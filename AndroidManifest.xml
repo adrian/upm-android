@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.u17od.upm"
+          android:versionCode="1"
+          android:versionName="1.0">
+
+    <application android:icon="@drawable/upm" 
+                 android:label="@string/app_name_short"
+                 android:debuggable="false"
+                 android:name="UPMApplication">
+
+        <activity android:name=".EnterMasterPassword"
+                  android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".FullAccountList">
+            <meta-data android:name="android.app.default_searchable"
+                       android:value=".SearchResults" />
+        </activity>
+
+        <activity android:name=".ViewAccountDetails">
+        </activity>
+
+        <activity android:name=".CreateNewDatabase">
+        </activity>
+
+        <activity android:name=".AddEditAccount">
+        </activity>
+
+        <activity android:name=".ChangeMasterPassword">
+        </activity>
+
+        <activity android:name=".SearchResults"
+                  android:label="@string/search_results"
+                  android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+
+            <meta-data android:name="android.app.searchable"
+                       android:resource="@xml/searchable" />
+        </activity>
+
+        <receiver android:name=".RestartApp"/>
+
+    </application>
+
+    <uses-sdk android:minSdkVersion="3"/>
+
+</manifest> 

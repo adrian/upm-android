@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name_short">UPM</string>
+    <string name="enter_master_password">Enter Master Password</string>
+    <string name="request_new_master_password">Please provide a master password that will be used to encrypt your password database.</string>
+    <string name="ok_label">OK</string>
+    <string name="open_label">Open</string>
+    <string name="request_master_password_dialog_title">Master Password</string>
+    <string name="passwords_dont_match">Passwords don't match</string>
+    <string name="no_accounts">No Accounts</string>
+    <string name="generic_error">Encountered an unexpected error. UPM will now close down.</string>
+    <string name="request_master_password">Please enter your master password</string>
+    <string name="invalid_password">Invalid password</string>
+    <string name="add_account_prompt">Click <b>Add</b> to add an account to your new database</string>
+    <string name="decrypting_db">Attempting to decrypt database</string>
+    <string name="account_name">Account Name</string>
+    <string name="userid">User Id</string>
+    <string name="password">Password</string>
+    <string name="url">URL</string>
+    <string name="notes">Notes</string>
+    <string name="search_label">Account Search</string>
+    <string name="search_results">Search Results</string>
+    <string name="search">Search</string>
+    <string name="add">Add</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="add_account">Add Account</string>
+    <string name="edit_account">Edit Account</string>
+    <string name="account_already_exists_error">An account with this name already exists</string>
+    <string name="account_name_required_error">Account Name is required</string>
+    <string name="existing_master_password">Existing master password</string>
+    <string name="change_master_password">Change Master Password</string>
+    <string name="more">More</string>
+    <string name="password_too_short">Master password must be at least %1$d characters long</string>
+    <string name="new_passwords_dont_match">New passwords don't match</string>
+    <string name="new_password">New Password</string>
+    <string name="new_password_confirm">New Password Confirmation</string>
+    <string name="no_accounts_found">No Accounts Found</string>
+    <string name="restore">Restore</string>
+    <string name="backup">Backup</string>
+    <string name="error_saving_after_delete">Error saving database following a delete</string>
+    <string name="account_deleted">Account '%s' deleted</string>
+    <string name="about">About</string>
+    <string name="close">Close</string>
+    <string name="homepage">Homepage</string>
+    <string name="homepageUrl">http://upm.sourceforge.net</string>
+    <string name="donate">Donate</string>
+    <string name="donateURL">http://sourceforge.net/donate/index.php?group_id=154394</string>
+    <string name="aboutText">
+        Universal Password Manager allows you to store usernames, passwords and 
+        generic notes in an encrypted database protected by one master 
+        password.\n\nVersion: 1.0
+    </string>
+    <string name="file_problem">Problem performing file operation</string>
+    <string name="restore_file_doesnt_exist">The file to restore from doesn\'t exist\n[%s]</string>
+    <string name="backup_file_exists">The backup file already exists on your SD card.\n%s\nDo you want to overwrite?"</string>
+    <string name="confirm_restore_overwrite">Are you sure you want to replace your existing database with the one on your SD card?"</string>
+    <string name="backup_successful">Backup Successful</string>
+    <string name="saving_database">Saving Database</string>
+</resources>
