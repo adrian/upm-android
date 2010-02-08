@@ -32,14 +32,14 @@ import com.u17od.upm.database.PasswordDatabase;
  */
 public class UPMApplication extends Application {
 
-	private PasswordDatabase passwordDatabase;
-	
-	public void setPasswordDatabase(PasswordDatabase passwordDatabase) {
-		this.passwordDatabase = passwordDatabase;
-	}
+    private PasswordDatabase passwordDatabase;
+    
+    public void setPasswordDatabase(PasswordDatabase passwordDatabase) {
+        this.passwordDatabase = passwordDatabase;
+    }
 
-	public PasswordDatabase getPasswordDatabase() {
-		return passwordDatabase;
-	}
+    public PasswordDatabase getPasswordDatabase() {
+        return passwordDatabase;
+    }
 
 }

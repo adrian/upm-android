@@ -60,7 +60,7 @@ public class EncryptionService {
     }
 
 
-	private void init(char[] password, byte[] salt) throws GeneralSecurityException {
+    private void init(char[] password, byte[] salt) throws GeneralSecurityException {
         PBEKeySpec pbeKeySpec;
         PBEParameterSpec pbeParamSpec;
         SecretKeyFactory keyFac;
@@ -82,9 +82,9 @@ public class EncryptionService {
     }
 
 
-	public byte[] encrypt(byte[] cleartext) throws IllegalBlockSizeException, BadPaddingException {
+    public byte[] encrypt(byte[] cleartext) throws IllegalBlockSizeException, BadPaddingException {
         return encryptionCipher.doFinal(cleartext);
-	}
+    }
 
 
     public byte[] decrypt(byte[] ciphertext) throws IllegalBlockSizeException, InvalidPasswordException {

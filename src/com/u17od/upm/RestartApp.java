@@ -28,12 +28,12 @@ import android.content.Intent;
 
 public class RestartApp extends BroadcastReceiver {
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		Intent i = new Intent(context, EnterMasterPassword.class);
-		i.addFlags(Intent.FLAG_FROM_BACKGROUND);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-		context.startActivity(i);
-	}
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Intent i = new Intent(context, EnterMasterPassword.class);
+        i.addFlags(Intent.FLAG_FROM_BACKGROUND);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+        context.startActivity(i);
+    }
 
 }

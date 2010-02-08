@@ -24,14 +24,14 @@ package com.u17od.upm.database;
 
 
 public class ProblemReadingDatabaseFile extends Exception {
-	
-	public ProblemReadingDatabaseFile(String message) {
-		super(message);
-	}
+    
+    public ProblemReadingDatabaseFile(String message) {
+        super(message);
+    }
 
-	
-	public ProblemReadingDatabaseFile(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
+    
+    public ProblemReadingDatabaseFile(String message, Throwable cause) {
+        super(message, cause);
+    }
+    
 }

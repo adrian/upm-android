@@ -42,81 +42,81 @@ import com.u17od.upm.database.PasswordDatabase;
 
 public class CreateNewDatabase extends Activity implements OnClickListener {
 
-	private static final int GENERIC_ERROR_DIALOG = 1;
-	private static final String DATABASE_FILE = "upm.db";
+    private static final int GENERIC_ERROR_DIALOG = 1;
+    private static final String DATABASE_FILE = "upm.db";
 
-	public static final int MIN_PASSWORD_LENGTH = 6;
+    public static final int MIN_PASSWORD_LENGTH = 6;
 
-	private EditText password1;
-	private EditText password2;
-	
+    private EditText password1;
+    private EditText password2;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.new_master_password_dialog);
         
-		password1 = (EditText) findViewById(R.id.password1);
-		password2 = (EditText) findViewById(R.id.password2);
-		Button okButton = (Button) findViewById(R.id.new_master_password_ok_button);
-		okButton.setOnClickListener(this);
+        password1 = (EditText) findViewById(R.id.password1);
+        password2 = (EditText) findViewById(R.id.password2);
+        Button okButton = (Button) findViewById(R.id.new_master_password_ok_button);
+        okButton.setOnClickListener(this);
     }
 
-	@Override
-	public void onClick(View v) {
-		if (!password1.getText().toString().equals(password2.getText().toString())) {
-			Toast toast = Toast.makeText(CreateNewDatabase.this, R.string.passwords_dont_match, Toast.LENGTH_SHORT);
-			toast.setGravity(Gravity.TOP, 0, 0);
-			toast.show();
-		} else if (password1.getText().length() < MIN_PASSWORD_LENGTH) {
-			String passwordTooShortResStr = getString(R.string.password_too_short);
-			String resultsText = String.format(passwordTooShortResStr, MIN_PASSWORD_LENGTH);
-			Toast.makeText(this, resultsText, Toast.LENGTH_SHORT).show();
-		} else {
-			try {
-				// Create a new database and then launch the AccountsList activity
-				PasswordDatabase passwordDatabase = createNewDatabase(password1.getText().toString());
-				
-				// Make the database available to the rest of the application by 
-				// putting a reference to it on the application
-				((UPMApplication) getApplication()).setPasswordDatabase(passwordDatabase);
+    @Override
+    public void onClick(View v) {
+        if (!password1.getText().toString().equals(password2.getText().toString())) {
+            Toast toast = Toast.makeText(CreateNewDatabase.this, R.string.passwords_dont_match, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.TOP, 0, 0);
+            toast.show();
+        } else if (password1.getText().length() < MIN_PASSWORD_LENGTH) {
+            String passwordTooShortResStr = getString(R.string.password_too_short);
+            String resultsText = String.format(passwordTooShortResStr, MIN_PASSWORD_LENGTH);
+            Toast.makeText(this, resultsText, Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                // Create a new database and then launch the AccountsList activity
+                PasswordDatabase passwordDatabase = createNewDatabase(password1.getText().toString());
+                
+                // Make the database available to the rest of the application by 
+                // putting a reference to it on the application
+                ((UPMApplication) getApplication()).setPasswordDatabase(passwordDatabase);
 
-				Intent i = new Intent(CreateNewDatabase.this, FullAccountList.class);
-				startActivity(i);
-			} catch (Exception e) {
-				Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
-				showDialog(GENERIC_ERROR_DIALOG);
-			}
-			
-			// We're finished with this activity so take it off the stack
-			finish();
-		}
-	}
+                Intent i = new Intent(CreateNewDatabase.this, FullAccountList.class);
+                startActivity(i);
+            } catch (Exception e) {
+                Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
+                showDialog(GENERIC_ERROR_DIALOG);
+            }
+            
+            // We're finished with this activity so take it off the stack
+            finish();
+        }
+    }
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		Dialog dialog = null;
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        Dialog dialog = null;
 
-		switch(id) {
-    		case GENERIC_ERROR_DIALOG:
-    			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    			builder.setMessage(R.string.generic_error)
-    				.setNeutralButton(R.string.ok_label, new DialogInterface.OnClickListener() {
-    					@Override
-						public void onClick(DialogInterface dialog, int which) {
-    						finish();
-    					}
-				});
-    			dialog = builder.create();
-    			break;
-		}
-		
-		return dialog;
-	}
+        switch(id) {
+            case GENERIC_ERROR_DIALOG:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.generic_error)
+                    .setNeutralButton(R.string.ok_label, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                });
+                dialog = builder.create();
+                break;
+        }
+        
+        return dialog;
+    }
 
-	private PasswordDatabase createNewDatabase(String password) throws Exception {
-		PasswordDatabase passwordDatabase = new PasswordDatabase(new File(getFilesDir(), DATABASE_FILE), password.toCharArray());
-		passwordDatabase.save();
-		return passwordDatabase;
-	}
+    private PasswordDatabase createNewDatabase(String password) throws Exception {
+        PasswordDatabase passwordDatabase = new PasswordDatabase(new File(getFilesDir(), DATABASE_FILE), password.toCharArray());
+        passwordDatabase.save();
+        return passwordDatabase;
+    }
 
 }

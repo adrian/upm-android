@@ -66,46 +66,46 @@ import com.u17od.upm.crypto.InvalidPasswordException;
  */
 public class PasswordDatabase {
 
-	private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 2;
     private static final String FILE_HEADER = "UPM";
 
-	private File databaseFile;
-	private Revision revision;
-	private DatabaseOptions dbOptions;
-	private HashMap<String, AccountInformation> accounts;
-	private EncryptionService encryptionService;
+    private File databaseFile;
+    private Revision revision;
+    private DatabaseOptions dbOptions;
+    private HashMap<String, AccountInformation> accounts;
+    private EncryptionService encryptionService;
 
 
-	public PasswordDatabase(File dbFile, char[] password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
-		this(dbFile, password, false);
-	}
-	
-	
-	public PasswordDatabase(File dbFile, char[] password, boolean overwrite) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
-		databaseFile = dbFile;
-		//Either create a new file (if it exists and overwrite == true OR it doesn't exist) or open the existing file
-		if ((databaseFile.exists() && overwrite == true) || !databaseFile.exists()) {
-			databaseFile.delete();
-			databaseFile.createNewFile();
-			revision = new Revision();
-			dbOptions = new DatabaseOptions();
-			accounts = new HashMap<String, AccountInformation>();
-			encryptionService = new EncryptionService(password);
-		} else {
-			load(password);
-		}
-	}
+    public PasswordDatabase(File dbFile, char[] password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
+        this(dbFile, password, false);
+    }
+    
+    
+    public PasswordDatabase(File dbFile, char[] password, boolean overwrite) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
+        databaseFile = dbFile;
+        //Either create a new file (if it exists and overwrite == true OR it doesn't exist) or open the existing file
+        if ((databaseFile.exists() && overwrite == true) || !databaseFile.exists()) {
+            databaseFile.delete();
+            databaseFile.createNewFile();
+            revision = new Revision();
+            dbOptions = new DatabaseOptions();
+            accounts = new HashMap<String, AccountInformation>();
+            encryptionService = new EncryptionService(password);
+        } else {
+            load(password);
+        }
+    }
 
 
-	public void changePassword(char[] password) throws GeneralSecurityException {
-		encryptionService = new EncryptionService(password);
-	}
+    public void changePassword(char[] password) throws GeneralSecurityException {
+        encryptionService = new EncryptionService(password);
+    }
 
 
-	private void load(char[] password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
-		
-		//Read the encrypted bytes into an in memory object (the ByteArrayOutputStream)
-		byte[] fullDatabase = getBytesFromFile(databaseFile);
+    private void load(char[] password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
+        
+        //Read the encrypted bytes into an in memory object (the ByteArrayOutputStream)
+        byte[] fullDatabase = getBytesFromFile(databaseFile);
 
         // Check the database is a minimum length
         if (fullDatabase.length < EncryptionService.SALT_LENGTH) {
@@ -191,22 +191,22 @@ public class PasswordDatabase {
 
         }
         
-		// Read the remainder of the database in now
-		accounts = new HashMap<String, AccountInformation>();
-		try {
-			while (true) { //keep loading accounts until an EOFException is thrown
-				AccountInformation ai = new AccountInformation(is);
-				addAccount(ai);
-			}
-		} catch (EOFException e) {
-			//just means we hit eof
-		}
-		is.close();
+        // Read the remainder of the database in now
+        accounts = new HashMap<String, AccountInformation>();
+        try {
+            while (true) { //keep loading accounts until an EOFException is thrown
+                AccountInformation ai = new AccountInformation(is);
+                addAccount(ai);
+            }
+        } catch (EOFException e) {
+            //just means we hit eof
+        }
+        is.close();
         
-	}
-	
+    }
+    
 
-	private byte[] getBytesFromFile(File file) throws IOException {
+    private byte[] getBytesFromFile(File file) throws IOException {
         InputStream is = new FileInputStream(file);
     
         // Get the size of the file
@@ -234,76 +234,76 @@ public class PasswordDatabase {
     }
 
 
-	public void addAccount(AccountInformation ai) {
-		accounts.put(ai.getAccountName(), ai);
-	}
-	
+    public void addAccount(AccountInformation ai) {
+        accounts.put(ai.getAccountName(), ai);
+    }
+    
 
-	public void deleteAccount(String accountName) {
-		accounts.remove(accountName);
-	}
+    public void deleteAccount(String accountName) {
+        accounts.remove(accountName);
+    }
 
-	
-	public AccountInformation getAccount(String name) {
-		return accounts.get(name);
-	}
-	
-	
-	public void save() throws IOException, IllegalBlockSizeException, BadPaddingException {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		
+    
+    public AccountInformation getAccount(String name) {
+        return accounts.get(name);
+    }
+    
+    
+    public void save() throws IOException, IllegalBlockSizeException, BadPaddingException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        
         // Flatpack the database revision and options
         revision.increment();
         revision.flatPack(os);
         dbOptions.flatPack(os);
 
-		// Flatpack the accounts
-		Iterator<AccountInformation> it = accounts.values().iterator();
-		while (it.hasNext()) {
-			AccountInformation ai = it.next();
-			ai.flatPack(os);
-		}
-		os.close();
-		byte[] dataToEncrypt = os.toByteArray();
+        // Flatpack the accounts
+        Iterator<AccountInformation> it = accounts.values().iterator();
+        while (it.hasNext()) {
+            AccountInformation ai = it.next();
+            ai.flatPack(os);
+        }
+        os.close();
+        byte[] dataToEncrypt = os.toByteArray();
 
-		//Now encrypt the database data
-		byte[] encryptedData = encryptionService.encrypt(dataToEncrypt);
-		
-		//Write the salt and the encrypted data out to the database file
-		FileOutputStream fos = new FileOutputStream(databaseFile);
+        //Now encrypt the database data
+        byte[] encryptedData = encryptionService.encrypt(dataToEncrypt);
+        
+        //Write the salt and the encrypted data out to the database file
+        FileOutputStream fos = new FileOutputStream(databaseFile);
         fos.write(FILE_HEADER.getBytes());
         fos.write(DB_VERSION);
-		fos.write(encryptionService.getSalt());
-		fos.write(encryptedData);
-		fos.close();
+        fos.write(encryptionService.getSalt());
+        fos.write(encryptedData);
+        fos.close();
 
-	}
+    }
 
-	
-	public ArrayList<AccountInformation> getAccounts() {
-	    return new ArrayList<AccountInformation>(accounts.values());
-	}
-	
-	
-	public ArrayList<String> getAccountNames() {
-		ArrayList<String> accountNames = new ArrayList<String>(accounts.keySet());
-		Collections.sort(accountNames, String.CASE_INSENSITIVE_ORDER);
-	    return accountNames;
-	}
-
-
-	public File getDatabaseFile() {
-		return databaseFile;
-	}
+    
+    public ArrayList<AccountInformation> getAccounts() {
+        return new ArrayList<AccountInformation>(accounts.values());
+    }
+    
+    
+    public ArrayList<String> getAccountNames() {
+        ArrayList<String> accountNames = new ArrayList<String>(accounts.keySet());
+        Collections.sort(accountNames, String.CASE_INSENSITIVE_ORDER);
+        return accountNames;
+    }
 
 
-	public DatabaseOptions getDbOptions() {
-		return dbOptions;
-	}
+    public File getDatabaseFile() {
+        return databaseFile;
+    }
 
 
-	public int getRevision() {
-		return revision.getRevision();
-	}
+    public DatabaseOptions getDbOptions() {
+        return dbOptions;
+    }
+
+
+    public int getRevision() {
+        return revision.getRevision();
+    }
 
 }

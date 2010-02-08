@@ -40,9 +40,9 @@ import com.u17od.upm.database.PasswordDatabase;
 
 public class ViewAccountDetails extends Activity {
 
-	public static AccountInformation account;
-	
-	private static final int CONFIRM_DELETE_DIALOG = 0;
+    public static AccountInformation account;
+    
+    private static final int CONFIRM_DELETE_DIALOG = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,80 +50,80 @@ public class ViewAccountDetails extends Activity {
         setContentView(R.layout.view_account_details);
     }
 
-	/**
-	 * This method is called when returning from the edit activity. Since the
-	 * account details may have been changed we should repopulate the view 
-	 */
-	@Override
+    /**
+     * This method is called when returning from the edit activity. Since the
+     * account details may have been changed we should repopulate the view 
+     */
+    @Override
     protected void onResume() {
         super.onResume();
         populateView(); 
     }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.account, menu);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.account, menu);
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		boolean optionConsumed = false;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        boolean optionConsumed = false;
 
-		switch (item.getItemId()) {
-		case R.id.edit:
-			Intent i = new Intent(ViewAccountDetails.this, AddEditAccount.class);
-			i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
-			AddEditAccount.accountToEdit = account;
-			startActivity(i);
-			break;
-		case R.id.delete:
-			showDialog(CONFIRM_DELETE_DIALOG);
-			break;
-		}
+        switch (item.getItemId()) {
+        case R.id.edit:
+            Intent i = new Intent(ViewAccountDetails.this, AddEditAccount.class);
+            i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
+            AddEditAccount.accountToEdit = account;
+            startActivity(i);
+            break;
+        case R.id.delete:
+            showDialog(CONFIRM_DELETE_DIALOG);
+            break;
+        }
 
-		return optionConsumed;
-	}
+        return optionConsumed;
+    }
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		Dialog dialog = null;
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        Dialog dialog = null;
 
-		switch(id) {
-		case CONFIRM_DELETE_DIALOG:
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Are you sure?")
-				.setTitle("Confirm Delete")
-				.setCancelable(false)
-				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						getPasswordDatabase().deleteAccount(account.getAccountName());
-						String accountName = account.getAccountName();
-						try {
-							getPasswordDatabase().save();
-							String message = String.format(getString(R.string.account_deleted), accountName);
-							Toast.makeText(ViewAccountDetails.this, message, Toast.LENGTH_SHORT).show();
-							finish();
-						} catch (Exception e) {
-							Log.e("ViewAccountDetails", "Error saving database", e);
-							Toast.makeText(ViewAccountDetails.this, R.string.error_saving_after_delete, Toast.LENGTH_SHORT).show();
-						}
-					}
-				})
-				.setNegativeButton("No", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-			dialog = builder.create();
-		}
+        switch(id) {
+        case CONFIRM_DELETE_DIALOG:
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure?")
+                .setTitle("Confirm Delete")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        getPasswordDatabase().deleteAccount(account.getAccountName());
+                        String accountName = account.getAccountName();
+                        try {
+                            getPasswordDatabase().save();
+                            String message = String.format(getString(R.string.account_deleted), accountName);
+                            Toast.makeText(ViewAccountDetails.this, message, Toast.LENGTH_SHORT).show();
+                            finish();
+                        } catch (Exception e) {
+                            Log.e("ViewAccountDetails", "Error saving database", e);
+                            Toast.makeText(ViewAccountDetails.this, R.string.error_saving_after_delete, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+            dialog = builder.create();
+        }
 
-		return dialog;
-	}
+        return dialog;
+    }
 
-	private void populateView() {
+    private void populateView() {
         TextView accountNameTextView = (TextView) findViewById(R.id.account_name);
         accountNameTextView.setText(account.getAccountName());
 
@@ -138,10 +138,10 @@ public class ViewAccountDetails extends Activity {
 
         TextView accountNotesTextView = (TextView) findViewById(R.id.account_notes);
         accountNotesTextView.setText(new String(account.getNotes()));
-	}
+    }
 
-	private PasswordDatabase getPasswordDatabase() {
-		return ((UPMApplication) getApplication()).getPasswordDatabase();
-	}
+    private PasswordDatabase getPasswordDatabase() {
+        return ((UPMApplication) getApplication()).getPasswordDatabase();
+    }
 
 }

@@ -36,42 +36,42 @@ import android.widget.AdapterView.OnItemLongClickListener;
 
 public class AccountsList extends ListActivity implements OnItemLongClickListener {
 
-	@Override
+    @Override
     public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
-	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		// Get the name of the account the user selected
-		TextView itemSelected = (TextView) view;
-		AccountInformation ai = getPasswordDatabase().getAccount(itemSelected.getText().toString());
-		AddEditAccount.accountToEdit = ai;
-
-		Intent i = new Intent(AccountsList.this, AddEditAccount.class);
-		i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
-		startActivity(i);
-		return true;
-	}
-
-	@Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-		// Get the name of the account the user selected
-		TextView itemSelected = (TextView) v;
-		AccountInformation ai = getPasswordDatabase().getAccount(itemSelected.getText().toString());
-
-		// Pass the AccountInformation object o the AccountDetails Activity by
-		// way of a static variable on that class. I really don't like this but
-		// it seems like the best way of doing it
-		// @see http://developer.android.com/guide/appendix/faq/framework.html#3
-		ViewAccountDetails.account = ai;
-
-		Intent i = new Intent(AccountsList.this, ViewAccountDetails.class);
-		startActivity(i);
+        super.onCreate(savedInstanceState);
     }
 
-	protected PasswordDatabase getPasswordDatabase() {
-		return ((UPMApplication) getApplication()).getPasswordDatabase();
-	}
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        // Get the name of the account the user selected
+        TextView itemSelected = (TextView) view;
+        AccountInformation ai = getPasswordDatabase().getAccount(itemSelected.getText().toString());
+        AddEditAccount.accountToEdit = ai;
+
+        Intent i = new Intent(AccountsList.this, AddEditAccount.class);
+        i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
+        startActivity(i);
+        return true;
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        // Get the name of the account the user selected
+        TextView itemSelected = (TextView) v;
+        AccountInformation ai = getPasswordDatabase().getAccount(itemSelected.getText().toString());
+
+        // Pass the AccountInformation object o the AccountDetails Activity by
+        // way of a static variable on that class. I really don't like this but
+        // it seems like the best way of doing it
+        // @see http://developer.android.com/guide/appendix/faq/framework.html#3
+        ViewAccountDetails.account = ai;
+
+        Intent i = new Intent(AccountsList.this, ViewAccountDetails.class);
+        startActivity(i);
+    }
+
+    protected PasswordDatabase getPasswordDatabase() {
+        return ((UPMApplication) getApplication()).getPasswordDatabase();
+    }
 
 }
