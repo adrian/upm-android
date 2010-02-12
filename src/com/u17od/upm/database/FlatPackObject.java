@@ -2,7 +2,7 @@
  * $Id: FlatPackObject.java 107 2006-05-25 19:17:14Z adrianshome $
  * 
  * Universal Password Manager
- * Copyright (C) 2005 Adrian Smith
+ * Copyright (c) 2010 Adrian Smith
  *
  * This file is part of Universal Password Manager.
  *   

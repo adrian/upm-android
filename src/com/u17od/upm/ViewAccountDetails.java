@@ -2,7 +2,7 @@
  * $Id: ViewAccountDetails.java 37 2010-01-27 19:16:42Z Adrian $
  * 
  * Universal Password Manager
- * Copyright (C) 2005 Adrian Smith
+ * Copyright (c) 2010 Adrian Smith
  *
  * This file is part of Universal Password Manager.
  *   

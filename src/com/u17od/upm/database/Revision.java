@@ -2,7 +2,7 @@
  * $Id: Revision.java 109 2006-05-25 19:31:50Z adrianshome $
  * 
  * Universal Password Manager
- * Copyright (C) 2005 Adrian Smith
+ * Copyright (c) 2010 Adrian Smith
  *
  * This file is part of Universal Password Manager.
  *   

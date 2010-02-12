@@ -2,7 +2,7 @@
  * $Id: EncryptionService.java 146 2006-09-14 19:32:14Z adrianshome $
  * 
  * Universal Password Manager
- * Copyright (C) 2005 Adrian Smith
+ * Copyright (c) 2010 Adrian Smith
  *
  * This file is part of Universal Password Manager.
  *   

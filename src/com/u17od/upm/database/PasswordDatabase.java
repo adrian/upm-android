@@ -2,7 +2,7 @@
  * $Id: PasswordDatabase.java 191 2007-12-02 17:17:42Z adrianshome $
  * 
  * Universal Password Manager
- * Copyright (C) 2005 Adrian Smith
+ * Copyright (c) 2010 Adrian Smith
  *
  * This file is part of Universal Password Manager.
  *   

@@ -2,7 +2,7 @@
  * $Id: DatabaseOptions.java 111 2006-07-20 20:21:20Z adrianshome $
  * 
  * Universal Password Manager
- * Copyright (C) 2005 Adrian Smith
+ * Copyright (c) 2010 Adrian Smith
  *
  * This file is part of Universal Password Manager.
  *   

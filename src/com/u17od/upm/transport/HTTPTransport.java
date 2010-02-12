@@ -2,7 +2,7 @@
  * $Id: HTTPTransport.java 174 2006-12-21 16:00:02Z adrianshome $
  * 
  * Universal Password Manager
- * Copyright (C) 2005 Adrian Smith
+ * Copyright (c) 2010 Adrian Smith
  *
  * This file is part of Universal Password Manager.
  *   

@@ -2,7 +2,7 @@
  * $Id: InvalidPasswordException.java 7 2005-10-11 09:02:13Z adrian $
  * 
  * Universal Password Manager
- * Copyright (C) 2005 Adrian Smith
+ * Copyright (c) 2010 Adrian Smith
  *
  * This file is part of Universal Password Manager.
  *   
