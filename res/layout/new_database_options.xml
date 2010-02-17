@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:padding="10dip">
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/emp_new_db_options"
+              android:layout_marginBottom="20dip"/>
+    
+    <Button android:id="@+id/new_database"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/emp_create_new_database"
+            android:layout_gravity="center"/>
+    
+    <Button android:id="@+id/open_remote_database"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/emp_open_remote_db"
+            android:layout_gravity="center"/>
+    
+</LinearLayout>

@@ -171,12 +171,12 @@ public class HTTPTransport extends Transport {
 
     
     private HttpURLConnection getConnection(URL url) throws IOException {
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         // This is for testing purposes. Setting http.proxyHost and http.proxyPort
         // doesn't seem to work but this does.
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888));
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection(proxy);
+//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888));
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection(proxy);
 
         return conn;
     }

@@ -26,10 +26,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +41,7 @@ import javax.crypto.IllegalBlockSizeException;
 import com.u17od.upm.crypto.DESDecryptionService;
 import com.u17od.upm.crypto.EncryptionService;
 import com.u17od.upm.crypto.InvalidPasswordException;
+import com.u17od.upm.util.Util;
 
 
 /**
@@ -105,7 +104,7 @@ public class PasswordDatabase {
     private void load(char[] password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
         
         //Read the encrypted bytes into an in memory object (the ByteArrayOutputStream)
-        byte[] fullDatabase = getBytesFromFile(databaseFile);
+        byte[] fullDatabase = Util.getBytesFromFile(databaseFile);
 
         // Check the database is a minimum length
         if (fullDatabase.length < EncryptionService.SALT_LENGTH) {
@@ -205,34 +204,6 @@ public class PasswordDatabase {
         
     }
     
-
-    private byte[] getBytesFromFile(File file) throws IOException {
-        InputStream is = new FileInputStream(file);
-    
-        // Get the size of the file
-        long length = file.length();
-    
-        // Create the byte array to hold the data
-        byte[] bytes = new byte[(int)length];
-    
-        // Read in the bytes
-        int offset = 0;
-        int numRead = 0;
-        while (offset < bytes.length
-               && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-            offset += numRead;
-        }
-    
-        // Ensure all the bytes have been read in
-        if (offset < bytes.length) {
-            throw new IOException("Could not completely read file " + file.getName());
-        }
-    
-        is.close();
-
-        return bytes;
-    }
-
 
     public void addAccount(AccountInformation ai) {
         accounts.put(ai.getAccountName(), ai);

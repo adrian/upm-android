@@ -54,7 +54,9 @@ import com.u17od.upm.database.PasswordDatabase;
 public class EnterMasterPassword extends Activity implements OnClickListener, Runnable {
 
     public static final String DATABASE_FILE = "upm.db";  // the name of the db file in the filesystem
+
     private static final int GENERIC_ERROR_DIALOG = 1;     // id of the dialog used to display generic errors
+    private static final int NEW_DATABASE_DIALOG = 2;     // dialog asking to download or create new db
 
     private static final int WHAT_INVALID_PASSWORD = 1;
     private static final int WHAT_GENERIC_ERROR = 2;
@@ -89,9 +91,7 @@ public class EnterMasterPassword extends Activity implements OnClickListener, Ru
                 }
             });
         } else {
-            // Start the CreateNewDatabase activity and remove this one from the stack
-            Intent i = new Intent(EnterMasterPassword.this, CreateNewDatabase.class);
-            startActivity(i);
+        	showDialog(NEW_DATABASE_DIALOG);
         }
     }
 
@@ -172,6 +172,34 @@ public class EnterMasterPassword extends Activity implements OnClickListener, Ru
                     });
                 dialog = builder.create();
                 break;
+            case NEW_DATABASE_DIALOG:
+                dialog = new Dialog(this);
+                dialog.setCancelable(false);
+                dialog.setContentView(R.layout.new_database_options);
+                dialog.setTitle(R.string.new_database);
+                
+                Button newDatabase = (Button) dialog.findViewById(R.id.new_database);
+                newDatabase.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Start the CreateNewDatabase activity and remove this one from the stack
+                        Intent i = new Intent(EnterMasterPassword.this, CreateNewDatabase.class);
+                        startActivity(i);
+                        finish();
+                    }
+                });
+
+                Button openRemoteDatabase = (Button) dialog.findViewById(R.id.open_remote_database);
+                openRemoteDatabase.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Start the DownloadRemoteDatabase activity
+                        Intent i = new Intent(EnterMasterPassword.this, DownloadRemoteDatabase.class);
+                        startActivity(i);
+                    }
+                });
+
+            	break;
             default:
                 dialog = null;
         }

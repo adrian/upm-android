@@ -58,4 +58,12 @@
     <string name="confirm_restore_overwrite">Are you sure you want to replace your existing database with the one on your SD card?"</string>
     <string name="backup_successful">Backup Successful</string>
     <string name="saving_database">Saving Database</string>
+    <string name="emp_new_db_options">Would you like to create a new database or open an existing one from a remote location?</string>
+    <string name="emp_create_new_database">Create New Database</string>
+    <string name="emp_open_remote_db">Open Remote Database</string>
+    <string name="new_database">New Database</string>
+    <string name="download">Download</string>
+    <string name="download_remote_database">Download Remote Database</string>
+    <string name="downloading_db">Downloading Database...</string>
+    <string name="problem_downloading_db">Problem Downloading Database</string>
 </resources>
