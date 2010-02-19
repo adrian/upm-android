@@ -23,10 +23,6 @@
 package com.u17od.upm;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -36,7 +32,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -196,38 +191,13 @@ public class FullAccountList extends AccountsList {
     private void restoreDatabase() {
         File fileOnSDCard = new File(Environment.getExternalStorageDirectory(), EnterMasterPassword.DATABASE_FILE);
         File databaseFile = new File(getFilesDir(), EnterMasterPassword.DATABASE_FILE);
-        copyFile(fileOnSDCard, databaseFile);
+        ((UPMApplication) getApplication()).copyFile(fileOnSDCard, databaseFile, this);
     }
 
     private void backupDatabase() {
         File fileOnSDCard = new File(Environment.getExternalStorageDirectory(), EnterMasterPassword.DATABASE_FILE);
         File databaseFile = new File(getFilesDir(), EnterMasterPassword.DATABASE_FILE);
-        copyFile(databaseFile, fileOnSDCard);
-    }
-
-    private void copyFile(File source, File dest) {
-        FileChannel sourceChannel = null;
-        FileChannel destinationChannel = null;
-        try {
-            sourceChannel = new FileInputStream(source).getChannel();
-            destinationChannel = new FileOutputStream(dest).getChannel();
-            destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
-        } catch (IOException e) {
-            Log.e("AccountsList", getString(R.string.file_problem), e);
-            Toast.makeText(this, R.string.file_problem, Toast.LENGTH_LONG).show();
-        } finally {
-            try {
-                if (sourceChannel != null) {
-                    sourceChannel.close();
-                }
-                if (destinationChannel != null) {
-                    destinationChannel.close();
-                }
-            } catch (IOException e) {
-                Log.e("AccountsList", getString(R.string.file_problem), e);
-                Toast.makeText(this, R.string.file_problem, Toast.LENGTH_LONG).show();
-            }
-        }
+        ((UPMApplication) getApplication()).copyFile(databaseFile, fileOnSDCard, this);
     }
 
 }

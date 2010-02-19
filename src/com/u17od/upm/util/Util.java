@@ -48,13 +48,14 @@ public class Util {
 
 
     public static byte[] getBytesFromFile(File file) throws IOException {
+        return getBytesFromFile(file, file.length());
+    }
+
+    public static byte[] getBytesFromFile(File file, long numBytesToRead) throws IOException {
         InputStream is = new FileInputStream(file);
     
-        // Get the size of the file
-        long length = file.length();
-    
         // Create the byte array to hold the data
-        byte[] bytes = new byte[(int)length];
+        byte[] bytes = new byte[(int) numBytesToRead];
     
         // Read in the bytes
         int offset = 0;

@@ -277,4 +277,14 @@ public class PasswordDatabase {
         return revision.getRevision();
     }
 
+    
+    public static boolean isPasswordDatabase(File file) throws IOException {
+        boolean isPasswordDatabase = false;
+        byte[] headerBytes = Util.getBytesFromFile(file, FILE_HEADER.getBytes().length);
+        if (Arrays.equals(headerBytes, FILE_HEADER.getBytes())) {
+            isPasswordDatabase = true;
+        }
+        return isPasswordDatabase;
+    }
+
 }

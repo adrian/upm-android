@@ -1,10 +1,6 @@
 package com.u17od.upm;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -20,12 +16,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.u17od.upm.database.PasswordDatabase;
 import com.u17od.upm.transport.HTTPTransport;
-import com.u17od.upm.transport.TransportException;
 
 public class DownloadRemoteDatabase extends Activity implements OnClickListener, Runnable {
 
     private static final int WHAT_ERROR_DOWNLOADING = 1;
+    private static final int WHAT_NOT_PW_DATABASE = 2;
     private static final String DATABASE_FILE = "upm.db";
 
     private EditText url;
@@ -60,15 +57,25 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener,
             HTTPTransport transport = new HTTPTransport();
             File tempDB = transport.getRemoteFile(url.getText().toString(),
                     userid.getText().toString(), password.getText().toString());
-            copyFile(tempDB, new File(getFilesDir(), DATABASE_FILE));
+            
+            // Check this is a password database before accepting it
+            if (PasswordDatabase.isPasswordDatabase(tempDB)) {
+                ((UPMApplication) getApplication()).copyFile(tempDB, new File(getFilesDir(), DATABASE_FILE), this);
 
-            // Start up the 
-            Intent i = new Intent(DownloadRemoteDatabase.this, EnterMasterPassword.class);
-            startActivity(i);
-            finish();
-        } catch (TransportException e) {
+                // Now that we have a database we need to prompt the user for the password
+                Intent i = new Intent(DownloadRemoteDatabase.this, EnterMasterPassword.class);
+                startActivity(i);
+                finish();
+            } else {
+                msg.what = WHAT_NOT_PW_DATABASE;
+            }
+
+        } catch (Exception e) {
             Log.e("DownloadRemoteDatabase", "Problem downloading database", e);
             msg.what = WHAT_ERROR_DOWNLOADING;
+            Bundle b = new Bundle();
+            b.putString("error", e.getMessage()); 
+            msg.setData(b);
         } finally {
             handler.sendMessage(msg);
         }
@@ -81,37 +88,20 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener,
 
             switch (msg.what) {
                 case WHAT_ERROR_DOWNLOADING:
-                    Toast toast = Toast.makeText(DownloadRemoteDatabase.this, R.string.problem_downloading_db, Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.TOP, 0, 0);
-                    toast.show();
+                    String errorMessage = (String) msg.getData().get("error");
+                    showToast(getString(R.string.problem_downloading_db) + "\n\n" + errorMessage);
+                    break; 
+                case WHAT_NOT_PW_DATABASE:
+                    showToast(getString(R.string.not_password_database));
                     break; 
             }
         }
-    };
 
-    private void copyFile(File source, File dest) {
-        FileChannel sourceChannel = null;
-        FileChannel destinationChannel = null;
-        try {
-            sourceChannel = new FileInputStream(source).getChannel();
-            destinationChannel = new FileOutputStream(dest).getChannel();
-            destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
-        } catch (IOException e) {
-            Log.e("AccountsList", getString(R.string.file_problem), e);
-            Toast.makeText(this, R.string.file_problem, Toast.LENGTH_LONG).show();
-        } finally {
-            try {
-                if (sourceChannel != null) {
-                    sourceChannel.close();
-                }
-                if (destinationChannel != null) {
-                    destinationChannel.close();
-                }
-            } catch (IOException e) {
-                Log.e("AccountsList", getString(R.string.file_problem), e);
-                Toast.makeText(this, R.string.file_problem, Toast.LENGTH_LONG).show();
-            }
+        private void showToast(String message) {
+            Toast toast = Toast.makeText(DownloadRemoteDatabase.this, message, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.TOP, 0, 0);
+            toast.show();
         }
-    }
+    };
 
 }

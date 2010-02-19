@@ -66,4 +66,5 @@
     <string name="download_remote_database">Download Remote Database</string>
     <string name="downloading_db">Downloading Database...</string>
     <string name="problem_downloading_db">Problem Downloading Database</string>
+    <string name="not_password_database">The downloaded file is not a UPM password database</string>
 </resources>

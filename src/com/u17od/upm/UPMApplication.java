@@ -22,7 +22,16 @@
  */
 package com.u17od.upm;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+
+import android.app.Activity;
 import android.app.Application;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.u17od.upm.database.PasswordDatabase;
 
@@ -40,6 +49,31 @@ public class UPMApplication extends Application {
 
     public PasswordDatabase getPasswordDatabase() {
         return passwordDatabase;
+    }
+
+    protected void copyFile(File source, File dest, Activity activity) {
+        FileChannel sourceChannel = null;
+        FileChannel destinationChannel = null;
+        try {
+            sourceChannel = new FileInputStream(source).getChannel();
+            destinationChannel = new FileOutputStream(dest).getChannel();
+            destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+        } catch (IOException e) {
+            Log.e(activity.getClass().getName(), getString(R.string.file_problem), e);
+            Toast.makeText(activity, R.string.file_problem, Toast.LENGTH_LONG).show();
+        } finally {
+            try {
+                if (sourceChannel != null) {
+                    sourceChannel.close();
+                }
+                if (destinationChannel != null) {
+                    destinationChannel.close();
+                }
+            } catch (IOException e) {
+                Log.e(activity.getClass().getName(), getString(R.string.file_problem), e);
+                Toast.makeText(activity, R.string.file_problem, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 }
