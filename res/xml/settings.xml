@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    
+
+<PreferenceCategory android:title="@string/shared_database_settings"><EditTextPreference android:title="@string/shared_url" android:summary="@string/shared_url_summary" android:key="shared_url" android:singleLine="true" android:inputType="textUri"/>
+
+<ListPreference android:title="@string/shared_url_auth" android:key="shared_url_auth" android:summary="@string/shared_url_auth_summary"></ListPreference>
+</PreferenceCategory>
+</PreferenceScreen> 

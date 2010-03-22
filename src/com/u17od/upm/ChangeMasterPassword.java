@@ -22,7 +22,8 @@
  */
 package com.u17od.upm;
 
-import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -41,6 +42,7 @@ import android.widget.Toast;
 
 import com.u17od.upm.crypto.InvalidPasswordException;
 import com.u17od.upm.database.PasswordDatabase;
+import com.u17od.upm.database.ProblemReadingDatabaseFile;
 
 public class ChangeMasterPassword extends Activity implements OnClickListener, Runnable {
 
@@ -95,9 +97,9 @@ public class ChangeMasterPassword extends Activity implements OnClickListener, R
     public void run() {
         Message msg = Message.obtain();
         try {
-            // Attempt to decrypt the database
+            // Attempt to decrypt the database so-as to test the password
             char[] password = existingPassword.getText().toString().toCharArray();
-            new PasswordDatabase(new File(getFilesDir(), EnterMasterPassword.DATABASE_FILE), password);
+            new PasswordDatabase(Utilities.getDatabaseFile(this), password);
 
             // Re-encrypt the database
             getPasswordDatabase().changePassword(newPassword.getText().toString().toCharArray());
@@ -107,7 +109,13 @@ public class ChangeMasterPassword extends Activity implements OnClickListener, R
             finish();
         } catch (InvalidPasswordException e) {
             msg.what = WHAT_INVALID_PASSWORD;
-        } catch (Exception e) {
+        } catch (IOException e) {
+            Log.e("ChangeMasterPassword", "Problem decrypting/encrypting the database", e);
+            msg.what = WHAT_GENERIC_ERROR;
+        } catch (GeneralSecurityException e) {
+            Log.e("ChangeMasterPassword", "Problem decrypting/encrypting the database", e);
+            msg.what = WHAT_GENERIC_ERROR;
+        } catch (ProblemReadingDatabaseFile e) {
             Log.e("ChangeMasterPassword", "Problem decrypting/encrypting the database", e);
             msg.what = WHAT_GENERIC_ERROR;
         } finally {

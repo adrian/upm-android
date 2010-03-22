@@ -22,6 +22,11 @@
  */
 package com.u17od.upm;
 
+import java.io.IOException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -148,7 +153,13 @@ public class AddEditAccount extends Activity implements OnClickListener {
         getPasswordDatabase().addAccount(ai);
         try {
             getPasswordDatabase().save();
-        } catch (Exception e) {
+        } catch (IOException e) {
+            Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
+            showDialog(GENERIC_ERROR_DIALOG);
+        } catch (IllegalBlockSizeException e) {
+            Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
+            showDialog(GENERIC_ERROR_DIALOG);
+        } catch (BadPaddingException e) {
             Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
             showDialog(GENERIC_ERROR_DIALOG);
         }

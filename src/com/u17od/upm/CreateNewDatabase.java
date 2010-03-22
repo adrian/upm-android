@@ -22,13 +22,13 @@
  */
 package com.u17od.upm;
 
-import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,12 +38,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.u17od.upm.crypto.InvalidPasswordException;
 import com.u17od.upm.database.PasswordDatabase;
+import com.u17od.upm.database.ProblemReadingDatabaseFile;
 
 public class CreateNewDatabase extends Activity implements OnClickListener {
 
     private static final int GENERIC_ERROR_DIALOG = 1;
-    private static final String DATABASE_FILE = "upm.db";
 
     public static final int MIN_PASSWORD_LENGTH = 6;
 
@@ -80,15 +81,21 @@ public class CreateNewDatabase extends Activity implements OnClickListener {
                 // putting a reference to it on the application
                 ((UPMApplication) getApplication()).setPasswordDatabase(passwordDatabase);
 
-                Intent i = new Intent(CreateNewDatabase.this, FullAccountList.class);
-                startActivity(i);
-            } catch (Exception e) {
+                setResult(RESULT_OK);
+                finish();
+            } catch (IOException e) {
+                Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
+                showDialog(GENERIC_ERROR_DIALOG);
+            } catch (ProblemReadingDatabaseFile e) {
+                Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
+                showDialog(GENERIC_ERROR_DIALOG);
+            } catch (InvalidPasswordException e) {
+                Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
+                showDialog(GENERIC_ERROR_DIALOG);
+            } catch (GeneralSecurityException e) {
                 Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
                 showDialog(GENERIC_ERROR_DIALOG);
             }
-            
-            // We're finished with this activity so take it off the stack
-            finish();
         }
     }
 
@@ -113,8 +120,8 @@ public class CreateNewDatabase extends Activity implements OnClickListener {
         return dialog;
     }
 
-    private PasswordDatabase createNewDatabase(String password) throws Exception {
-        PasswordDatabase passwordDatabase = new PasswordDatabase(new File(getFilesDir(), DATABASE_FILE), password.toCharArray());
+    private PasswordDatabase createNewDatabase(String password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
+        PasswordDatabase passwordDatabase = new PasswordDatabase(Utilities.getDatabaseFile(this), password.toCharArray());
         passwordDatabase.save();
         return passwordDatabase;
     }

@@ -8,7 +8,7 @@
     <string name="request_master_password_dialog_title">Master Password</string>
     <string name="passwords_dont_match">Passwords don't match</string>
     <string name="no_accounts">No Accounts</string>
-    <string name="generic_error">Encountered an unexpected error. UPM will now close down.</string>
+    <string name="generic_error">Encountered an unexpected error</string>
     <string name="request_master_password">Please enter your master password</string>
     <string name="invalid_password">Invalid password</string>
     <string name="add_account_prompt">Click <b>Add</b> to add an account to your new database</string>
@@ -65,6 +65,27 @@
     <string name="download">Download</string>
     <string name="download_remote_database">Download Remote Database</string>
     <string name="downloading_db">Downloading Database...</string>
-    <string name="problem_downloading_db">Problem Downloading Database</string>
+    <string name="problem_downloading_db">Problem Downloading Database\n\n%s</string>
     <string name="not_password_database">The downloaded file is not a UPM password database</string>
+    <string name="sync">Sync</string>
+    <string name="problem_checking_upm_db">There was a problem checking that the file is a UPM database\n\n%s</string>
+    <string name="problem_decrypying_db">There was a problem decrypting the database\n\n%s</string>
+    <string name="enter_password_cancalled">No password provided</string>
+    <string name="generic_error_with_message">Unexpected Error...\n\n%s</string>
+    <string name="syncing_database">Syncing Database</string>
+    <string name="problem_reading_upm_db">Problem reading database...\n\n%s</string>
+    <string name="new_db_downloaded">New Database Downloaded</string>
+    <string name="db_uptodate">Database up to date</string>
+    <string name="preferences">Preferences</string>
+    <string name="no_remote_db">This database has not been configured with a remote URL</string>
+    <string name="settings_title">UPM Preferences</string>
+    <string name="shared_database_settings">Shared Database Settings</string>
+    <string name="shared_url">URL</string>
+    <string name="shared_url_summary">HTTP URL used to share database</string>
+    <string name="shared_url_auth">HTTP Authentication Account</string>
+    <string name="shared_url_auth_summary">Required if URL is password protected</string>
+    <string name="problem_saving_db">Problem Saving Database\n\n%s</string>
+    <string name="uploading_database">Uploading Database</string>
+    <string name="db_sync_complete">Database Sync Complete</string>
+    <string name="db_sync_error">Database Sync Error\n\n%s</string>
 </resources>

@@ -22,12 +22,16 @@
  */
 package com.u17od.upm.crypto;
 
-import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -39,46 +43,53 @@ public class EncryptionService {
     private static final String PBEWithSHA256And256BitAES = "PBEWithSHA256And256BitAES-CBC-BC";
     private static final String randomAlgorithm = "SHA1PRNG";
     public static final int SALT_LENGTH = 8;
+    public static final int SALT_GEN_ITER_COUNT = 20;
 
     private Cipher encryptionCipher; 
     private Cipher decryptionCipher;
-    private byte[] salt;
+    private SecretKey secretKey;
+    private byte salt[];
 
 
-    public EncryptionService(char[] password) throws GeneralSecurityException {
-        //Generate a random salt
-        SecureRandom saltGen = SecureRandom.getInstance(randomAlgorithm);
-        byte pSalt[] = new byte[SALT_LENGTH];
-        saltGen.nextBytes(pSalt);
-
-        init(password, pSalt);
+    public EncryptionService(SecretKey secretKey, byte salt[]) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException {
+        this.secretKey = secretKey;
+        this.salt = salt;
+        initCiphers();
     }
 
 
-    public EncryptionService(char[] password, byte[] salt) throws GeneralSecurityException {
-        init(password, salt);
-    }
-
-
-    private void init(char[] password, byte[] salt) throws GeneralSecurityException {
-        PBEKeySpec pbeKeySpec;
-        PBEParameterSpec pbeParamSpec;
-        SecretKeyFactory keyFac;
+    public EncryptionService(char[] password, byte[] salt) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(password);
+        SecretKeyFactory keyFac = SecretKeyFactory.getInstance(PBEWithSHA256And256BitAES);
+        secretKey = keyFac.generateSecret(pbeKeySpec);
 
         this.salt = salt;
-        int count = 20;
 
-        pbeParamSpec = new PBEParameterSpec(salt, count);
+        initCiphers();
+    }
 
-        pbeKeySpec = new PBEKeySpec(password);
-        keyFac = SecretKeyFactory.getInstance(PBEWithSHA256And256BitAES);
-        SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
+    
+    public EncryptionService(char[] password) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(password);
+        SecretKeyFactory keyFac = SecretKeyFactory.getInstance(PBEWithSHA256And256BitAES);
+        secretKey = keyFac.generateSecret(pbeKeySpec);
+
+        SecureRandom saltGen = SecureRandom.getInstance(randomAlgorithm);
+        this.salt = new byte[SALT_LENGTH];
+        saltGen.nextBytes(this.salt);
+
+        initCiphers();
+    }
+
+
+    private void initCiphers() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+        PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, SALT_GEN_ITER_COUNT);
 
         encryptionCipher = Cipher.getInstance(PBEWithSHA256And256BitAES);
         decryptionCipher = Cipher.getInstance(PBEWithSHA256And256BitAES);
 
-        encryptionCipher.init(Cipher.ENCRYPT_MODE, pbeKey, pbeParamSpec);
-        decryptionCipher.init(Cipher.DECRYPT_MODE, pbeKey, pbeParamSpec);
+        encryptionCipher.init(Cipher.ENCRYPT_MODE, secretKey, pbeParamSpec);
+        decryptionCipher.init(Cipher.DECRYPT_MODE, secretKey, pbeParamSpec);
     }
 
 
@@ -101,5 +112,17 @@ public class EncryptionService {
     public byte[] getSalt() {
         return salt;
     }
+
+
+    public SecretKey getSecretKey() {
+        return secretKey;
+    }
+
     
+    public static SecretKey createSecretKey(char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(password);
+        SecretKeyFactory keyFac = SecretKeyFactory.getInstance(PBEWithSHA256And256BitAES);
+        return keyFac.generateSecret(pbeKeySpec);
+    }
+
 }

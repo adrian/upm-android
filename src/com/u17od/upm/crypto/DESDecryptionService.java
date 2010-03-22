@@ -43,8 +43,8 @@ public class DESDecryptionService {
     
     /**
      * This method initialises a local decryption cipher, and decrypts the given string.
-     * It's here as a convienence method for backwards compatibility with the old DES 
-     * encryption algorithim pre 1.3
+     * It's here as a convenience method for backwards compatibility with the old DES 
+     * encryption algorithm pre 1.3
      * @param password
      * @param salt
      * @param ciphertext
@@ -58,15 +58,18 @@ public class DESDecryptionService {
      * @throws InvalidPasswordException 
      */
     public static byte[] decrypt(char[] password, byte[] salt, byte[] ciphertext) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, InvalidPasswordException {
-
-        PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 20);
         PBEKeySpec pbeKeySpec = new PBEKeySpec(password);
         SecretKeyFactory keyFac = SecretKeyFactory.getInstance(PBEWithMD5AndDES);
-        SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
+        SecretKey secretKey = keyFac.generateSecret(pbeKeySpec);
 
+        return decrypt(secretKey, salt, ciphertext);
+    }
+
+    
+    public static byte[] decrypt(SecretKey secretKey, byte[] salt, byte[] ciphertext) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, InvalidPasswordException {
+        PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 20);
         Cipher desDecryptionCipher = Cipher.getInstance(PBEWithMD5AndDES);
-
-        desDecryptionCipher.init(Cipher.DECRYPT_MODE, pbeKey, pbeParamSpec);
+        desDecryptionCipher.init(Cipher.DECRYPT_MODE, secretKey, pbeParamSpec);
 
         // Do the decryption
         byte[] retVal;
@@ -76,7 +79,6 @@ public class DESDecryptionService {
             throw new InvalidPasswordException(); 
         }
         return retVal;
-
     }
-    
+
 }

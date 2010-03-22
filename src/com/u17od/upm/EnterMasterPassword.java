@@ -23,13 +23,11 @@
 package com.u17od.upm;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,6 +43,7 @@ import android.widget.Toast;
 
 import com.u17od.upm.crypto.InvalidPasswordException;
 import com.u17od.upm.database.PasswordDatabase;
+import com.u17od.upm.database.ProblemReadingDatabaseFile;
 
 /**
  * This Activity is responsible for prompting the user to enter their master
@@ -53,46 +52,41 @@ import com.u17od.upm.database.PasswordDatabase;
  */
 public class EnterMasterPassword extends Activity implements OnClickListener, Runnable {
 
-    public static final String DATABASE_FILE = "upm.db";  // the name of the db file in the filesystem
-
     private static final int GENERIC_ERROR_DIALOG = 1;     // id of the dialog used to display generic errors
-    private static final int NEW_DATABASE_DIALOG = 2;     // dialog asking to download or create new db
 
     private static final int WHAT_INVALID_PASSWORD = 1;
     private static final int WHAT_GENERIC_ERROR = 2;
-    
+
+    private static final String BUNDLE_ERROR_MESSAGE = "BUNDLE_ERROR_MESSAGE";
+
+    public static PasswordDatabase decryptedPasswordDatabase;
+    public static File databaseFileToDecrypt;
+
     private ProgressDialog progressDialog;
     private EditText passwordField;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        
-        //Debug.startMethodTracing("upm");
-
         super.onCreate(savedInstanceState);
 
-        if (databaseFileExists()) {
-            setContentView(R.layout.enter_master_password);
-    
-            passwordField = (EditText) findViewById(R.id.password);
-            passwordField.setText(null);
-    
-            // Make this class the listener for the click event on the OK button
-            Button okButton = (Button) findViewById(R.id.master_password_open_button);
-            okButton.setOnClickListener(this);
+        setContentView(R.layout.enter_master_password);
 
-            passwordField.setOnKeyListener(new OnKeyListener() {
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                        openDatabase();
-                        return true;
-                    }
-                    return false;
+        passwordField = (EditText) findViewById(R.id.password);
+        passwordField.setText(null);
+
+        // Make this class the listener for the click event on the OK button
+        Button okButton = (Button) findViewById(R.id.master_password_open_button);
+        okButton.setOnClickListener(this);
+
+        passwordField.setOnKeyListener(new OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    openDatabase();
+                    return true;
                 }
-            });
-        } else {
-        	showDialog(NEW_DATABASE_DIALOG);
-        }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -117,19 +111,25 @@ public class EnterMasterPassword extends Activity implements OnClickListener, Ru
         try {
             // Attempt to decrypt the database
             char[] password = passwordField.getText().toString().toCharArray();
-            PasswordDatabase passwordDatabase = new PasswordDatabase(new File(getFilesDir(), DATABASE_FILE), password);
+            decryptedPasswordDatabase = new PasswordDatabase(databaseFileToDecrypt, password);
 
-            // Make the PasswordDatabase available to the rest of the application
-            // by storing it on the application
-            ((UPMApplication) getApplication()).setPasswordDatabase(passwordDatabase);
-
-            Intent i = new Intent(EnterMasterPassword.this, FullAccountList.class);
-            startActivity(i);
+            setResult(RESULT_OK);
+            finish();
         } catch (InvalidPasswordException e) {
             msg.what = WHAT_INVALID_PASSWORD;
-        } catch (Exception e) {
-            Log.e("EnterMasterPassword", "Problem decrypting database", e);
+            msg.getData().putString(BUNDLE_ERROR_MESSAGE, e.getMessage());
+        } catch (IOException e) {
+            Log.e("EnterMasterPassword", e.getMessage(), e);
             msg.what = WHAT_GENERIC_ERROR;
+            msg.getData().putString(BUNDLE_ERROR_MESSAGE, e.getMessage());
+        } catch (GeneralSecurityException e) {
+            Log.e("EnterMasterPassword", e.getMessage(), e);
+            msg.what = WHAT_GENERIC_ERROR;
+            msg.getData().putString(BUNDLE_ERROR_MESSAGE, e.getMessage());
+        } catch (ProblemReadingDatabaseFile e) {
+            Log.e("EnterMasterPassword", e.getMessage(), e);
+            msg.what = WHAT_GENERIC_ERROR;
+            msg.getData().putString(BUNDLE_ERROR_MESSAGE, e.getMessage());
         } finally {
             handler.sendMessage(msg);
         }
@@ -152,62 +152,12 @@ public class EnterMasterPassword extends Activity implements OnClickListener, Ru
                     
                     break; 
                 case WHAT_GENERIC_ERROR:
+                    String.format(getText(R.string.generic_error_with_message).toString(), msg.getData().getString(BUNDLE_ERROR_MESSAGE));
+                    UIUtilities.showToast(EnterMasterPassword.this, R.string.generic_error_with_message, true);
                     showDialog(GENERIC_ERROR_DIALOG);
                     break; 
             }
         }
     };
-
-    protected Dialog onCreateDialog(int id) {
-        Dialog dialog;
-        switch(id) {
-            case GENERIC_ERROR_DIALOG:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.generic_error)
-                    .setNeutralButton(R.string.ok_label, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish(); // Close the application
-                        }
-                    });
-                dialog = builder.create();
-                break;
-            case NEW_DATABASE_DIALOG:
-                dialog = new Dialog(this);
-                dialog.setCancelable(false);
-                dialog.setContentView(R.layout.new_database_options);
-                dialog.setTitle(R.string.new_database);
-                
-                Button newDatabase = (Button) dialog.findViewById(R.id.new_database);
-                newDatabase.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Start the CreateNewDatabase activity and remove this one from the stack
-                        Intent i = new Intent(EnterMasterPassword.this, CreateNewDatabase.class);
-                        startActivity(i);
-                        finish();
-                    }
-                });
-
-                Button openRemoteDatabase = (Button) dialog.findViewById(R.id.open_remote_database);
-                openRemoteDatabase.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Start the DownloadRemoteDatabase activity
-                        Intent i = new Intent(EnterMasterPassword.this, DownloadRemoteDatabase.class);
-                        startActivity(i);
-                    }
-                });
-
-            	break;
-            default:
-                dialog = null;
-        }
-        return dialog;
-    }
-
-    private boolean databaseFileExists() {
-        return new File(getFilesDir(), DATABASE_FILE).exists();
-    }
 
 }

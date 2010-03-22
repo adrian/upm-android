@@ -37,6 +37,7 @@ import java.util.Iterator;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
 
 import com.u17od.upm.crypto.DESDecryptionService;
 import com.u17od.upm.crypto.EncryptionService;
@@ -75,11 +76,17 @@ public class PasswordDatabase {
     private EncryptionService encryptionService;
 
 
+    public PasswordDatabase(File dbFile, SecretKey secretKey) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
+        databaseFile = dbFile;
+        load(secretKey);
+    }
+
+
     public PasswordDatabase(File dbFile, char[] password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
         this(dbFile, password, false);
     }
-    
-    
+
+
     public PasswordDatabase(File dbFile, char[] password, boolean overwrite) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
         databaseFile = dbFile;
         //Either create a new file (if it exists and overwrite == true OR it doesn't exist) or open the existing file
@@ -91,7 +98,8 @@ public class PasswordDatabase {
             accounts = new HashMap<String, AccountInformation>();
             encryptionService = new EncryptionService(password);
         } else {
-            load(password);
+            SecretKey secretKey = EncryptionService.createSecretKey(password);
+            load(secretKey);
         }
     }
 
@@ -101,9 +109,9 @@ public class PasswordDatabase {
     }
 
 
-    private void load(char[] password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
-        
-        //Read the encrypted bytes into an in memory object (the ByteArrayOutputStream)
+    private void load(SecretKey secretKey) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
+
+        //Read in the encrypted bytes
         byte[] fullDatabase = Util.getBytesFromFile(databaseFile);
 
         // Check the database is a minimum length
@@ -112,7 +120,7 @@ public class PasswordDatabase {
         }
 
         ByteArrayInputStream is = null;
-        
+
         // Ensure this is a real UPM database by checking for the existance of the string "UPM" at the start of the file
         byte[] header = new byte[FILE_HEADER.getBytes().length];
         System.arraycopy(fullDatabase, 0, header, 0, header.length);
@@ -134,7 +142,7 @@ public class PasswordDatabase {
                 System.arraycopy(fullDatabase, encryptedBytesPos, encryptedBytes, 0, encryptedBytesLength);
     
                 //Attempt to decrypt the database information
-                encryptionService = new EncryptionService(password, salt);
+                encryptionService = new EncryptionService(secretKey, salt);
                 byte[] decryptedBytes = encryptionService.decrypt(encryptedBytes);
 
                 //If we've got here then the database was successfully decrypted 
@@ -164,13 +172,13 @@ public class PasswordDatabase {
             byte[] decryptedBytes = null;
             try {
                 //Attempt to decrypt the database information
-                decryptedBytes = DESDecryptionService.decrypt(password, salt, encryptedBytes);
+                decryptedBytes = DESDecryptionService.decrypt(secretKey, salt, encryptedBytes);
             } catch (IllegalBlockSizeException e) {
                 throw new ProblemReadingDatabaseFile("Either your password is incorrect or this file isn't a UPM password database");
             }
 
             // Create the encryption for use later in the save() method
-            encryptionService = new EncryptionService(password, salt);
+            encryptionService = new EncryptionService(secretKey, salt);
             
             //We'll get to here if the password was correct so load up the decryped byte
             is = new ByteArrayInputStream(decryptedBytes);
@@ -268,6 +276,19 @@ public class PasswordDatabase {
     }
 
 
+    /**
+     * There are times when we decrypt a temp version of the database file,
+     * e.g. when we download a db during sync. If we end up making this temp db
+     * our permanent db then we don't want to have to decrypt it again. In this
+     * instance what we do is overwrite the main db file with the temp downloaded
+     * one and then repoint this PassswordDatabase at the main db file.  
+     * @param file
+     */
+    public void setDatabaseFile(File file) {
+        databaseFile = file;
+    }
+
+
     public DatabaseOptions getDbOptions() {
         return dbOptions;
     }
@@ -285,6 +306,11 @@ public class PasswordDatabase {
             isPasswordDatabase = true;
         }
         return isPasswordDatabase;
+    }
+
+    
+    public EncryptionService getEncryptionService () {
+        return encryptionService;
     }
 
 }

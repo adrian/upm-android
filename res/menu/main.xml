@@ -6,10 +6,12 @@
           android:id="@+id/search">
     </item>
 
-    <item android:icon="@android:drawable/ic_menu_add" android:alphabeticShortcut="a" android:title="@string/add" android:id="@+id/add">
+    <item android:title="@string/add" android:id="@+id/add" android:alphabeticShortcut="a" android:icon="@android:drawable/ic_menu_add">
     </item>
 
-    <item android:icon="@android:drawable/ic_menu_more" android:alphabeticShortcut="m" android:title="@string/more" android:id="@+id/more">
+    <item android:id="@+id/sync" android:title="@string/sync" android:alphabeticShortcut="y" android:icon="@drawable/ic_menu_refresh"></item>
+
+<item android:id="@+id/preferences" android:title="@string/preferences" android:alphabeticShortcut="p" android:icon="@android:drawable/ic_menu_preferences"></item><item android:icon="@android:drawable/ic_menu_more" android:alphabeticShortcut="m" android:title="@string/more" android:id="@+id/more">
         <menu>
             <item android:title="@string/change_master_password" android:id="@+id/change_master_password">
             </item>
