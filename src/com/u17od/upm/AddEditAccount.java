@@ -22,17 +22,11 @@
  */
 package com.u17od.upm;
 
-import java.io.IOException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -151,20 +145,12 @@ public class AddEditAccount extends Activity implements OnClickListener {
         }
 
         getPasswordDatabase().addAccount(ai);
-        try {
-            getPasswordDatabase().save();
-        } catch (IOException e) {
-            Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
-            showDialog(GENERIC_ERROR_DIALOG);
-        } catch (IllegalBlockSizeException e) {
-            Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
-            showDialog(GENERIC_ERROR_DIALOG);
-        } catch (BadPaddingException e) {
-            Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
-            showDialog(GENERIC_ERROR_DIALOG);
-        }
-
-        finish();
+        new SaveDatabaseAsyncTask(this, new Callback() {
+            @Override
+            public void execute() {
+                AddEditAccount.this.finish();
+            }
+        }).execute(getPasswordDatabase());
     }
 
     @Override

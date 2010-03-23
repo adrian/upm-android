@@ -28,7 +28,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -108,16 +107,16 @@ public class ViewAccountDetails extends Activity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         getPasswordDatabase().deleteAccount(account.getAccountName());
-                        String accountName = account.getAccountName();
-                        try {
-                            getPasswordDatabase().save();
-                            String message = String.format(getString(R.string.account_deleted), accountName);
-                            Toast.makeText(ViewAccountDetails.this, message, Toast.LENGTH_SHORT).show();
-                            finish();
-                        } catch (Exception e) {
-                            Log.e("ViewAccountDetails", "Error saving database", e);
-                            Toast.makeText(ViewAccountDetails.this, R.string.error_saving_after_delete, Toast.LENGTH_SHORT).show();
-                        }
+                        final String accountName = account.getAccountName();
+
+                        new SaveDatabaseAsyncTask(ViewAccountDetails.this, new Callback() {
+                            @Override
+                            public void execute() {
+                                String message = String.format(getString(R.string.account_deleted), accountName);
+                                Toast.makeText(ViewAccountDetails.this, message, Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        }).execute(getPasswordDatabase());
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {

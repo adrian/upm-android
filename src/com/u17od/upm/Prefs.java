@@ -1,10 +1,6 @@
 package com.u17od.upm;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -12,7 +8,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.util.Log;
+import android.view.KeyEvent;
 
 import com.u17od.upm.database.PasswordDatabase;
 
@@ -53,30 +49,22 @@ public class Prefs extends PreferenceActivity implements OnPreferenceChangeListe
     }
 
     @Override
-    protected void onPause() {
-        super.onStop();
-
-        if (saveRequired) {
-            db.getDbOptions().setRemoteLocation(sharedURLPref.getText());
-            db.getDbOptions().setAuthDBEntry(sharedURLAuthPref.getValue());
-            
-            try {
-                db.save();
-            } catch (IllegalBlockSizeException e) {
-                Log.e("Prefs", e.getMessage(), e);
-                String message = String.format(getString(R.string.problem_saving_db), e.getMessage());
-                UIUtilities.showToast(this, message, true);
-            } catch (BadPaddingException e) {
-                Log.e("Prefs", e.getMessage(), e);
-                String message = String.format(getString(R.string.problem_saving_db), e.getMessage());
-                UIUtilities.showToast(this, message, true);
-            } catch (IOException e) {
-                Log.e("Prefs", e.getMessage(), e);
-                String message = String.format(getString(R.string.problem_saving_db), e.getMessage());
-                UIUtilities.showToast(this, message, true);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (saveRequired) {
+                db.getDbOptions().setRemoteLocation(sharedURLPref.getText());
+                db.getDbOptions().setAuthDBEntry(sharedURLAuthPref.getValue());
+                new SaveDatabaseAsyncTask(this, new Callback() {
+                    @Override
+                    public void execute() {
+                        Prefs.this.finish();
+                    }
+                }).execute(db);
+                return true;
             }
         }
-    }
+        return super.onKeyDown(keyCode, event);
+    } 
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {

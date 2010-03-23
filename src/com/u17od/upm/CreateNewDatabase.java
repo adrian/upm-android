@@ -75,24 +75,30 @@ public class CreateNewDatabase extends Activity implements OnClickListener {
         } else {
             try {
                 // Create a new database and then launch the AccountsList activity
-                PasswordDatabase passwordDatabase = createNewDatabase(password1.getText().toString());
+                final PasswordDatabase passwordDatabase = createNewDatabase(password1.getText().toString());
                 
-                // Make the database available to the rest of the application by 
-                // putting a reference to it on the application
-                ((UPMApplication) getApplication()).setPasswordDatabase(passwordDatabase);
+                new SaveDatabaseAsyncTask(this, new Callback() {
+                    @Override
+                    public void execute() {
+                        // Make the database available to the rest of the application by 
+                        // putting a reference to it on the application
+                        ((UPMApplication) getApplication()).setPasswordDatabase(passwordDatabase);
 
-                setResult(RESULT_OK);
-                finish();
+                        setResult(RESULT_OK);
+                        finish();
+                    }
+                }).execute(passwordDatabase);
+
             } catch (IOException e) {
+                Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
+                showDialog(GENERIC_ERROR_DIALOG);
+            } catch (GeneralSecurityException e) {
                 Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
                 showDialog(GENERIC_ERROR_DIALOG);
             } catch (ProblemReadingDatabaseFile e) {
                 Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
                 showDialog(GENERIC_ERROR_DIALOG);
             } catch (InvalidPasswordException e) {
-                Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
-                showDialog(GENERIC_ERROR_DIALOG);
-            } catch (GeneralSecurityException e) {
                 Log.e("CreateNewDatabase", "Error encountered while creating a new database", e);
                 showDialog(GENERIC_ERROR_DIALOG);
             }
