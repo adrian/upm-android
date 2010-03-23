@@ -155,11 +155,7 @@ public class FullAccountList extends AccountsList {
                 new RetrieveRemoteDatabase().execute();
                 break;
             case R.id.preferences:
-                if (Utilities.isSyncRequired(this)) {
-                    UIUtilities.showToast(this, R.string.sync_required);
-                } else {
-                    startActivity(new Intent(this, Prefs.class));
-                }
+                startActivity(new Intent(this, Prefs.class));
                 break;
         }
 
