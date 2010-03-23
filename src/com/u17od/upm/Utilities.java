@@ -1,6 +1,9 @@
 package com.u17od.upm;
 
 import java.io.File;
+import java.util.Date;
+
+import com.u17od.upm.database.PasswordDatabase;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -30,6 +33,22 @@ public class Utilities {
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(PREFS_DB_FILE_NAME, dbFileName);
         editor.commit();
+    }
+
+    public static boolean isSyncRequired(Activity activity) {
+        UPMApplication app = (UPMApplication) activity.getApplication();
+        PasswordDatabase db = app.getPasswordDatabase();
+        Date timeOfLastSync = app.getTimeOfLastSync();
+
+        boolean syncRequired = false;
+
+        if (db.getDbOptions().getRemoteLocation() != null && !db.getDbOptions().getRemoteLocation().equals("")) {
+            if (timeOfLastSync == null || System.currentTimeMillis() - timeOfLastSync.getTime() > (5 * 60 * 1000)) {
+                syncRequired = true;
+            }
+        }
+
+        return syncRequired;
     }
 
 }

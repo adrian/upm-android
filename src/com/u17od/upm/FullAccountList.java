@@ -25,6 +25,7 @@ package com.u17od.upm;
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Date;
 
 import javax.crypto.SecretKey;
 
@@ -112,12 +113,20 @@ public class FullAccountList extends AccountsList {
                 optionConsumed = true;
                 break;
             case R.id.add:
-                Intent i = new Intent(FullAccountList.this, AddEditAccount.class);
-                i.putExtra(AddEditAccount.MODE, AddEditAccount.ADD_MODE);
-                startActivity(i);
+                if (Utilities.isSyncRequired(this)) {
+                    UIUtilities.showToast(this, R.string.sync_required);
+                } else {
+                    Intent i = new Intent(FullAccountList.this, AddEditAccount.class);
+                    i.putExtra(AddEditAccount.MODE, AddEditAccount.ADD_MODE);
+                    startActivity(i);
+                }
                 break;
             case R.id.change_master_password:
-                startActivity(new Intent(FullAccountList.this, ChangeMasterPassword.class));
+                if (Utilities.isSyncRequired(this)) {
+                    UIUtilities.showToast(this, R.string.sync_required);
+                } else {
+                    startActivity(new Intent(FullAccountList.this, ChangeMasterPassword.class));
+                }
                 break;
             case R.id.restore:
                 // Check to ensure there's a file to restore
@@ -146,7 +155,11 @@ public class FullAccountList extends AccountsList {
                 new RetrieveRemoteDatabase().execute();
                 break;
             case R.id.preferences:
-                startActivity(new Intent(this, Prefs.class));
+                if (Utilities.isSyncRequired(this)) {
+                    UIUtilities.showToast(this, R.string.sync_required);
+                } else {
+                    startActivity(new Intent(this, Prefs.class));
+                }
                 break;
         }
 
@@ -259,6 +272,7 @@ public class FullAccountList extends AccountsList {
         } else if (dbDownloadedOnSync.getRevision() == app.getPasswordDatabase().getRevision()) {
             UIUtilities.showToast(this, R.string.db_uptodate);
         }
+        app.setTimeOfLastSync(new Date());
     }
 
     private class UploadDatabase extends AsyncTask<Void, Void, Integer> {

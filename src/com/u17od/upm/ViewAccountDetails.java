@@ -74,13 +74,21 @@ public class ViewAccountDetails extends Activity {
 
         switch (item.getItemId()) {
         case R.id.edit:
-            Intent i = new Intent(ViewAccountDetails.this, AddEditAccount.class);
-            i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
-            AddEditAccount.accountToEdit = account;
-            startActivity(i);
+            if (Utilities.isSyncRequired(this)) {
+                UIUtilities.showToast(this, R.string.sync_required);
+            } else {
+                Intent i = new Intent(ViewAccountDetails.this, AddEditAccount.class);
+                i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
+                AddEditAccount.accountToEdit = account;
+                startActivity(i);
+            }
             break;
         case R.id.delete:
-            showDialog(CONFIRM_DELETE_DIALOG);
+            if (Utilities.isSyncRequired(this)) {
+                UIUtilities.showToast(this, R.string.sync_required);
+            } else {
+                showDialog(CONFIRM_DELETE_DIALOG);
+            }
             break;
         }
 

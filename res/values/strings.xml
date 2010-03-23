@@ -88,4 +88,5 @@
     <string name="uploading_database">Uploading Database</string>
     <string name="db_sync_complete">Database Sync Complete</string>
     <string name="db_sync_error">Database Sync Error\n\n%s</string>
+    <string name="sync_required">A sync is required before carrying out this operation</string>
 </resources>

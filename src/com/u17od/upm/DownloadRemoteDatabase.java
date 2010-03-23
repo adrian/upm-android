@@ -2,6 +2,7 @@ package com.u17od.upm;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -60,6 +61,7 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
                 // Put a reference to the decrypted database on the Application object
                 UPMApplication app = (UPMApplication) getApplication();
                 app.setPasswordDatabase(EnterMasterPassword.decryptedPasswordDatabase);
+                app.setTimeOfLastSync(new Date());
 
                 setResult(RESULT_OK);
                 finish();

@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.Application;
@@ -42,7 +43,16 @@ import com.u17od.upm.database.PasswordDatabase;
 public class UPMApplication extends Application {
 
     private PasswordDatabase passwordDatabase;
+    private Date timeOfLastSync;
     
+    public Date getTimeOfLastSync() {
+        return timeOfLastSync;
+    }
+
+    public void setTimeOfLastSync(Date timeOfLastSync) {
+        this.timeOfLastSync = timeOfLastSync;
+    }
+
     public void setPasswordDatabase(PasswordDatabase passwordDatabase) {
         this.passwordDatabase = passwordDatabase;
     }
