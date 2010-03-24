@@ -50,7 +50,7 @@
     <string name="aboutText">
         Universal Password Manager allows you to store usernames, passwords and 
         generic notes in an encrypted database protected by one master 
-        password.\n\nVersion: 1.0
+        password.\n\nVersion: %s
     </string>
     <string name="file_problem">Problem performing file operation</string>
     <string name="restore_file_doesnt_exist">The file to restore from doesn\'t exist\n[%s]</string>

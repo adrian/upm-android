@@ -36,6 +36,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -208,9 +210,18 @@ public class FullAccountList extends AccountsList {
                });
             break;
         case DIALOG_ABOUT:
+            PackageInfo pinfo;
+            String versionName = "<unknown>";
+            try {
+                pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                versionName = pinfo.versionName;
+            } catch (NameNotFoundException e) {
+                Log.e("FullAccountList", e.getMessage(), e);
+            }
+                       
             View v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
             TextView text = (TextView) v.findViewById(R.id.dialogText);
-            text.setText(getString(R.string.aboutText));
+            text.setText(getString(R.string.aboutText, versionName));
 
             dialogBuilder
                 .setTitle(R.string.about)
