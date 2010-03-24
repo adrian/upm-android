@@ -1,5 +1,5 @@
 /*
- * $Id: TransportException.java 146 2006-09-14 19:32:14Z adrianshome $
+ * $Id$
  * 
  * Universal Password Manager
  * Copyright (c) 2010 Adrian Smith

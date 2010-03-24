@@ -1,5 +1,5 @@
 /*
- * $Id:$
+ * $Id$
  * 
  * Universal Password Manager
  * Copyright (c) 2010 Adrian Smith

@@ -1,5 +1,5 @@
 /*
- * $Id: FlatPackObject.java 107 2006-05-25 19:17:14Z adrianshome $
+ * $Id$
  * 
  * Universal Password Manager
  * Copyright (c) 2010 Adrian Smith

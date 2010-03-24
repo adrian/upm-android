@@ -1,5 +1,5 @@
 /*
- * $Id: DatabaseOptions.java 111 2006-07-20 20:21:20Z adrianshome $
+ * $Id$
  * 
  * Universal Password Manager
  * Copyright (c) 2010 Adrian Smith

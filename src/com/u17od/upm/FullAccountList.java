@@ -1,5 +1,5 @@
 /*
- * $Id: FullAccountList.java 37 2010-01-27 19:16:42Z Adrian $
+ * $Id$
  * 
  * Universal Password Manager
  * Copyright (c) 2010 Adrian Smith

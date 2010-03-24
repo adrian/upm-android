@@ -1,5 +1,5 @@
 /*
- * $Id: Util.java 114 2006-07-28 15:25:49Z adrianshome $
+ * $Id$
  * 
  * Universal Password Manager
  * Copyright (c) 2010 Adrian Smith

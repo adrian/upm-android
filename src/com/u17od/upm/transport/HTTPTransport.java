@@ -1,5 +1,5 @@
 /*
- * $Id: HTTPTransport.java 174 2006-12-21 16:00:02Z adrianshome $
+ * $Id$
  * 
  * Universal Password Manager
  * Copyright (c) 2010 Adrian Smith

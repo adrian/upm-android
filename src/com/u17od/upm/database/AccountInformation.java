@@ -1,5 +1,5 @@
 /*
- * $Id: AccountInformation.java 15 2005-10-15 12:43:13Z adrian $
+ * $Id$
  * 
  * Universal Password Manager
  * Copyright (c) 2010 Adrian Smith

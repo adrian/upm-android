@@ -1,5 +1,5 @@
 /*
- * $Id: ProblemReadingDatabaseFile.java 7 2005-10-11 09:02:13Z adrian $
+ * $Id$
  * 
  * Universal Password Manager
  * Copyright (c) 2010 Adrian Smith
