@@ -43,14 +43,18 @@ public class AccountsList extends ListActivity implements OnItemLongClickListene
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        // Get the name of the account the user selected
-        TextView itemSelected = (TextView) view;
-        AccountInformation ai = getPasswordDatabase().getAccount(itemSelected.getText().toString());
-        AddEditAccount.accountToEdit = ai;
-
-        Intent i = new Intent(AccountsList.this, AddEditAccount.class);
-        i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
-        startActivity(i);
+        if (Utilities.isSyncRequired(this)) {
+            UIUtilities.showToast(this, R.string.sync_required);
+        } else {
+            // Get the name of the account the user selected
+            TextView itemSelected = (TextView) view;
+            AccountInformation ai = getPasswordDatabase().getAccount(itemSelected.getText().toString());
+            AddEditAccount.accountToEdit = ai;
+    
+            Intent i = new Intent(AccountsList.this, AddEditAccount.class);
+            i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
+            startActivity(i);
+        }
         return true;
     }
 
