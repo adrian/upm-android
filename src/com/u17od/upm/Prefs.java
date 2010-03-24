@@ -45,7 +45,7 @@ public class Prefs extends PreferenceActivity implements OnPreferenceChangeListe
         System.arraycopy(accountNamesAL.toArray(), 0, accountNames, 1, accountNamesAL.size());
         sharedURLAuthPref.setEntryValues(accountNames);
         sharedURLAuthPref.setEntries(accountNames);
-        sharedURLAuthPref.setDefaultValue(db.getDbOptions().getAuthDBEntry());
+        sharedURLAuthPref.setValue(db.getDbOptions().getAuthDBEntry());
     }
 
     @Override
