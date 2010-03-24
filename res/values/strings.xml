@@ -33,7 +33,7 @@
     <string name="change_master_password">Change Master Password</string>
     <string name="more">More</string>
     <string name="password_too_short">Master password must be at least %1$d characters long</string>
-    <string name="new_passwords_dont_match">New passwords don't match</string>
+    <string name="new_passwords_dont_match">New passwords don\'t match</string>
     <string name="new_password">New Password</string>
     <string name="new_password_confirm">New Password Confirmation</string>
     <string name="no_accounts_found">No Accounts Found</string>
@@ -56,7 +56,7 @@
     <string name="restore_file_doesnt_exist">The file to restore from doesn\'t exist\n[%s]</string>
     <string name="backup_file_exists">The backup file already exists on your SD card.\n%s\nDo you want to overwrite?"</string>
     <string name="confirm_restore_overwrite">Are you sure you want to replace your existing database with the one on your SD card?"</string>
-    <string name="backup_successful">Backup Successful</string>
+    <string name="backup_complete">Database backed up to %s</string>
     <string name="saving_database">Saving Database</string>
     <string name="emp_new_db_options">Would you like to create a new database or open an existing one from a remote location?</string>
     <string name="emp_create_new_database">Create New Database</string>

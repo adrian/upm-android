@@ -199,7 +199,6 @@ public class FullAccountList extends AccountsList {
                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                        backupDatabase();
-                       Toast.makeText(FullAccountList.this, R.string.backup_successful, Toast.LENGTH_SHORT).show();
                    }
                })
                .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -247,6 +246,8 @@ public class FullAccountList extends AccountsList {
         File fileOnSDCard = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
         File databaseFile = Utilities.getDatabaseFile(this);
         ((UPMApplication) getApplication()).copyFile(databaseFile, fileOnSDCard, this);
+        String message = String.format(getString(R.string.backup_complete), fileOnSDCard.getAbsolutePath());
+        UIUtilities.showToast(this, message, false);
     }
 
     /**

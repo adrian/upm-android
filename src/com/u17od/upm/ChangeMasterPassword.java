@@ -26,13 +26,9 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,12 +40,7 @@ import com.u17od.upm.crypto.InvalidPasswordException;
 import com.u17od.upm.database.PasswordDatabase;
 import com.u17od.upm.database.ProblemReadingDatabaseFile;
 
-public class ChangeMasterPassword extends Activity implements OnClickListener, Runnable {
-
-    private static final int GENERIC_ERROR_DIALOG = 1;     // id of the dialog used to display generic errors
-
-    private static final int WHAT_INVALID_PASSWORD = 1;
-    private static final int WHAT_GENERIC_ERROR = 2;
+public class ChangeMasterPassword extends Activity implements OnClickListener {
 
     private EditText existingPassword;
     private EditText newPassword;
@@ -84,86 +75,68 @@ public class ChangeMasterPassword extends Activity implements OnClickListener, R
                 String resultsText = String.format(passwordTooShortResStr, CreateNewDatabase.MIN_PASSWORD_LENGTH);
                 Toast.makeText(this, resultsText, Toast.LENGTH_SHORT).show();
             } else {
-                // Show a dialog informing the user the db in being decrypted
-                // Start a new thread to decrypt the database
-                progressDialog = ProgressDialog.show(this, "", getString(R.string.saving_database));
-                new Thread(this).start();
+                new DecryptAndSaveDatabaseAsyncTask().execute();
             }
             break;
         }
-    }
-
-    @Override
-    public void run() {
-        Message msg = Message.obtain();
-        try {
-            // Attempt to decrypt the database so-as to test the password
-            char[] password = existingPassword.getText().toString().toCharArray();
-            new PasswordDatabase(Utilities.getDatabaseFile(this), password);
-
-            // Re-encrypt the database
-            getPasswordDatabase().changePassword(newPassword.getText().toString().toCharArray());
-            getPasswordDatabase().save();
-
-            // We're finished with this activity so take it off the stack
-            finish();
-        } catch (InvalidPasswordException e) {
-            msg.what = WHAT_INVALID_PASSWORD;
-        } catch (IOException e) {
-            Log.e("ChangeMasterPassword", "Problem decrypting/encrypting the database", e);
-            msg.what = WHAT_GENERIC_ERROR;
-        } catch (GeneralSecurityException e) {
-            Log.e("ChangeMasterPassword", "Problem decrypting/encrypting the database", e);
-            msg.what = WHAT_GENERIC_ERROR;
-        } catch (ProblemReadingDatabaseFile e) {
-            Log.e("ChangeMasterPassword", "Problem decrypting/encrypting the database", e);
-            msg.what = WHAT_GENERIC_ERROR;
-        } finally {
-            handler.sendMessage(msg);
-        }
-    }
-
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            progressDialog.dismiss();
-
-            switch (msg.what) {
-            case WHAT_INVALID_PASSWORD:
-                Toast.makeText(ChangeMasterPassword.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
-                
-                // Set focus back to the password and select all characters
-                existingPassword.requestFocus();
-                existingPassword.selectAll();
-                
-                break; 
-            case WHAT_GENERIC_ERROR:
-                showDialog(GENERIC_ERROR_DIALOG);
-                break; 
-            }
-        }
-    };
-
-    protected Dialog onCreateDialog(int id) {
-        Dialog dialog = null;
-        switch(id) {
-        case GENERIC_ERROR_DIALOG:
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.generic_error)
-                .setNeutralButton(R.string.ok_label, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish(); // Close the application
-                    }
-                });
-            dialog = builder.create();
-            break;
-        }
-        return dialog;
     }
 
     private PasswordDatabase getPasswordDatabase() {
         return ((UPMApplication) getApplication()).getPasswordDatabase();
+    }
+
+    public class DecryptAndSaveDatabaseAsyncTask extends AsyncTask<Void, Void, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(ChangeMasterPassword.this, "", getString(R.string.saving_database));
+        }
+        
+        @Override
+        protected Integer doInBackground(Void... params) {
+            Integer messageCode = null;
+            try {
+                // Attempt to decrypt the database so-as to test the password
+                char[] password = existingPassword.getText().toString().toCharArray();
+                new PasswordDatabase(Utilities.getDatabaseFile(ChangeMasterPassword.this), password);
+
+                // Re-encrypt the database
+                getPasswordDatabase().changePassword(newPassword.getText().toString().toCharArray());
+                getPasswordDatabase().save();
+
+                // We're finished with this activity so take it off the stack
+                finish();
+            } catch (InvalidPasswordException e) {
+                Log.e("ChangeMasterPassword", e.getMessage(), e);
+                messageCode = R.string.invalid_password;
+            } catch (IOException e) {
+                Log.e("ChangeMasterPassword", e.getMessage(), e);
+                messageCode = R.string.generic_error;
+            } catch (GeneralSecurityException e) {
+                Log.e("ChangeMasterPassword", e.getMessage(), e);
+                messageCode = R.string.generic_error;
+            } catch (ProblemReadingDatabaseFile e) {
+                Log.e("ChangeMasterPassword", e.getMessage(), e);
+                messageCode = R.string.generic_error;
+            }
+            
+            return messageCode;
+        }
+        
+        protected void onPostExecute(Integer messageCode) {
+            progressDialog.dismiss();
+
+            if (messageCode != null) {
+                Toast.makeText(ChangeMasterPassword.this, messageCode, Toast.LENGTH_SHORT).show();
+                if (messageCode == R.string.invalid_password) {
+                    // Set focus back to the password and select all characters
+                    existingPassword.requestFocus();
+                    existingPassword.selectAll();
+                }
+            }
+            
+        }
+
     }
 
 }

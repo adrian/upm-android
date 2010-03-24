@@ -75,8 +75,9 @@ public class CreateNewDatabase extends Activity implements OnClickListener {
         } else {
             try {
                 // Create a new database and then launch the AccountsList activity
-                final PasswordDatabase passwordDatabase = createNewDatabase(password1.getText().toString());
-                
+                String password = password1.getText().toString();
+                final PasswordDatabase passwordDatabase = new PasswordDatabase(Utilities.getDatabaseFile(this), password.toCharArray());
+
                 new SaveDatabaseAsyncTask(this, new Callback() {
                     @Override
                     public void execute() {
@@ -124,12 +125,6 @@ public class CreateNewDatabase extends Activity implements OnClickListener {
         }
         
         return dialog;
-    }
-
-    private PasswordDatabase createNewDatabase(String password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
-        PasswordDatabase passwordDatabase = new PasswordDatabase(Utilities.getDatabaseFile(this), password.toCharArray());
-        passwordDatabase.save();
-        return passwordDatabase;
     }
 
 }
