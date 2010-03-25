@@ -89,4 +89,6 @@
     <string name="db_sync_complete">Database Sync Complete</string>
     <string name="db_sync_error">Database Sync Error\n\n%s</string>
     <string name="sync_required">A sync is required before carrying out this operation</string>
+    <string name="delete_db">Delete Database</string>
+    <string name="confirm_delete_db">Are you sure you want to delete your db? Once deleted the database is gone forever.</string>
 </resources>

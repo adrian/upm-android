@@ -21,7 +21,7 @@
         <activity android:name=".EnterMasterPassword">
         </activity>
 
-        <activity android:name=".FullAccountList">
+        <activity android:name=".FullAccountList" android:launchMode="singleTask">
             <meta-data android:name="android.app.default_searchable"
                        android:value=".SearchResults" />
         </activity>
@@ -55,8 +55,6 @@
         </activity>
 
         <activity android:name=".Prefs" android:label="@string/settings_title"/>
-
-        <receiver android:name=".RestartApp"/>
 
     </application>
 

@@ -64,6 +64,7 @@ public class FullAccountList extends AccountsList {
     private static final int CONFIRM_RESTORE_DIALOG = 0;
     private static final int CONFIRM_OVERWRITE_BACKUP_FILE = 1;
     private static final int DIALOG_ABOUT = 2;
+    private static final int CONFIRM_DELETE_DB_DIALOG = 3;
     
     private static final int ENTER_PW_REQUEST_CODE = 222;
 
@@ -159,6 +160,9 @@ public class FullAccountList extends AccountsList {
             case R.id.preferences:
                 startActivity(new Intent(this, Prefs.class));
                 break;
+            case R.id.delete_db:
+                showDialog(CONFIRM_DELETE_DB_DIALOG);
+                break;
         }
 
         return optionConsumed;
@@ -176,13 +180,12 @@ public class FullAccountList extends AccountsList {
                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                        restoreDatabase();
-                       
-                        // Send a broadcast event to start the app and then finish this
-                        // activity. This needs to be done to reopen the newly
-                        // restored db.
-                        Intent i = new Intent(FullAccountList.this, RestartApp.class);
-                        sendBroadcast(i);
-                        finish();
+                       // Clear the activity stack and bring up AppEntryActivity
+                       // This is effectively restarting the application
+                       Intent i = new Intent(FullAccountList.this, AppEntryActivity.class);
+                       i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                       startActivity(i);
+                       finish();
                    }
                })
                .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -241,13 +244,39 @@ public class FullAccountList extends AccountsList {
                 .setNegativeButton(R.string.close, null)
                 .setView(v);
             break;
+        case CONFIRM_DELETE_DB_DIALOG:
+            dialogBuilder.setMessage(getString(R.string.confirm_delete_db))
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    deleteDatabase();
+                    // Clear the activity stack and bring up AppEntryActivity
+                    // This is effectively restarting the application
+                    Intent i = new Intent(FullAccountList.this, AppEntryActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+                    finish();
+                }
+            })
+            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                     dialog.cancel();
+                }
+            });
+            break;
         }
 
         dialog = dialogBuilder.create();
         return dialog;
     }
 
+    private void deleteDatabase() {
+        Utilities.getDatabaseFile(this).delete();
+        Utilities.setDatabaseFileName(null, this);
+    }
+
     private void restoreDatabase() {
+        deleteDatabase();
+
         File fileOnSDCard = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
         File databaseFile = Utilities.getDatabaseFile(this);
         ((UPMApplication) getApplication()).copyFile(fileOnSDCard, databaseFile, this);
