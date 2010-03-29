@@ -152,8 +152,8 @@ public class EnterMasterPassword extends Activity implements OnClickListener, Ru
                     
                     break; 
                 case WHAT_GENERIC_ERROR:
-                    String.format(getText(R.string.generic_error_with_message).toString(), msg.getData().getString(BUNDLE_ERROR_MESSAGE));
-                    UIUtilities.showToast(EnterMasterPassword.this, R.string.generic_error_with_message, true);
+                    String message = String.format(getText(R.string.generic_error_with_message).toString(), msg.getData().getString(BUNDLE_ERROR_MESSAGE));
+                    UIUtilities.showToast(EnterMasterPassword.this, message, true);
                     showDialog(GENERIC_ERROR_DIALOG);
                     break; 
             }

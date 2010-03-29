@@ -77,12 +77,14 @@ public class AppEntryActivity extends Activity {
                 startActivity(i);
                 finish();
             }
+            break;
         case REQ_CODE_DOWNLOAD_DB:
             if (resultCode == RESULT_OK) {
                 Intent i = new Intent(AppEntryActivity.this, FullAccountList.class);
                 startActivity(i);
                 finish();
             }
+            break;
         }
     }
 
