@@ -6,7 +6,7 @@
     <string name="ok_label">OK</string>
     <string name="open_label">Open</string>
     <string name="request_master_password_dialog_title">Master Password</string>
-    <string name="passwords_dont_match">Passwords don't match</string>
+    <string name="passwords_dont_match">Passwords don\'t match</string>
     <string name="no_accounts">No Accounts</string>
     <string name="generic_error">Encountered an unexpected error</string>
     <string name="request_master_password">Please enter your master password</string>
@@ -40,7 +40,7 @@
     <string name="restore">Restore</string>
     <string name="backup">Backup</string>
     <string name="error_saving_after_delete">Error saving database following a delete</string>
-    <string name="account_deleted">Account '%s' deleted</string>
+    <string name="account_deleted">Account \'%s\' deleted</string>
     <string name="about">About</string>
     <string name="close">Close</string>
     <string name="homepage">Homepage</string>
@@ -91,4 +91,8 @@
     <string name="sync_required">A sync is required before carrying out this operation</string>
     <string name="delete_db">Delete Database</string>
     <string name="confirm_delete_db">Are you sure you want to delete your db? Once deleted the database is gone forever.</string>
+    <string name="confirm_exit_title">Exit UPM?</string>
+    <string name="confirm_exit_message">Are you sure you want to exit UPM? You\'ll be requested to enter your master password next time you open UPM.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
