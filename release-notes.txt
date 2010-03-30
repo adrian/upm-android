@@ -1,0 +1,7 @@
+v1.1 30-Mar-2010
+  * Impplemented the Shared Database feature as it exists in the desktop version of UPM
+  * Added Delete Database feature
+  * Lots of little bugs fixes throughout the codebase
+
+$Id$
+
