@@ -12,57 +12,67 @@
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/account_name"
-                  android:textStyle="bold"/>
+                  android:textStyle="bold"
+                  android:textSize="20dp"/>
 
     	<TextView android:id="@+id/account_name" 
 	              android:layout_width="fill_parent" 
 	              android:layout_height="wrap_content"
-	              android:inputType="text"
-    			  android:layout_marginBottom="10dip"/>
+	              android:inputType="textMultiLine"
+    			  android:layout_marginBottom="10dip"
+                  android:textSize="20dp"/>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/userid"
-                  android:textStyle="bold"/>
+                  android:textStyle="bold"
+                  android:textSize="20dp"/>
 
 	    <TextView android:id="@+id/account_userid" 
 	              android:layout_width="fill_parent" 
 	              android:layout_height="wrap_content"
-	              android:inputType="text"
-			      android:layout_marginBottom="10dip"/>
+	              android:inputType="textMultiLine"
+			      android:layout_marginBottom="10dip"
+                  android:textSize="20dp"/>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/password"
-                  android:textStyle="bold"/>
+                  android:textStyle="bold"
+                  android:textSize="20dp"/>
 
 	    <TextView android:id="@+id/account_password" 
 	              android:layout_width="fill_parent" 
 	              android:layout_height="wrap_content"
 	              android:inputType="textVisiblePassword"
-			      android:layout_marginBottom="10dip"/>
+			      android:layout_marginBottom="10dip"
+                  android:textSize="20dp"/>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/url"
-                  android:textStyle="bold"/>
+                  android:textStyle="bold"
+                  android:textSize="20dp"/>
 
 	    <TextView android:id="@+id/account_url"
 	              android:layout_width="fill_parent" 
 	              android:layout_height="wrap_content"
-	              android:inputType="text"
-			      android:layout_marginBottom="10dip"/>
+	              android:inputType="textMultiLine"
+			      android:layout_marginBottom="10dip"
+                  android:textSize="20dp"/>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/notes"
-                  android:textStyle="bold"/>
+                  android:textStyle="bold"
+                  android:textSize="20dp"/>
 
 	    <TextView android:id="@+id/account_notes"
 	              android:layout_width="fill_parent" 
 	              android:layout_height="wrap_content"
 	              android:inputType="textMultiLine"
-	              android:layout_marginBottom="10dip"/>
+	              android:layout_marginBottom="10dip"
+                  android:textSize="20dp"/>
 
     </LinearLayout>
 

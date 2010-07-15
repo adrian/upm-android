@@ -35,6 +35,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -361,7 +362,10 @@ public class FullAccountList extends AccountsList {
                 remoteURLPassword = new String(account.getPassword());
             }
 
-            HTTPTransport transport = new HTTPTransport();
+            SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
+            boolean trustAllCertificates = settings.getBoolean(Prefs.PREF_TRUST_ALL_CERTS, false);
+
+            HTTPTransport transport = new HTTPTransport(trustAllCertificates);
             String fileName = getPasswordDatabase().getDatabaseFile().getName();
             try {
                 transport.delete(remoteURL, fileName, remoteURLUsername, remoteURLPassword);
@@ -425,7 +429,10 @@ public class FullAccountList extends AccountsList {
                 }
     
                 try {
-                    HTTPTransport httpTransport = new HTTPTransport();
+                    SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
+                    boolean trustAllCertificates = settings.getBoolean(Prefs.PREF_TRUST_ALL_CERTS, false);
+
+                    HTTPTransport httpTransport = new HTTPTransport(trustAllCertificates);
                     downloadedDatabaseFile = httpTransport.getRemoteFile(remoteURL, remoteFileName, remoteURLUsername, remoteURLPassword);
                     if (downloadedDatabaseFile != null) {
                         SecretKey existingDBSecretKey = getPasswordDatabase().getEncryptionService().getSecretKey();

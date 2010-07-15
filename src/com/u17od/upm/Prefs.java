@@ -24,7 +24,9 @@ package com.u17od.upm;
 
 import java.util.ArrayList;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -36,8 +38,13 @@ import com.u17od.upm.database.PasswordDatabase;
 
 public class Prefs extends PreferenceActivity implements OnPreferenceChangeListener {
 
+    public static final String PREFS_NAME = "UPMPrefs";
+
+    public static final String PREF_TRUST_ALL_CERTS = "trustAllCertificates";
+    
     private ListPreference sharedURLAuthPref;
     private EditTextPreference sharedURLPref;
+    private CheckBoxPreference trustAllCertificatesPref;
     private PasswordDatabase db;
     private boolean saveRequired;
     
@@ -53,9 +60,11 @@ public class Prefs extends PreferenceActivity implements OnPreferenceChangeListe
         // Get a handle to the preference items
         sharedURLAuthPref = (ListPreference) findPreference("shared_url_auth");
         sharedURLPref = (EditTextPreference) findPreference("shared_url");
+        trustAllCertificatesPref = (CheckBoxPreference) findPreference("trust_all_certificates");
 
         sharedURLAuthPref.setOnPreferenceChangeListener(this);
         sharedURLPref.setOnPreferenceChangeListener(this);
+        trustAllCertificatesPref.setOnPreferenceChangeListener(this);
 
         // Populate the preferences
         db = ((UPMApplication) getApplication()).getPasswordDatabase();
@@ -68,6 +77,11 @@ public class Prefs extends PreferenceActivity implements OnPreferenceChangeListe
         sharedURLAuthPref.setEntryValues(accountNames);
         sharedURLAuthPref.setEntries(accountNames);
         sharedURLAuthPref.setValue(db.getDbOptions().getAuthDBEntry());
+        
+        // Some preferences are stored using Android's SharedPreferences
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        boolean trustAllCertificates = settings.getBoolean(PREF_TRUST_ALL_CERTS, false);
+        trustAllCertificatesPref.setChecked(trustAllCertificates);
     }
 
     @Override
@@ -100,7 +114,21 @@ public class Prefs extends PreferenceActivity implements OnPreferenceChangeListe
             }
         }
         
-        return saveRequired;
+        return true;
     }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+       // We need an Editor object to make preference changes.
+       // All objects are from android.context.Context
+       SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+       SharedPreferences.Editor editor = settings.edit();
+       editor.putBoolean(PREF_TRUST_ALL_CERTS, trustAllCertificatesPref.isChecked());
+
+       // Commit the edits!
+       editor.commit();
+     }
 
 }

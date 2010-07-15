@@ -31,6 +31,17 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
 import com.u17od.upm.util.Base64;
 import com.u17od.upm.util.Util;
@@ -39,6 +50,15 @@ import com.u17od.upm.util.Util;
 public class HTTPTransport extends Transport {
 
     private static final String BOUNDRY = "==================================";
+    private boolean trustAllCertificated;
+
+    public HTTPTransport() {
+        this.trustAllCertificated = false;
+    }
+
+    public HTTPTransport(boolean trustAllCertificated) {
+        this.trustAllCertificated = trustAllCertificated;
+    }
 
     public void put(String targetLocation, File file) throws TransportException {
         put(targetLocation, file, null, null);
@@ -163,6 +183,10 @@ public class HTTPTransport extends Transport {
             throw new TransportException(e);
         } catch (IOException e) {
             throw new TransportException(e);
+        } catch (KeyManagementException e) {
+            throw new TransportException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new TransportException(e);
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -173,14 +197,20 @@ public class HTTPTransport extends Transport {
 
     }
 
-    
-    private HttpURLConnection getConnection(URL url) throws IOException {
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
+    private HttpURLConnection getConnection(URL url) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         // This is for testing purposes. Setting http.proxyHost and http.proxyPort
         // doesn't seem to work but this does.
 //        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888));
 //        HttpURLConnection conn = (HttpURLConnection) url.openConnection(proxy);
+
+        HttpURLConnection conn = null;
+        if (url.getProtocol().toLowerCase().equals("https") && trustAllCertificated) {
+            trustAllHosts();
+            conn = (HttpsURLConnection) url.openConnection();
+            ((HttpsURLConnection) conn).setHostnameVerifier(new AllowAllHostnameVerifier());
+        } else {
+            conn = (HttpURLConnection) url.openConnection();
+        }
 
         return conn;
     }
@@ -304,4 +334,28 @@ public class HTTPTransport extends Transport {
         return "Basic " + encodedUsernamePassword;
     }
 
+    private void trustAllHosts() throws NoSuchAlgorithmException, KeyManagementException {
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[] {
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[] {};
+                    }
+
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                        if (true) {};
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                        if (true) {};
+                    }
+                }
+        };
+
+        // Install the all-trusting trust manager
+        SSLContext sc = SSLContext.getInstance("TLS");
+        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+    }
+    
 }
