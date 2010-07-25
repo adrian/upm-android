@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="launch_url">Launch URL</string>
+    <string name="copy_password">Copy Password</string>
+    <string name="copy_username">Copy Username</string>
     <string name="app_name_short">UPM</string>
     <string name="enter_master_password">Enter Master Password</string>
     <string name="request_new_master_password">Please provide a master password that will be used to encrypt your password database.</string>
@@ -97,4 +100,5 @@
     <string name="no">No</string>
     <string name="trust_all_certificates">Trust all Certificates</string>
     <string name="trust_all_certificates_desc">Trust all (including self-signed) HTTPS certificates</string>
+    <string name="invalid_uri">Invalid URI [%s]</string>
 </resources>

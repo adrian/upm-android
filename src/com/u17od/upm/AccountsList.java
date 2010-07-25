@@ -22,19 +22,24 @@
  */
 package com.u17od.upm;
 
+import android.app.ListActivity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.ClipboardManager;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+
 import com.u17od.upm.database.AccountInformation;
 import com.u17od.upm.database.PasswordDatabase;
 
-import android.app.ListActivity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.AdapterView.OnItemLongClickListener;
-
-public class AccountsList extends ListActivity implements OnItemLongClickListener {
+public class AccountsList extends ListActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,28 +47,69 @@ public class AccountsList extends ListActivity implements OnItemLongClickListene
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        if (Utilities.isSyncRequired(this)) {
-            UIUtilities.showToast(this, R.string.sync_required);
-        } else {
-            // Get the name of the account the user selected
-            TextView itemSelected = (TextView) view;
-            AccountInformation ai = getPasswordDatabase().getAccount(itemSelected.getText().toString());
-            AddEditAccount.accountToEdit = ai;
-    
-            Intent i = new Intent(AccountsList.this, AddEditAccount.class);
-            i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
-            startActivity(i);
-        }
-        return true;
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.account_context_menu, menu);
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        // Get the name of the account the user selected
-        TextView itemSelected = (TextView) v;
-        AccountInformation ai = getPasswordDatabase().getAccount(itemSelected.getText().toString());
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+        case R.id.edit_account:
+            editAccount(getAccount(info.targetView));
+            return true;
+        case R.id.copy_username:
+            setClipboardText(getUsername(getAccount(info.targetView)));
+            return true;
+        case R.id.copy_password:
+            setClipboardText(getPassword(getAccount(info.targetView)));
+            return true;
+        case R.id.launch_url:
+            launchURL(getURL(getAccount(info.targetView)));
+            return true;
+        default:
+          return super.onContextItemSelected(item);
+        } 
+    }
 
+    private void setClipboardText(String text) {
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        clipboardManager.setText(text);
+    }
+
+    private AccountInformation getAccount(View listviewItem) {
+        return getPasswordDatabase().getAccount(((TextView) listviewItem).getText().toString());
+    }
+
+    private String getUsername(AccountInformation account) {
+        return new String(account.getUserId());
+    }
+
+    private String getURL(AccountInformation account) {
+        return new String(account.getUrl());
+    }
+
+    private String getPassword(AccountInformation account) {
+        return new String(account.getPassword());
+    }
+
+    private void launchURL(String uriString) {
+        if (uriString == null || uriString.equals("")) {
+            String message = String.format(getString(R.string.invalid_uri), uriString);
+            UIUtilities.showToast(this, message, true);
+        } else {
+            Uri uri = Uri.parse(uriString);
+            if (uri.getScheme() == null) {
+                uri = Uri.parse("http://" + uriString);
+            }
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri); 
+            startActivity(intent); 
+        }
+    }
+
+    private void viewAccount(AccountInformation ai) {
         // Pass the AccountInformation object o the AccountDetails Activity by
         // way of a static variable on that class. I really don't like this but
         // it seems like the best way of doing it
@@ -72,6 +118,24 @@ public class AccountsList extends ListActivity implements OnItemLongClickListene
 
         Intent i = new Intent(AccountsList.this, ViewAccountDetails.class);
         startActivity(i);
+    }
+
+    private void editAccount(AccountInformation ai) {
+        if (Utilities.isSyncRequired(this)) {
+            UIUtilities.showToast(this, R.string.sync_required);
+        } else {
+            Intent i = new Intent(AccountsList.this, AddEditAccount.class);
+            i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
+            AddEditAccount.accountToEdit = ai;
+            startActivity(i);
+        }
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        // Get the name of the account the user selected
+        TextView itemSelected = (TextView) v;
+        viewAccount(getPasswordDatabase().getAccount(itemSelected.getText().toString()));
     }
 
     protected PasswordDatabase getPasswordDatabase() {

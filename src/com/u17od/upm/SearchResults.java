@@ -35,6 +35,7 @@ public class SearchResults extends AccountsList {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_results);
+        registerForContextMenu(getListView());
     }
 
     @Override
@@ -71,7 +72,6 @@ public class SearchResults extends AccountsList {
         }
 
         setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, filteredAccountNames));
-        getListView().setOnItemLongClickListener(this);
     }
 
 }

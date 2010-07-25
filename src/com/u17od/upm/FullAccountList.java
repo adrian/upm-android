@@ -76,6 +76,7 @@ public class FullAccountList extends AccountsList {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        registerForContextMenu(getListView());
     }
 
     @Override
@@ -97,7 +98,6 @@ public class FullAccountList extends AccountsList {
 
     private void populateAccountList() {
         setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getPasswordDatabase().getAccountNames()));
-        getListView().setOnItemLongClickListener(this);
     }
 
     @Override

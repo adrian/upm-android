@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+<item android:title="@string/edit_account" android:id="@+id/edit_account"></item><item android:title="@string/copy_username" android:id="@+id/copy_username"></item>
+<item android:title="@string/copy_password" android:id="@+id/copy_password"></item>
+<item android:id="@+id/launch_url" android:title="@string/launch_url"></item>
+
+</menu>
