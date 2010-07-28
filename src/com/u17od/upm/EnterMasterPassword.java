@@ -28,11 +28,9 @@ import java.security.GeneralSecurityException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,20 +48,13 @@ import com.u17od.upm.database.ProblemReadingDatabaseFile;
  * password and then decrypting the database. If the correct password is entered
  * then the AccountList Activity is loaded.
  */
-public class EnterMasterPassword extends Activity implements OnClickListener, Runnable {
-
-    private static final int GENERIC_ERROR_DIALOG = 1;     // id of the dialog used to display generic errors
-
-    private static final int WHAT_INVALID_PASSWORD = 1;
-    private static final int WHAT_GENERIC_ERROR = 2;
-
-    private static final String BUNDLE_ERROR_MESSAGE = "BUNDLE_ERROR_MESSAGE";
+public class EnterMasterPassword extends Activity implements OnClickListener {
 
     public static PasswordDatabase decryptedPasswordDatabase;
     public static File databaseFileToDecrypt;
 
-    private ProgressDialog progressDialog;
     private EditText passwordField;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,51 +90,62 @@ public class EnterMasterPassword extends Activity implements OnClickListener, Ru
     }
 
     private void openDatabase() {
-        // Show a progress dialog and then start the decrypting of the
-        // db in a separate thread
-        progressDialog = ProgressDialog.show(this, "", getString(R.string.decrypting_db));
-        new Thread(this).start();
+        new DecryptDatabase().execute();
     }
 
-    @Override
-    public void run() {
-        Message msg = Message.obtain();
-        try {
-            // Attempt to decrypt the database
-            char[] password = passwordField.getText().toString().toCharArray();
-            decryptedPasswordDatabase = new PasswordDatabase(databaseFileToDecrypt, password);
+    // Show a progress dialog and then start the decrypting of the
+    // db in a separate thread
+    private class DecryptDatabase extends AsyncTask<Void, Void, Integer> {
 
-            setResult(RESULT_OK);
-            finish();
-        } catch (InvalidPasswordException e) {
-            msg.what = WHAT_INVALID_PASSWORD;
-            msg.getData().putString(BUNDLE_ERROR_MESSAGE, e.getMessage());
-        } catch (IOException e) {
-            Log.e("EnterMasterPassword", e.getMessage(), e);
-            msg.what = WHAT_GENERIC_ERROR;
-            msg.getData().putString(BUNDLE_ERROR_MESSAGE, e.getMessage());
-        } catch (GeneralSecurityException e) {
-            Log.e("EnterMasterPassword", e.getMessage(), e);
-            msg.what = WHAT_GENERIC_ERROR;
-            msg.getData().putString(BUNDLE_ERROR_MESSAGE, e.getMessage());
-        } catch (ProblemReadingDatabaseFile e) {
-            Log.e("EnterMasterPassword", e.getMessage(), e);
-            msg.what = WHAT_GENERIC_ERROR;
-            msg.getData().putString(BUNDLE_ERROR_MESSAGE, e.getMessage());
-        } finally {
-            handler.sendMessage(msg);
-        }
-    }
+        private static final int ERROR_INVALID_PASSWORD = 1;
+        private static final int ERROR_GENERIC_ERROR = 2;
 
-    private Handler handler = new Handler() {
+        private ProgressDialog progressDialog;
+        private String errorMessage;
+
         @Override
-        public void handleMessage(Message msg) {
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(EnterMasterPassword.this, "", getString(R.string.decrypting_db));
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            int errorCode = 0;
+            try {
+                // Attempt to decrypt the database
+                char[] password = passwordField.getText().toString().toCharArray();
+                decryptedPasswordDatabase = new PasswordDatabase(databaseFileToDecrypt, password);
+
+                setResult(RESULT_OK);
+                finish();
+            } catch (InvalidPasswordException e) {
+                Log.e("EnterMasterPassword", e.getMessage(), e);
+                errorMessage = e.getMessage();
+                errorCode = ERROR_INVALID_PASSWORD;
+            } catch (IOException e) {
+                Log.e("EnterMasterPassword", e.getMessage(), e);
+                errorMessage = e.getMessage();
+                errorCode = ERROR_GENERIC_ERROR;
+            } catch (GeneralSecurityException e) {
+                Log.e("EnterMasterPassword", e.getMessage(), e);
+                errorMessage = e.getMessage();
+                errorCode = ERROR_GENERIC_ERROR;
+            } catch (ProblemReadingDatabaseFile e) {
+                Log.e("EnterMasterPassword", e.getMessage(), e);
+                errorMessage = e.getMessage();
+                errorCode = ERROR_GENERIC_ERROR;
+            }
+            
+            return errorCode;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
             progressDialog.dismiss();
 
-            switch (msg.what) {
-                case WHAT_INVALID_PASSWORD:
+            switch (result) {
+                case ERROR_INVALID_PASSWORD:
                     Toast toast = Toast.makeText(EnterMasterPassword.this, R.string.invalid_password, Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.TOP, 0, 0);
                     toast.show();
                     
                     // Set focus back to the password and select all characters
@@ -151,13 +153,13 @@ public class EnterMasterPassword extends Activity implements OnClickListener, Ru
                     passwordField.selectAll();
                     
                     break; 
-                case WHAT_GENERIC_ERROR:
-                    String message = String.format(getText(R.string.generic_error_with_message).toString(), msg.getData().getString(BUNDLE_ERROR_MESSAGE));
+                case ERROR_GENERIC_ERROR:
+                    String message = String.format(getText(R.string.generic_error_with_message).toString(), errorMessage);
                     UIUtilities.showToast(EnterMasterPassword.this, message, true);
-                    showDialog(GENERIC_ERROR_DIALOG);
                     break; 
             }
         }
-    };
+
+    }
 
 }
