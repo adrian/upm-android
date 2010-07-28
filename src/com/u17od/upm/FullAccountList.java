@@ -69,8 +69,12 @@ public class FullAccountList extends AccountsList {
     private static final int CONFIRM_DELETE_DB_DIALOG = 3;
     
     private static final int ENTER_PW_REQUEST_CODE = 222;
+    
+    public static final int RESULT_EXIT = 0;
+    public static final int RESULT_ENTER_PW = 1;
 
     private File downloadedDatabaseFile;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,7 +97,12 @@ public class FullAccountList extends AccountsList {
     @Override
     public void onResume() {
         super.onResume();
-        populateAccountList();
+        if (getPasswordDatabase() == null) {
+            setResult(RESULT_ENTER_PW);
+            finish();
+        } else {
+            populateAccountList();
+        }
     }
 
     private void populateAccountList() {
@@ -110,7 +119,7 @@ public class FullAccountList extends AccountsList {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             new AlertDialog.Builder(this)
             .setIcon(android.R.drawable.ic_dialog_alert)
             .setTitle(R.string.confirm_exit_title)
@@ -118,14 +127,14 @@ public class FullAccountList extends AccountsList {
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    FullAccountList.this.setResult(RESULT_EXIT);
                     FullAccountList.this.finish();    
                 }
             })
             .setNegativeButton(R.string.no, null)
             .show();
             return true;
-        }
-        else {
+        } else {
             return super.onKeyDown(keyCode, event);
         }
     }

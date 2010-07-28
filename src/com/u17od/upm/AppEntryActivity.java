@@ -39,6 +39,7 @@ public class AppEntryActivity extends Activity {
     private static final int REQ_CODE_ENTER_PASSWORD = 0;
     private static final int REQ_CODE_CREATE_DB = 1;
     private static final int REQ_CODE_DOWNLOAD_DB = 2;
+    private static final int REQ_CODE_OPEN_DB = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,21 +68,30 @@ public class AppEntryActivity extends Activity {
             if (resultCode == RESULT_OK) {
                 ((UPMApplication) getApplication()).setPasswordDatabase(EnterMasterPassword.decryptedPasswordDatabase);
                 Intent i = new Intent(AppEntryActivity.this, FullAccountList.class);
-                startActivity(i);
+                startActivityForResult(i, REQ_CODE_OPEN_DB);
+            } else {
+                // User clicked Back from the EnterMasterPassword activity so quit
+                finish();
             }
-            finish();
             break;
         case REQ_CODE_CREATE_DB:
             if (resultCode == RESULT_OK) {
                 Intent i = new Intent(AppEntryActivity.this, FullAccountList.class);
-                startActivity(i);
-                finish();
+                startActivityForResult(i, REQ_CODE_OPEN_DB);
             }
             break;
         case REQ_CODE_DOWNLOAD_DB:
             if (resultCode == RESULT_OK) {
                 Intent i = new Intent(AppEntryActivity.this, FullAccountList.class);
-                startActivity(i);
+                startActivityForResult(i, REQ_CODE_OPEN_DB);
+            }
+            break;
+        case REQ_CODE_OPEN_DB:
+            if (resultCode == FullAccountList.RESULT_ENTER_PW) {
+                EnterMasterPassword.databaseFileToDecrypt = Utilities.getDatabaseFile(this);
+                Intent i = new Intent(AppEntryActivity.this, EnterMasterPassword.class);
+                startActivityForResult(i, REQ_CODE_ENTER_PASSWORD);
+            } else if (resultCode == FullAccountList.RESULT_EXIT) {
                 finish();
             }
             break;
