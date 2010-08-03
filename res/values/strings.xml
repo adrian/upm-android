@@ -99,4 +99,10 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="invalid_uri">Invalid URI [%s]</string>
+    <string name="import_cert">Import Certificate</string>
+    <string name="delete_cert">Delete Certificate</string>
+    <string name="import_cert_message">Ensure your SD card has the file %s in it\'s root directory</string>
+    <string name="cert_imported">Certificate Imported</string>
+    <string name="cert_deleted">Certificate Deleted</string>
+    <string name="no_cert_available">No Certificate Available</string>
 </resources>

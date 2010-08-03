@@ -16,7 +16,12 @@
             <item android:title="@string/change_master_password" android:id="@+id/change_master_password">
             </item>
         <item android:id="@+id/restore" android:title="@string/restore"></item><item android:id="@+id/backup" android:title="@string/backup"></item>
-<item android:id="@+id/delete_db" android:title="@string/delete_db"></item><item android:title="@string/about" android:id="@+id/about"></item>
+<item android:id="@+id/delete_db" android:title="@string/delete_db"></item><item android:id="@+id/import_certificate" android:title="@string/import_cert"></item><item android:title="@string/delete_cert" android:id="@+id/delete_certificate"></item><item android:title="@string/about" android:id="@+id/about"></item>
+
+
+
+
+
 
 </menu>
     </item>

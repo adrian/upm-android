@@ -25,12 +25,25 @@ package com.u17od.upm.transport;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 
 import com.u17od.upm.util.Base64;
 import com.u17od.upm.util.Util;
@@ -39,6 +52,13 @@ import com.u17od.upm.util.Util;
 public class HTTPTransport extends Transport {
 
     private static final String BOUNDRY = "==================================";
+
+    private File certFile;
+    private SSLSocketFactory sslFactory;
+    
+    public HTTPTransport(File certFile) {
+        this.certFile = certFile;
+    }
 
     public void put(String targetLocation, File file) throws TransportException {
         put(targetLocation, file, null, null);
@@ -174,17 +194,57 @@ public class HTTPTransport extends Transport {
     }
 
     
-    private HttpURLConnection getConnection(URL url) throws IOException {
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    private HttpURLConnection getConnection(URL url) throws TransportException {
+        HttpURLConnection conn;
+        try {
+            conn = (HttpURLConnection) url.openConnection();
+            
+            // This is for testing purposes. Setting http.proxyHost and http.proxyPort
+            // doesn't seem to work but this does.
+//            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888));
+//            HttpURLConnection conn = (HttpURLConnection) url.openConnection(proxy);
 
-        // This is for testing purposes. Setting http.proxyHost and http.proxyPort
-        // doesn't seem to work but this does.
-//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888));
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection(proxy);
+            if(conn instanceof HttpsURLConnection) {
+                if (certFile.exists() && sslFactory == null) {
+                    buildSSLFactory();
+                }
+                if (sslFactory != null) {
+                    ((HttpsURLConnection) conn).setSSLSocketFactory(sslFactory);
+                }
+            }
+        } catch (IOException e) {
+            throw new TransportException(e);
+        } catch (KeyManagementException e) {
+            throw new TransportException(e);
+        } catch (CertificateException e) {
+            throw new TransportException(e);
+        } catch (KeyStoreException e) {
+            throw new TransportException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new TransportException(e);
+        }
 
         return conn;
     }
 
+    private void buildSSLFactory() throws CertificateException, KeyStoreException, NoSuchAlgorithmException, IOException, KeyManagementException {
+        FileInputStream fileStream = new FileInputStream(certFile);
+
+        CertificateFactory certFactory  = CertificateFactory.getInstance("X.509");
+        Certificate cert = certFactory.generateCertificate(fileStream);
+            
+        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        keyStore.load(null);
+        keyStore.setCertificateEntry("cert0", cert);
+            
+        TrustManagerFactory trustManager = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManager.init(keyStore);
+            
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(null, trustManager.getTrustManagers(), null);
+            
+        sslFactory = context.getSocketFactory();
+    }
 
     private byte[] readFromResponseStream(InputStream is) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

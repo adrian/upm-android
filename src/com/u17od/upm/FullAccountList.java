@@ -23,7 +23,10 @@
 package com.u17od.upm;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.security.GeneralSecurityException;
 import java.util.Date;
 
@@ -34,8 +37,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
@@ -66,11 +69,14 @@ public class FullAccountList extends AccountsList {
     private static final int CONFIRM_OVERWRITE_BACKUP_FILE = 1;
     private static final int DIALOG_ABOUT = 2;
     private static final int CONFIRM_DELETE_DB_DIALOG = 3;
+    private static final int IMPORT_CERT_DIALOG = 4;
     
     private static final int ENTER_PW_REQUEST_CODE = 222;
     
     public static final int RESULT_EXIT = 0;
     public static final int RESULT_ENTER_PW = 1;
+
+    public static final String CERT_FILE_NAME = "upm.cer";
 
     private File downloadedDatabaseFile;
 
@@ -195,6 +201,12 @@ public class FullAccountList extends AccountsList {
             case R.id.delete_db:
                 showDialog(CONFIRM_DELETE_DB_DIALOG);
                 break;
+            case R.id.import_certificate:
+                showDialog(IMPORT_CERT_DIALOG);
+                break;
+            case R.id.delete_certificate:
+                deleteCertificate();
+                break;
         }
 
         return optionConsumed;
@@ -295,6 +307,25 @@ public class FullAccountList extends AccountsList {
                 }
             });
             break;
+        case IMPORT_CERT_DIALOG:
+            String importCertMessageRes = getString(R.string.import_cert_message);
+            String importCertMessage = String.format(importCertMessageRes, CERT_FILE_NAME);
+
+            dialogBuilder
+                .setCancelable(false)
+                .setTitle(R.string.import_cert)
+                .setMessage(importCertMessage)
+                .setPositiveButton(R.string.import_cert, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        importCert();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+            break;
         }
 
         dialog = dialogBuilder.create();
@@ -370,7 +401,7 @@ public class FullAccountList extends AccountsList {
                 remoteURLPassword = new String(account.getPassword());
             }
 
-            HTTPTransport transport = new HTTPTransport();
+            HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME));
             String fileName = getPasswordDatabase().getDatabaseFile().getName();
             try {
                 transport.delete(remoteURL, fileName, remoteURLUsername, remoteURLPassword);
@@ -434,7 +465,7 @@ public class FullAccountList extends AccountsList {
                 }
     
                 try {
-                    HTTPTransport httpTransport = new HTTPTransport();
+                    HTTPTransport httpTransport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME));
                     downloadedDatabaseFile = httpTransport.getRemoteFile(remoteURL, remoteFileName, remoteURLUsername, remoteURLPassword);
                     if (downloadedDatabaseFile != null) {
                         SecretKey existingDBSecretKey = getPasswordDatabase().getEncryptionService().getSecretKey();
@@ -501,6 +532,58 @@ public class FullAccountList extends AccountsList {
             }
         }
 
+    }
+
+    private void deleteCertificate() {
+        File privateCertFile = getFileStreamPath(CERT_FILE_NAME);
+        if (privateCertFile.exists()) {
+            privateCertFile.delete();
+            UIUtilities.showToast(this, R.string.cert_deleted, false);
+        } else {
+            UIUtilities.showToast(this, R.string.no_cert_available, false);
+        }
+    }
+
+    /*
+     * Import a Certifcate at a known location into the applications private files area.
+     * This file will be used in the HTTPTransport.
+     */
+    private void importCert() {
+        File certFile = new File(Environment.getExternalStorageDirectory(), CERT_FILE_NAME);
+        File privateCertFile = getFileStreamPath(CERT_FILE_NAME);
+
+        try {
+            copyFile(certFile, privateCertFile);
+            UIUtilities.showToast(this, R.string.cert_imported, false);
+        } catch (IOException e) {
+            Log.e(this.getClass().getName(), e.toString(), e);
+            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void copyFile(File source, File dest) throws IOException {
+        FileChannel sourceChannel = null;
+        FileChannel destinationChannel = null;
+        try {
+            sourceChannel = new FileInputStream(source).getChannel();
+
+            File destFile = null;
+            if (dest.isDirectory()) {
+                destFile = new File(dest, source.getName());
+            } else {
+                destFile = dest;
+            }
+
+            destinationChannel = new FileOutputStream(destFile).getChannel();
+            destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+        } finally {
+            if (sourceChannel != null) {
+                sourceChannel.close();
+            }
+            if (destinationChannel != null) {
+                destinationChannel.close();
+            }
+        }
     }
 
 }

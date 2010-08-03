@@ -23,7 +23,6 @@
 package com.u17od.upm.transport;
 
 import java.io.File;
-import java.net.URL;
 
 
 /**
@@ -44,14 +43,6 @@ public abstract class Transport {
 
     public abstract File getRemoteFile(String remoteLocation, String username, String password) throws TransportException;
 
-    public static Transport getTransportForURL(URL url) {
-        Transport retVal = null;
-        if (url.getProtocol().equals("http")) {
-            retVal = new HTTPTransport();
-        }
-        return retVal;
-    }
-    
     public static boolean isASupportedProtocol(String protocol) {
         boolean supported = false;
         if (protocol.equals("http")) {

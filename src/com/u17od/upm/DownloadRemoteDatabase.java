@@ -122,7 +122,7 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
         protected Integer doInBackground(Void... params) {
             int errorCode = 0;
 
-            HTTPTransport transport = new HTTPTransport();
+            HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME));
             File tempDB = null;
             try {
                 tempDB = transport.getRemoteFile(urlEditText.getText().toString(),
