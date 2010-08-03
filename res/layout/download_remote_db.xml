@@ -33,12 +33,6 @@
                   android:layout_width="fill_parent" 
                   android:layout_height="wrap_content"
                   android:inputType="textPassword"
-                  android:layout_marginBottom="10dip"/>
-
-        <CheckBox android:id="@+id/trust_all_certificates"
-                  android:text="@string/trust_all_certificates"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
                   android:layout_marginBottom="20dip"/>
 
         <Button android:id="@+id/download_button"

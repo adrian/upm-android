@@ -35,7 +35,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.u17od.upm.database.PasswordDatabase;
@@ -49,7 +48,6 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
     private EditText urlEditText;
     private EditText userid;
     private EditText password;
-    private CheckBox trustAllCertificates;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +56,6 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
         urlEditText = (EditText) findViewById(R.id.remote_db_url);
         userid = (EditText) findViewById(R.id.remote_url_userid);
         password = (EditText) findViewById(R.id.remote_url_password);
-        trustAllCertificates = (CheckBox) findViewById(R.id.trust_all_certificates);
 
         Button downloadButton = (Button) findViewById(R.id.download_button);
         downloadButton.setOnClickListener(this);
@@ -66,7 +63,7 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
 
     @Override
     public void onClick(View v) {
-        new DownloadDatabase(trustAllCertificates.isChecked()).execute();
+        new DownloadDatabase().execute();
     }
 
     /**
@@ -111,11 +108,6 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
 
         private String errorMessage;
         private ProgressDialog progressDialog;
-        private boolean trustAllCertificates;
-
-        public DownloadDatabase(boolean trustAllCertificates) {
-            this.trustAllCertificates = trustAllCertificates;
-        }
 
         protected void onPreExecute() {
             progressDialog = ProgressDialog.show(DownloadRemoteDatabase.this, "", getString(R.string.downloading_db));
@@ -130,7 +122,7 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
         protected Integer doInBackground(Void... params) {
             int errorCode = 0;
 
-            HTTPTransport transport = new HTTPTransport(trustAllCertificates);
+            HTTPTransport transport = new HTTPTransport();
             File tempDB = null;
             try {
                 tempDB = transport.getRemoteFile(urlEditText.getText().toString(),

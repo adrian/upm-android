@@ -98,7 +98,5 @@
     <string name="confirm_exit_message">Are you sure you want to exit UPM? You\'ll be requested to enter your master password next time you open UPM.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="trust_all_certificates">Trust all Certificates</string>
-    <string name="trust_all_certificates_desc">Trust all (including self-signed) HTTPS certificates</string>
     <string name="invalid_uri">Invalid URI [%s]</string>
 </resources>
