@@ -29,6 +29,7 @@ import java.util.Date;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -122,7 +123,10 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
         protected Integer doInBackground(Void... params) {
             int errorCode = 0;
 
-            HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME));
+            SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
+            String trustedHostname = settings.getString(Prefs.PREF_TRUSTED_HOSTNAME, "");
+
+            HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME), trustedHostname);
             File tempDB = null;
             try {
                 tempDB = transport.getRemoteFile(urlEditText.getText().toString(),

@@ -40,8 +40,10 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -55,9 +57,11 @@ public class HTTPTransport extends Transport {
 
     private File certFile;
     private SSLSocketFactory sslFactory;
+    private String trustedHost;
     
-    public HTTPTransport(File certFile) {
+    public HTTPTransport(File certFile, String trustedHost) {
         this.certFile = certFile;
+        this.trustedHost = trustedHost;
     }
 
     public void put(String targetLocation, File file) throws TransportException {
@@ -210,6 +214,18 @@ public class HTTPTransport extends Transport {
                 }
                 if (sslFactory != null) {
                     ((HttpsURLConnection) conn).setSSLSocketFactory(sslFactory);
+                    // If we've been provided with a hostname we should always
+                    // trust then add a HostnameVerifier for that hostname
+                    if (trustedHost != null) {
+                        ((HttpsURLConnection) conn).setHostnameVerifier(
+                                new HostnameVerifier() {
+                                    @Override
+                                    public boolean verify(String hostname, SSLSession session) {
+                                        return hostname.equals(trustedHost);
+                                    }
+                                }
+                        );
+                    }
                 }
             }
         } catch (IOException e) {
@@ -242,7 +258,7 @@ public class HTTPTransport extends Transport {
             
         SSLContext context = SSLContext.getInstance("TLS");
         context.init(null, trustManager.getTrustManagers(), null);
-            
+
         sslFactory = context.getSocketFactory();
     }
 

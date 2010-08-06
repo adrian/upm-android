@@ -39,6 +39,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
@@ -401,7 +402,10 @@ public class FullAccountList extends AccountsList {
                 remoteURLPassword = new String(account.getPassword());
             }
 
-            HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME));
+            SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
+            String trustedHostname = settings.getString(Prefs.PREF_TRUSTED_HOSTNAME, "");
+
+            HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME), trustedHostname);
             String fileName = getPasswordDatabase().getDatabaseFile().getName();
             try {
                 transport.delete(remoteURL, fileName, remoteURLUsername, remoteURLPassword);
@@ -465,8 +469,11 @@ public class FullAccountList extends AccountsList {
                 }
     
                 try {
-                    HTTPTransport httpTransport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME));
-                    downloadedDatabaseFile = httpTransport.getRemoteFile(remoteURL, remoteFileName, remoteURLUsername, remoteURLPassword);
+                    SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
+                    String trustedHostname = settings.getString(Prefs.PREF_TRUSTED_HOSTNAME, "");
+
+                    HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME), trustedHostname);
+                    downloadedDatabaseFile = transport.getRemoteFile(remoteURL, remoteFileName, remoteURLUsername, remoteURLPassword);
                     if (downloadedDatabaseFile != null) {
                         SecretKey existingDBSecretKey = getPasswordDatabase().getEncryptionService().getSecretKey();
                         downloadedDatabase = new PasswordDatabase(downloadedDatabaseFile, existingDBSecretKey);

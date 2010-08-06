@@ -5,5 +5,6 @@
 <PreferenceCategory android:title="@string/shared_database_settings"><EditTextPreference android:title="@string/shared_url" android:summary="@string/shared_url_summary" android:key="shared_url" android:singleLine="true" android:inputType="textUri"/>
 
 <ListPreference android:title="@string/shared_url_auth" android:key="shared_url_auth" android:summary="@string/shared_url_auth_summary"></ListPreference>
+<EditTextPreference android:key="trusted_hostname" android:title="@string/trusted_hostname" android:summary="@string/trusted_hostname_summary"></EditTextPreference>
 </PreferenceCategory>
 </PreferenceScreen> 

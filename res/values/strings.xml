@@ -105,4 +105,6 @@
     <string name="cert_imported">Certificate Imported</string>
     <string name="cert_deleted">Certificate Deleted</string>
     <string name="no_cert_available">No Certificate Available</string>
+    <string name="trusted_hostname">Trusted Hostname</string>
+    <string name="trusted_hostname_summary">Hostname to always trust</string>
 </resources>
