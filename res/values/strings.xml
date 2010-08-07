@@ -98,7 +98,7 @@
     <string name="confirm_exit_message">Are you sure you want to exit UPM? You\'ll be requested to enter your master password next time you open UPM.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="invalid_uri">Invalid URI [%s]</string>
+    <string name="no_uri">No URL on this account</string>
     <string name="import_cert">Import Certificate</string>
     <string name="delete_cert">Delete Certificate</string>
     <string name="import_cert_message">Ensure your SD card has the file %s in it\'s root directory</string>

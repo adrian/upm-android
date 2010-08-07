@@ -97,8 +97,7 @@ public class AccountsList extends ListActivity {
 
     private void launchURL(String uriString) {
         if (uriString == null || uriString.equals("")) {
-            String message = String.format(getString(R.string.invalid_uri), uriString);
-            UIUtilities.showToast(this, message, true);
+            UIUtilities.showToast(this, R.string.no_uri, true);
         } else {
             Uri uri = Uri.parse(uriString);
             if (uri.getScheme() == null) {
