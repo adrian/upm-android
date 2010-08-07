@@ -1,7 +1,14 @@
+v1.2 8-Aug-2010
+  * New Feature: Long-clicking on an account now brings up a context menu
+    allowing you to copy username, copy password, launch URL, edit account
+  * New Feature: Added the ability to trust self signed certificates and 
+    certificates that have a different Common Name to the website hostname
+  * New Feature: Increased the font size on the Account Details activity
+  * Bug Fix: recover gracefully when the database is closed unexpectedly
+
 v1.1 30-Mar-2010
   * Implemented the Shared Database feature as it exists in the desktop version of UPM
   * Added Delete Database feature
   * Lots of little bugs fixes throughout the codebase
 
 $Id$
-
