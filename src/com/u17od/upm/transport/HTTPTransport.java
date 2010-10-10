@@ -160,7 +160,7 @@ public class HTTPTransport extends Transport {
             conn = getConnection(url);
 
             // Put the authentication details in the request
-            if (username != null) {
+            if (username != null && !username.trim().equals("")) {
                 conn.setRequestProperty ("Authorization", createAuthenticationString(username, password));
             }
 

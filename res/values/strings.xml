@@ -71,7 +71,6 @@
     <string name="problem_downloading_db">Problem Downloading Database\n\n%s</string>
     <string name="not_password_database">The downloaded file is not a UPM password database</string>
     <string name="sync">Sync</string>
-    <string name="problem_checking_upm_db">There was a problem checking that the file is a UPM database\n\n%s</string>
     <string name="problem_decrypying_db">There was a problem decrypting the database\n\n%s</string>
     <string name="enter_password_cancalled">No password provided</string>
     <string name="generic_error_with_message">Unexpected Error...\n\n%s</string>

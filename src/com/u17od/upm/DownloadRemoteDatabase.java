@@ -22,7 +22,9 @@
  */
 package com.u17od.upm;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
@@ -104,7 +106,7 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
     private class DownloadDatabase extends AsyncTask<Void, Void, Integer> {
 
         private static final int PROBLEM_DOWNLOADING_DB = 1;
-        private static final int PROBLEM_CHECKING_DB = 2;
+        private static final int PROBLEM_SAVING_DB = 2;
         private static final int NOT_UPM_DB = 3;
 
         private String errorMessage;
@@ -127,19 +129,22 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
             String trustedHostname = settings.getString(Prefs.PREF_TRUSTED_HOSTNAME, "");
 
             HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME), trustedHostname);
-            File tempDB = null;
             try {
-                tempDB = transport.getRemoteFile(urlEditText.getText().toString(),
-                        userid.getText().toString(), password.getText().toString());
+                byte[] passwordDBBytes = transport.get(
+                        urlEditText.getText().toString(), 
+                        userid.getText().toString(), 
+                        password.getText().toString());
 
-                if (PasswordDatabase.isPasswordDatabase(tempDB)) {
-                    // Copy the downloaded file to the app's files dir.
+                if (PasswordDatabase.isPasswordDatabase(passwordDBBytes)) {
+                    // Copy the downloaded bytes to the app's files dir.
                     // We retain the file name so that we know what file to delete
                     // on the server when doing a sync.
-                    UPMApplication app = (UPMApplication) getApplication();
                     File destFile = new File(getFilesDir(), getDatabaseFileNameFromURL());
-                    app.copyFile(tempDB, destFile, DownloadRemoteDatabase.this);
-                    app.setPasswordDatabase(EnterMasterPassword.decryptedPasswordDatabase);
+
+                    BufferedOutputStream buf = new BufferedOutputStream(
+                            new FileOutputStream(destFile));
+                    buf.write(passwordDBBytes);
+                    buf.close();
 
                     EnterMasterPassword.databaseFileToDecrypt = destFile;
                 } else {
@@ -150,13 +155,9 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
                 errorMessage = e.getMessage();
                 errorCode = PROBLEM_DOWNLOADING_DB;
             } catch (IOException e) {
-                Log.e("DownloadRemoteDatabase", "IO problem", e);
+                Log.e("DownloadRemoteDatabase", "Problem writing to database file", e);
                 errorMessage = e.getMessage();
-                errorCode = PROBLEM_CHECKING_DB;
-            } finally {
-                if (tempDB != null) {
-                    tempDB.delete();
-                }
+                errorCode = PROBLEM_SAVING_DB;
             }
 
             return errorCode;
@@ -185,9 +186,9 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
                             String.format(getString(R.string.problem_downloading_db), errorMessage),
                             true);
                     break;
-                case PROBLEM_CHECKING_DB:
+                case PROBLEM_SAVING_DB:
                     UIUtilities.showToast(DownloadRemoteDatabase.this,
-                            String.format(getString(R.string.problem_checking_upm_db), errorMessage),
+                            String.format(getString(R.string.problem_saving_db), errorMessage),
                             true);
                     break;
             }

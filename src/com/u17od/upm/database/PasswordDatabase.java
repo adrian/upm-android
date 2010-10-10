@@ -298,17 +298,30 @@ public class PasswordDatabase {
         return revision.getRevision();
     }
 
-    
-    public static boolean isPasswordDatabase(File file) throws IOException {
+
+    /**
+     * Check if the given bytes represent a password database by examining the
+     * header bytes for the UPM magic number.
+     * @param data
+     * @return
+     */
+    public static boolean isPasswordDatabase(byte[] data) {
         boolean isPasswordDatabase = false;
-        byte[] headerBytes = Util.getBytesFromFile(file, FILE_HEADER.getBytes().length);
+
+        // Extract the header bytes
+        byte[] headerBytes = new byte[FILE_HEADER.getBytes().length];
+        for (int i=0; i<headerBytes.length; i++) {
+            headerBytes[i] = data[i];
+        }
+
         if (Arrays.equals(headerBytes, FILE_HEADER.getBytes())) {
             isPasswordDatabase = true;
         }
+
         return isPasswordDatabase;
     }
 
-    
+
     public EncryptionService getEncryptionService () {
         return encryptionService;
     }
