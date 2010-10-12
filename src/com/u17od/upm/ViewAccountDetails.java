@@ -56,7 +56,13 @@ public class ViewAccountDetails extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        populateView(); 
+        // If the account is null then finish (may be null because activity was
+        // recreated since it was last visible
+        if (account == null) {
+            finish();
+        } else {
+            populateView();
+        }
     }
 
     @Override
