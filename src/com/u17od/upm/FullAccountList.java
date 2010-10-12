@@ -104,6 +104,10 @@ public class FullAccountList extends AccountsList {
     public void onResume() {
         super.onResume();
         if (getPasswordDatabase() == null) {
+            // If the UPM process was restarted since AppEntryActivity was last
+            // run then databaseFileToDecrypt won't be set so set it here.
+            EnterMasterPassword.databaseFileToDecrypt = Utilities.getDatabaseFile(this);
+
             setResult(RESULT_ENTER_PW);
             finish();
         } else {

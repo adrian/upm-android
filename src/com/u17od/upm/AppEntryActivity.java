@@ -44,11 +44,15 @@ public class AppEntryActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         if (databaseFileExists()) {
-            EnterMasterPassword.databaseFileToDecrypt = Utilities.getDatabaseFile(this);
-            Intent i = new Intent(AppEntryActivity.this, EnterMasterPassword.class);
-            startActivityForResult(i, REQ_CODE_ENTER_PASSWORD);
+            // If databaseFileToDecrypt is null then UPM is just starting so
+            // show the EnterMasterPassword activity
+            if (EnterMasterPassword.databaseFileToDecrypt == null) {
+                EnterMasterPassword.databaseFileToDecrypt = Utilities.getDatabaseFile(this);
+                Intent i = new Intent(AppEntryActivity.this, EnterMasterPassword.class);
+                startActivityForResult(i, REQ_CODE_ENTER_PASSWORD);
+            }
         } else {
             showDialog(NEW_DATABASE_DIALOG);
         }
@@ -92,6 +96,9 @@ public class AppEntryActivity extends Activity {
                 Intent i = new Intent(AppEntryActivity.this, EnterMasterPassword.class);
                 startActivityForResult(i, REQ_CODE_ENTER_PASSWORD);
             } else if (resultCode == FullAccountList.RESULT_EXIT) {
+                // databaseFileToDecrypt is used in AppEntryActivity to indicate
+                // weather EnterMasterPassword needs to be shown.
+                EnterMasterPassword.databaseFileToDecrypt = null;
                 finish();
             }
             break;
