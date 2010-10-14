@@ -378,6 +378,7 @@ public class FullAccountList extends AccountsList {
             UIUtilities.showToast(this, R.string.db_uptodate);
         }
         app.setTimeOfLastSync(new Date());
+        downloadedDatabaseFile.delete();
     }
 
     private class UploadDatabase extends AsyncTask<Void, Void, Integer> {

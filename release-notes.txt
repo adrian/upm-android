@@ -1,5 +1,6 @@
 v1.3 14-Oct-2010
   * Fixed a number of problems that were causing crashes.
+  * Delete the temp db file created during a sync operation.
 
 v1.2 8-Aug-2010
   * New Feature: Long-clicking on an account now brings up a context menu
