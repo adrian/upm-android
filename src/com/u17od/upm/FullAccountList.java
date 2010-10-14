@@ -212,6 +212,9 @@ public class FullAccountList extends AccountsList {
             case R.id.delete_certificate:
                 deleteCertificate();
                 break;
+            case R.id.donate:
+                launchDonatePage();
+                break;
         }
 
         return optionConsumed;
@@ -286,8 +289,7 @@ public class FullAccountList extends AccountsList {
                 })
                 .setNeutralButton(R.string.donate, new OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
-                        Uri uri = Uri.parse(getString(R.string.donateURL));
-                        startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                        launchDonatePage();
                     }
                 })
                 .setNegativeButton(R.string.close, null)
@@ -379,6 +381,11 @@ public class FullAccountList extends AccountsList {
         }
         app.setTimeOfLastSync(new Date());
         downloadedDatabaseFile.delete();
+    }
+
+    private void launchDonatePage() {
+        Uri uri = Uri.parse(getString(R.string.donateURL));
+        startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
 
     private class UploadDatabase extends AsyncTask<Void, Void, Integer> {
