@@ -50,6 +50,10 @@ public class AppEntryActivity extends Activity {
             // show the EnterMasterPassword activity
             if (EnterMasterPassword.databaseFileToDecrypt == null) {
                 EnterMasterPassword.databaseFileToDecrypt = Utilities.getDatabaseFile(this);
+            }
+            // savedInstanceState will be null if the app is just starting so
+            // in this case we should display the EnterMasterPassword activity
+            if (savedInstanceState == null) {
                 Intent i = new Intent(AppEntryActivity.this, EnterMasterPassword.class);
                 startActivityForResult(i, REQ_CODE_ENTER_PASSWORD);
             }
