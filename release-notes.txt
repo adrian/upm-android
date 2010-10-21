@@ -1,3 +1,6 @@
+v1.4 21-Oct-2010
+  * Bugfix for blank screen when the application starts
+
 v1.3 14-Oct-2010
   * Fixed a number of problems that were causing crashes.
   * Delete the temp db file created during a sync operation.
