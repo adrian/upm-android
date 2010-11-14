@@ -73,14 +73,13 @@ public class FullAccountList extends AccountsList {
     private static final int IMPORT_CERT_DIALOG = 4;
     
     private static final int ENTER_PW_REQUEST_CODE = 222;
-    
+
     public static final int RESULT_EXIT = 0;
     public static final int RESULT_ENTER_PW = 1;
 
     public static final String CERT_FILE_NAME = "upm.cer";
 
     private File downloadedDatabaseFile;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -222,7 +221,6 @@ public class FullAccountList extends AccountsList {
 
     @Override
     protected Dialog onCreateDialog(int id) {
-        Dialog dialog = null;
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 
         switch(id) {
@@ -231,7 +229,7 @@ public class FullAccountList extends AccountsList {
                .setCancelable(false)
                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                       restoreDatabase();
+                       ((UPMApplication) getApplication()).restoreDatabase(FullAccountList.this);
                        // Clear the activity stack and bring up AppEntryActivity
                        // This is effectively restarting the application
                        Intent i = new Intent(FullAccountList.this, AppEntryActivity.class);
@@ -335,21 +333,12 @@ public class FullAccountList extends AccountsList {
             break;
         }
 
-        dialog = dialogBuilder.create();
-        return dialog;
+        return dialogBuilder.create();
     }
 
     private void deleteDatabase() {
         Utilities.getDatabaseFile(this).delete();
         Utilities.setDatabaseFileName(null, this);
-    }
-
-    private void restoreDatabase() {
-        deleteDatabase();
-
-        File fileOnSDCard = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
-        File databaseFile = Utilities.getDatabaseFile(this);
-        ((UPMApplication) getApplication()).copyFile(fileOnSDCard, databaseFile, this);
     }
 
     private void backupDatabase() {

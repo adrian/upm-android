@@ -15,7 +15,13 @@
             android:layout_height="wrap_content"
             android:text="@string/emp_create_new_database"
             android:layout_gravity="center"/>
-    
+
+    <Button android:id="@+id/restore_database"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/restore_database"
+            android:layout_gravity="center"/>
+
     <Button android:id="@+id/open_remote_database"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

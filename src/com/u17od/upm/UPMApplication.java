@@ -31,6 +31,7 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.Application;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -92,6 +93,18 @@ public class UPMApplication extends Application {
                 Toast.makeText(activity, R.string.file_problem, Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    protected void restoreDatabase(Activity activity) {
+        deleteDatabase(activity);
+        File fileOnSDCard = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
+        File databaseFile = Utilities.getDatabaseFile(activity);
+        ((UPMApplication) activity.getApplication()).copyFile(fileOnSDCard, databaseFile, activity);
+    }
+
+    protected void deleteDatabase(Activity activity) {
+        Utilities.getDatabaseFile(activity).delete();
+        Utilities.setDatabaseFileName(null, activity);
     }
 
 }
