@@ -1,21 +1,72 @@
-v1.4 21-Oct-2010
-  * Bugfix for blank screen when the application starts
+Universal Password Manager
+--------------------------
+http://upm.sourceforge.net
 
-v1.3 14-Oct-2010
-  * Fixed a number of problems that were causing crashes.
-  * Delete the temp db file created during a sync operation.
+Copyright (C) 2005-2010 Adrian Smith
 
-v1.2 8-Aug-2010
-  * New Feature: Long-clicking on an account now brings up a context menu
-    allowing you to copy username, copy password, launch URL, edit account
-  * New Feature: Added the ability to trust self signed certificates and 
-    certificates that have a different Common Name to the website hostname
-  * New Feature: Increased the font size on the Account Details activity
-  * Bug Fix: recover gracefully when the database is closed unexpectedly
+Universal Password Manager is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-v1.1 30-Mar-2010
-  * Implemented the Shared Database feature as it exists in the desktop version of UPM
-  * Added Delete Database feature
-  * Lots of little bugs fixes throughout the codebase
+Universal Password Manager is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-$Id$
+You should have received a copy of the GNU General Public License
+along with Universal Password Manager; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+Overview
+--------
+   Universal Password Manager (UPM) allows you to store usernames, passwords, URLs,
+   and generic notes in an encrypted database protected by one master password.
+
+   There are several open source password managers available so what makes UPM 
+   different? It's three strongest features are...
+
+    * it's simplicity - it provides a small number of very strong features with no
+      clutter.
+
+    * cross platform - UPM runs on Android, Windows, Mac OS X and Linux.
+
+    * database sharing - This feature allows your to keep you database in sync
+      across several locations by maintaining a shared copy in a remote HTTP location.
+
+Features
+--------
+   .Small, fast and lean
+   .Uses AES for database encryption
+   .Shared password database
+   .Written in Java/SWING
+   .Android, Windows and Mac OS X native feeling versions available
+   .Fast account searching
+   .Streamlined for those who are more comfortable using the keyboard only
+
+History
+-------
+   v1.4 21-Oct-2010
+     * Bugfix for blank screen when the application starts
+
+   v1.3 14-Oct-2010
+     * Fixed a number of problems that were causing crashes.
+     * Delete the temp db file created during a sync operation.
+
+   v1.2 8-Aug-2010
+     * New Feature: Long-clicking on an account now brings up a context menu
+       allowing you to copy username, copy password, launch URL, edit account
+     * New Feature: Added the ability to trust self signed certificates and 
+       certificates that have a different Common Name to the website hostname
+     * New Feature: Increased the font size on the Account Details activity
+     * Bug Fix: recover gracefully when the database is closed unexpectedly
+
+   v1.1 30-Mar-2010
+     * Implemented the Shared Database feature as it exists in the desktop
+       version of UPM
+     * Added Delete Database feature
+     * Lots of little bugs fixes throughout the codebase
+
+   v1.0 1-Feb-2010
+     * Initial Release
