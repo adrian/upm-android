@@ -63,6 +63,8 @@ public class AddEditAccount extends Activity implements OnClickListener {
         saveButton = (Button) findViewById(R.id.save_button);
         saveButton.setOnClickListener(this);
 
+        ((Button) findViewById(R.id.cancel_button)).setOnClickListener(this);
+
         accountName = (EditText) findViewById(R.id.account_name);
         userid = (EditText) findViewById(R.id.account_userid);
         password = (EditText) findViewById(R.id.account_password);
@@ -121,6 +123,9 @@ public class AddEditAccount extends Activity implements OnClickListener {
                 }
             }
 
+            break;
+        case R.id.cancel_button:
+            this.finish();
             break;
         }
     }
