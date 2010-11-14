@@ -56,8 +56,16 @@ public class CreateNewDatabase extends Activity implements OnClickListener {
         
         password1 = (EditText) findViewById(R.id.password1);
         password2 = (EditText) findViewById(R.id.password2);
-        Button okButton = (Button) findViewById(R.id.new_master_password_ok_button);
-        okButton.setOnClickListener(this);
+        Button createDatabaseButton = (Button) findViewById(R.id.create_database_button);
+        createDatabaseButton.setOnClickListener(this);
+
+        Button cancelButton = (Button) findViewById(R.id.cancel_button);
+        cancelButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override

@@ -108,4 +108,5 @@
     <string name="trusted_hostname_summary">Hostname to always trust</string>
     <string name="cancel">Cancel</string>
     <string name="restore_database">Restore Database</string>
+    <string name="create">Create</string>
 </resources>
