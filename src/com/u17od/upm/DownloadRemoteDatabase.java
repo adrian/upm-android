@@ -60,6 +60,14 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
 
         Button downloadButton = (Button) findViewById(R.id.download_button);
         downloadButton.setOnClickListener(this);
+
+        Button cancelButton = (Button) findViewById(R.id.cancel_button);
+        cancelButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
