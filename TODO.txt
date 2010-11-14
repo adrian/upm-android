@@ -1,20 +1,15 @@
+* On the create database dialog add a "Restore" option
+* Put database on SD card by default. Provide option to store in "Internal Storage"
+* Put OK, Cancel, etc buttons at the bottom of pages
 * Put all I/O into a service/content provider
 * On the logon page include a button/menu to delete the db
-* Don't ask for internet permission on install. Instead, ask for it when remote feature is used. Maybe have an add-on application?
-* On the create database dialog add a "Restore" option
+* Don't ask for internet permission on install. Instead, ask for it when remote feature is used. Maybe have an add-on application? http://developer.android.com/intl/fr/resources/samples/TicTacToeLib/index.html
 * Get rid of static references
-* Add a auto-destruct feature
-* Have option to store database on SD card (or maybe do by default)
-* Warn user to backup periodically (why not just put db on SD card to start with?)
-* Put OK, Cancel, etc buttons at the bottom of pages
-
-* Move to GitHub/other for issue tracking
-
-* Remove all the temporary files in the root of the SD card
-  -> This should be done now
+* Add a autodestruct feature
+* Move to GitHub/other for issue/feature tracking
 
 * DONE Get HTTPS with self signed certificate working
 * DONE Increase text size
 * DONE Include "Copy Username", "Copy Password", "Launch URL" in account long click menu
 * DONE 08-11-2010 Move to GitHub/other for code hosting
-
+* DONE Remove all the temporary files in the root of the SD card
