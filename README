@@ -47,6 +47,10 @@ Features
 
 History
 -------
+   v1.5 29-Nov-2010
+     * Moved all buttons onto a ButtonBar on their respective Activity
+     * Put a "Restore Database" option on the New Database dialog
+
    v1.4 21-Oct-2010
      * Bugfix for blank screen when the application starts
 
