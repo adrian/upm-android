@@ -110,6 +110,6 @@
     <string name="restore_database">Restore Database</string>
     <string name="create">Create</string>
     <string name="new_master_password_message">Choose your master password carefully. It should be difficult for others to guess but easy for you to remember.</string>
-    <string name="dont_forget_password_warning">If you forget your master password there\'s no way to opening your password database. There are no backdoors and consequently UPM\'s developer can\'t help.</string>
+    <string name="dont_forget_password_warning">If you forget your master password there\'s no way of opening your password database. There are no backdoors and consequently UPM\'s developer can\'t help.</string>
     <string name="backup_message">NOTE: If you uninstall UPM your password database will be deleted along with it. For this reason it\'s important you backup your data regularly (available in the menu).</string>
 </resources>
