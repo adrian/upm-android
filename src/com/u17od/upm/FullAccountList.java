@@ -84,16 +84,25 @@ public class FullAccountList extends AccountsList {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         registerForContextMenu(getListView());
+        populateAccountList();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (resultCode == Activity.RESULT_CANCELED) {
-            UIUtilities.showToast(this, R.string.enter_password_cancalled);
-        } else {
-            if (requestCode == ENTER_PW_REQUEST_CODE) {
-                syncDb(EnterMasterPassword.decryptedPasswordDatabase);
-            }
+        switch(requestCode) {
+            case ENTER_PW_REQUEST_CODE:
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    UIUtilities.showToast(this, R.string.enter_password_cancalled);
+                } else {
+                    syncDb(EnterMasterPassword.decryptedPasswordDatabase);
+                }
+                break;
+            case AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE:
+            case ViewAccountDetails.VIEW_ACCOUNT_REQUEST_CODE:
+                if (resultCode == AddEditAccount.EDIT_ACCOUNT_RESULT_CODE_TRUE) {
+                    populateAccountList();
+                }
+                break;
         }
     }
 
@@ -107,8 +116,6 @@ public class FullAccountList extends AccountsList {
 
             setResult(RESULT_ENTER_PW);
             finish();
-        } else {
-            populateAccountList();
         }
     }
 
@@ -135,7 +142,7 @@ public class FullAccountList extends AccountsList {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     FullAccountList.this.setResult(RESULT_EXIT);
-                    FullAccountList.this.finish();    
+                    FullAccountList.this.finish();
                 }
             })
             .setNegativeButton(R.string.no, null)
@@ -161,7 +168,7 @@ public class FullAccountList extends AccountsList {
                 } else {
                     Intent i = new Intent(FullAccountList.this, AddEditAccount.class);
                     i.putExtra(AddEditAccount.MODE, AddEditAccount.ADD_MODE);
-                    startActivity(i);
+                    startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
                 }
                 break;
             case R.id.change_master_password:

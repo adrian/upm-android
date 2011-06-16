@@ -114,7 +114,7 @@ public class AccountsList extends ListActivity {
         ViewAccountDetails.account = ai;
 
         Intent i = new Intent(AccountsList.this, ViewAccountDetails.class);
-        startActivity(i);
+        startActivityForResult(i, ViewAccountDetails.VIEW_ACCOUNT_REQUEST_CODE);
     }
 
     private void editAccount(AccountInformation ai) {
@@ -124,7 +124,7 @@ public class AccountsList extends ListActivity {
             Intent i = new Intent(AccountsList.this, AddEditAccount.class);
             i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
             AddEditAccount.accountToEdit = ai;
-            startActivity(i);
+            startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
         }
     }
 

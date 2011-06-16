@@ -26,6 +26,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,8 +39,11 @@ import com.u17od.upm.database.PasswordDatabase;
 public class ViewAccountDetails extends Activity {
 
     public static AccountInformation account;
-    
+
     private static final int CONFIRM_DELETE_DIALOG = 0;
+    public static final int VIEW_ACCOUNT_REQUEST_CODE = 224;
+
+    private int editAccountResultCode = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,7 +87,7 @@ public class ViewAccountDetails extends Activity {
                 Intent i = new Intent(ViewAccountDetails.this, AddEditAccount.class);
                 i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
                 AddEditAccount.accountToEdit = account;
-                startActivity(i);
+                startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
             }
             break;
         case R.id.delete:
@@ -133,6 +137,26 @@ public class ViewAccountDetails extends Activity {
 
         return dialog;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        switch(requestCode) {
+            case AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE:
+                editAccountResultCode = resultCode;
+                break;
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // If the back button is pressed pass back the edit account flag
+        // This is used to indicate if the list of account names on 
+        // FullAccountList needs to be refreshed
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            setResult(editAccountResultCode);
+        }
+        return super.onKeyDown(keyCode, event);
+    } 
 
     private void populateView() {
         TextView accountNameTextView = (TextView) findViewById(R.id.account_name);

@@ -42,6 +42,9 @@ public class AddEditAccount extends Activity implements OnClickListener {
     public static final int EDIT_MODE = 1;
     public static final int ADD_MODE = 2;
 
+    public static final int EDIT_ACCOUNT_RESULT_CODE_TRUE = 1;
+    public static final int EDIT_ACCOUNT_REQUEST_CODE = 223;
+
     public static AccountInformation accountToEdit;
 
     private int mode;
@@ -52,6 +55,7 @@ public class AddEditAccount extends Activity implements OnClickListener {
     private EditText password;
     private EditText url;
     private EditText notes;
+    private String originalAccountName;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,8 @@ public class AddEditAccount extends Activity implements OnClickListener {
         // Set the title based on weather we were called to Edit/Add
         if (mode == EDIT_MODE) {
             setTitle(getString(R.string.edit_account));
+
+            originalAccountName = accountToEdit.getAccountName();
 
             // Populate the form with the account to edit
             accountName.setText(accountToEdit.getAccountName());
@@ -128,7 +134,7 @@ public class AddEditAccount extends Activity implements OnClickListener {
         }
     }
 
-    private void saveAccount(String accountName) {
+    private void saveAccount(final String accountName) {
         byte[] useridBytes = userid.getText().toString().getBytes();
         byte[] passwordBytes = password.getText().toString().getBytes();
         byte[] urlBytes = url.getText().toString().getBytes();
@@ -151,6 +157,12 @@ public class AddEditAccount extends Activity implements OnClickListener {
         new SaveDatabaseAsyncTask(this, new Callback() {
             @Override
             public void execute() {
+                // If the account name has changed or we're added a new account
+                // then pass back a value instructing the FullAccountList to
+                // refresh the list of accounts
+                if (!accountName.equals(originalAccountName) || mode == ADD_MODE) {
+                    setResult(EDIT_ACCOUNT_RESULT_CODE_TRUE);
+                }
                 AddEditAccount.this.finish();
             }
         }).execute(getPasswordDatabase());
