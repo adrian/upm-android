@@ -47,6 +47,11 @@ Features
 
 History
 -------
+   v1.6 17-Jul-2011
+     * When returning to the main account list activity return to the same scroll position as we left
+     * Added support for large screens
+     * Made links on the Account Details page clickable
+
    v1.5 29-Nov-2010
      * Moved all buttons onto a ButtonBar on their respective Activity
      * Put a "Restore Database" option on the New Database dialog
