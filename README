@@ -47,6 +47,9 @@ Features
 
 History
 -------
+   v1.7 17-Jul-2011
+     * Added permission WRITE_EXTERNAL_STORAGE. Backup wasn't working without this.
+
    v1.6 17-Jul-2011
      * When returning to the main account list activity return to the same scroll position as we left
      * Added support for large screens
