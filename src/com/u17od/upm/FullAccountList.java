@@ -411,7 +411,9 @@ public class FullAccountList extends AccountsList {
             SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
             String trustedHostname = settings.getString(Prefs.PREF_TRUSTED_HOSTNAME, "");
 
-            HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME), trustedHostname);
+            HTTPTransport transport = new HTTPTransport(getFileStreamPath(
+                    FullAccountList.CERT_FILE_NAME), trustedHostname, 
+                    getApplicationContext().getFilesDir());
             String fileName = getPasswordDatabase().getDatabaseFile().getName();
             try {
                 transport.delete(remoteURL, fileName, remoteURLUsername, remoteURLPassword);
@@ -478,7 +480,9 @@ public class FullAccountList extends AccountsList {
                     SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
                     String trustedHostname = settings.getString(Prefs.PREF_TRUSTED_HOSTNAME, "");
 
-                    HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME), trustedHostname);
+                    HTTPTransport transport = new HTTPTransport(getFileStreamPath(
+                            FullAccountList.CERT_FILE_NAME), trustedHostname, 
+                            getApplicationContext().getFilesDir());
                     downloadedDatabaseFile = transport.getRemoteFile(remoteURL, remoteFileName, remoteURLUsername, remoteURLPassword);
                     if (downloadedDatabaseFile != null) {
                         SecretKey existingDBSecretKey = getPasswordDatabase().getEncryptionService().getSecretKey();

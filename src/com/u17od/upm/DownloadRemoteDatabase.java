@@ -134,7 +134,9 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
             SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
             String trustedHostname = settings.getString(Prefs.PREF_TRUSTED_HOSTNAME, "");
 
-            HTTPTransport transport = new HTTPTransport(getFileStreamPath(FullAccountList.CERT_FILE_NAME), trustedHostname);
+            HTTPTransport transport = new HTTPTransport(getFileStreamPath(
+                    FullAccountList.CERT_FILE_NAME), trustedHostname, 
+                    getApplicationContext().getFilesDir());
             try {
                 byte[] passwordDBBytes = transport.get(
                         urlEditText.getText().toString(), 

@@ -56,10 +56,13 @@ public class HTTPTransport extends Transport {
     private File certFile;
     private SSLSocketFactory sslFactory;
     private String trustedHost;
-    
-    public HTTPTransport(File certFile, String trustedHost) {
+    private File tmpDir;
+
+
+    public HTTPTransport(File certFile, String trustedHost, File tmpDir) {
         this.certFile = certFile;
         this.trustedHost = trustedHost;
+        this.tmpDir = tmpDir;
     }
 
     public void put(String targetLocation, File file) throws TransportException {
@@ -289,7 +292,7 @@ public class HTTPTransport extends Transport {
             File downloadedFile = null;
             byte[] remoteFile = get(remoteLocation, httpUsername, httpPassword);
             if (remoteFile != null) {
-                downloadedFile = File.createTempFile("upm", null);
+                downloadedFile = File.createTempFile("upm", null, tmpDir);
                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                 fos.write(remoteFile);
                 fos.close();
