@@ -60,7 +60,9 @@ public class UPMApplication extends Application {
         return passwordDatabase;
     }
 
-    protected void copyFile(File source, File dest, Activity activity) {
+    protected boolean copyFile(File source, File dest, Activity activity) {
+        boolean successful = false;
+
         FileChannel sourceChannel = null;
         FileChannel destinationChannel = null;
         try {
@@ -75,6 +77,8 @@ public class UPMApplication extends Application {
 
             destinationChannel = new FileOutputStream(destFile).getChannel();
             destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+
+            successful=true;
         } catch (IOException e) {
             Log.e(activity.getClass().getName(), getString(R.string.file_problem), e);
             Toast.makeText(activity, R.string.file_problem, Toast.LENGTH_LONG).show();
@@ -91,6 +95,8 @@ public class UPMApplication extends Application {
                 Toast.makeText(activity, R.string.file_problem, Toast.LENGTH_LONG).show();
             }
         }
+
+        return successful;
     }
 
     protected void restoreDatabase(Activity activity) {

@@ -349,9 +349,10 @@ public class FullAccountList extends AccountsList {
     private void backupDatabase() {
         File fileOnSDCard = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
         File databaseFile = Utilities.getDatabaseFile(this);
-        ((UPMApplication) getApplication()).copyFile(databaseFile, fileOnSDCard, this);
-        String message = String.format(getString(R.string.backup_complete), fileOnSDCard.getAbsolutePath());
-        UIUtilities.showToast(this, message, false);
+        if (((UPMApplication) getApplication()).copyFile(databaseFile, fileOnSDCard, this)) {
+            String message = String.format(getString(R.string.backup_complete), fileOnSDCard.getAbsolutePath());
+            UIUtilities.showToast(this, message, false);
+        }
     }
 
     /**
