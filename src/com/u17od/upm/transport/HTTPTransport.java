@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -321,16 +322,19 @@ public class HTTPTransport extends Transport {
                 conn.setRequestProperty ("Authorization", createAuthenticationString(username, password));
             }
 
-            conn.setRequestProperty("Content-Length", String.valueOf(requestBody.length()));
+            int contentLength = requestBody.length();
+            conn.setRequestProperty("Content-Length", String.valueOf(contentLength));
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setUseCaches(false);
             conn.setRequestMethod("POST");
+            conn.setFixedLengthStreamingMode(contentLength);
 
             // Send the body
-            DataOutputStream dataOS = new DataOutputStream(conn.getOutputStream());
-            dataOS.writeBytes(requestBody.toString());
+            OutputStreamWriter dataOS = new OutputStreamWriter(conn.getOutputStream());
+            dataOS.write(requestBody);
             dataOS.flush();
             dataOS.close();
 
