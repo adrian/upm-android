@@ -59,7 +59,8 @@
 	              android:layout_height="wrap_content"
 	              android:inputType="textMultiLine"
 			      android:layout_marginBottom="10dip"
-                  android:textSize="20dp"/>
+                  android:textSize="20dp"
+                  android:autoLink="all"/>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
