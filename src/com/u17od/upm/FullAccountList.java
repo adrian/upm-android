@@ -375,7 +375,9 @@ public class FullAccountList extends AccountsList {
             UIUtilities.showToast(this, R.string.db_uptodate);
         }
         app.setTimeOfLastSync(new Date());
-        downloadedDatabaseFile.delete();
+        if (downloadedDatabaseFile != null) {
+            downloadedDatabaseFile.delete();
+        }
     }
 
     private void launchDonatePage() {
