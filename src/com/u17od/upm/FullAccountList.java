@@ -467,7 +467,7 @@ public class FullAccountList extends AccountsList {
             int errorCode = 0;
 
             String remoteURL = getPasswordDatabase().getDbOptions().getRemoteLocation();
-            if (remoteURL.equals("")) {
+            if (remoteURL.trim().equals("")) {
                 errorCode = NO_REMOTE_DB;
             } else {
                 String remoteFileName = Utilities.getDatabaseFileName(FullAccountList.this);
