@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="launch_url">Запустить URL</string>
+    <string name="copy_password">Копировать пароль</string>
+    <string name="copy_username">Копировать имя пользователя</string>
+    <string name="app_name_short">UPM</string>
+    <string name="enter_master_password">Введите мастер-пароль</string>
+    <string name="request_new_master_password">Укажите мастер-пароль которым будет защищена БД.</string>
+    <string name="ok_label">OK</string>
+    <string name="open_label">Открыть</string>
+    <string name="request_master_password_dialog_title">Мастер-пароль</string>
+    <string name="passwords_dont_match">"Пароль не совпал"</string>
+    <string name="no_accounts">Нет записей</string>
+    <string name="generic_error">Непредвиденная ошибка</string>
+    <string name="request_master_password">Введите мастер-пароль</string>
+    <string name="invalid_password">Неверный пароль</string>
+    <string name="add_account_prompt">Нажмите <b>Добавить</b> для добавления записи</string>
+    <string name="decrypting_db">Попытка расшифровать БД</string>
+    <string name="account_name">Запись</string>
+    <string name="userid">ID пользователя (логин и т.п.)</string>
+    <string name="password">Пароль</string>
+    <string name="url">URL адрес</string>
+    <string name="notes">Заметки</string>
+    <string name="search_label">Поиск записей</string>
+    <string name="search_results">Результаты поиска</string>
+    <string name="search">Поиск</string>
+    <string name="add">Добавить</string>
+    <string name="save">Сохранить</string>
+    <string name="edit">Изменить</string>
+    <string name="delete">Удалить</string>
+    <string name="add_account">Добавить запись</string>
+    <string name="edit_account">Править запись</string>
+    <string name="account_already_exists_error">Уже существует запись с таким именем</string>
+    <string name="account_name_required_error">Необходимо указать имя записи</string>
+    <string name="existing_master_password">Существующий мастер-пароль</string>
+    <string name="change_master_password">Изменить мастер-пароль</string>
+    <string name="more">Еще</string>
+    <string name="password_too_short">Мастер-пароль должен быть не менее %1$d знаков</string>
+    <string name="new_passwords_dont_match">"Пароли не совпадают"</string>
+    <string name="new_password">Новый пароль</string>
+    <string name="new_password_confirm">Подтвердите пароль</string>
+    <string name="no_accounts_found">Записи не найдены</string>
+    <string name="restore">Восстановить</string>
+    <string name="backup">Сохранить на SD</string>
+    <string name="error_saving_after_delete">Ошибка сохранения после удаления</string>
+    <string name="account_deleted">"Запись '%s' удалена"</string>
+    <string name="about">О программе</string>
+    <string name="close">Выход</string>
+    <string name="homepage">Домой</string>
+    <string name="homepageUrl">http://upm.sourceforge.net</string>
+    <string name="donate">Пожертвовать</string>
+    <string name="donateURL">http://sourceforge.net/donate/index.php?group_id=154394</string>
+    <string name="aboutText">"Universal Password Manager (UPM) позволяет хранить имена пользователей, пароли и заметки в зашифрованной базе данных (БД), защищенной мастер-паролем.
+
+Version: %s"</string>
+    <string name="file_problem">Ошибка файловой операции</string>
+    <string name="restore_file_doesnt_exist">"Нет файлов upm.db для восстановления
+[%s]"</string>
+    <string name="backup_file_exists">"Уже есть такой файл на SD-карте.
+%s
+Перезаписать?"</string>
+    <string name="confirm_restore_overwrite">Заменить текущую БД из сохраненной на SD-карте?</string>
+    <string name="backup_complete">БД сохранена в %s</string>
+    <string name="saving_database">Сохранение БД</string>
+    <string name="emp_new_db_options">Создать новую, восстановить, или скачать удаленно?</string>
+    <string name="emp_create_new_database">Создать новую</string>
+    <string name="emp_open_remote_db">Скачать удаленно</string>
+    <string name="new_database">Новая база данных (БД)</string>
+    <string name="download">Скачать</string>
+    <string name="download_remote_database">Скачать удаленно</string>
+    <string name="downloading_db">Скачивание БД...</string>
+    <string name="problem_downloading_db">"Ошибка скачивания
+
+%s"</string>
+    <string name="not_password_database">Скачанный файл не является файлом БД UPM</string>
+    <string name="sync">Синхронизация</string>
+    <string name="problem_decrypying_db">"Ошибка расшифровки БД
+
+%s"</string>
+    <string name="enter_password_cancalled">Не указан пароль</string>
+    <string name="generic_error_with_message">"Непредвиденная ошибка...
+
+%s"</string>
+    <string name="syncing_database">Синхронизация БД</string>
+    <string name="problem_reading_upm_db">"Ошибка считывания БД...
+
+%s"</string>
+    <string name="new_db_downloaded">Новая БД скачана</string>
+    <string name="db_uptodate">БД обновлена</string>
+    <string name="preferences">Настройки</string>
+    <string name="no_remote_db">Эта БД не связана с удаленным URL адресом</string>
+    <string name="settings_title">Настройки UPM</string>
+    <string name="shared_database_settings">Настройки удаленного сохранения БД</string>
+    <string name="shared_url">URL адрес</string>
+    <string name="shared_url_summary">HTTP дрес для удаленного сохранения БД</string>
+    <string name="shared_url_auth">Имя пользователя</string>
+    <string name="shared_url_auth_summary">Необходимо если HTTP адрес защищен паролем</string>
+    <string name="problem_saving_db">"Ошибка сохранения БД
+
+%s"</string>
+    <string name="uploading_database">Загрузка БД</string>
+    <string name="db_sync_complete">Синхронизация БД завершена</string>
+    <string name="db_sync_error">"Ошибка синхронизации БД
+
+%s"</string>
+    <string name="sync_required">Сначала необходимо выполнить синхронизацию</string>
+    <string name="delete_db">Удалить БД</string>
+    <string name="confirm_delete_db">Уверены что хотите удалить БД безвозвратно?.</string>
+    <string name="confirm_exit_title">Закрыть UPM?</string>
+    <string name="confirm_exit_message">"Уверены что хотите закрыть UPM? Потребуется пароль при следующем запуске."</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="no_url">Нет URL адреса в этой записи</string>
+    <string name="import_cert">Импорт сертификата</string>
+    <string name="delete_cert">Удаление сертификата</string>
+    <string name="import_cert_message">"Убедитесь в наличии файла %s в корне SD-карты"</string>
+    <string name="cert_imported">Сертификат импортирован</string>
+    <string name="cert_deleted">Сертификат удален</string>
+    <string name="no_cert_available">Нет доступных сертификатов</string>
+    <string name="trusted_hostname">Доверенный хост</string>
+    <string name="trusted_hostname_summary">Всегда доверять выбранному хосту</string>
+    <string name="cancel">Отмена</string>
+    <string name="restore_database">Восстановить</string>
+    <string name="create">Создать</string>
+    <string name="new_master_password_message">Выбирайте мастер-пароль осторожно. Он должен быть сложным для угадывания кем-то чужим, и достаточно легким чтобы вам запомнить.</string>
+    <string name="dont_forget_password_warning">"Если вы забудете мастер-пароль, открыть БД будет невозможно. Разработчик UPM не сможет вам в этом помочь."</string>
+    <string name="backup_message">"ВАЖНО: Если удалить UPM, ваша БД будет также удалена. Поэтому необходимо регулярно сохранять резервные копии БД (доступно в меню)."</string>
+</resources>
