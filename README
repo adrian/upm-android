@@ -2,7 +2,7 @@ Universal Password Manager
 --------------------------
 http://upm.sourceforge.net
 
-Copyright (C) 2005-2010 Adrian Smith
+Copyright (C) 2005-2011 Adrian Smith
 
 Universal Password Manager is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -47,6 +47,10 @@ Features
 
 History
 -------
+   v1.8 12-Oct-2011
+     * Added Russian translation
+     * Trim the remote url before using it
+
    v1.7 17-Jul-2011
      * Added permission WRITE_EXTERNAL_STORAGE. Backup wasn't working without this.
 
