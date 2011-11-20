@@ -84,7 +84,6 @@ public class FullAccountList extends AccountsList {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         registerForContextMenu(getListView());
-        populateAccountList();
     }
 
     @Override
@@ -116,6 +115,8 @@ public class FullAccountList extends AccountsList {
 
             setResult(RESULT_ENTER_PW);
             finish();
+        } else {
+            populateAccountList();
         }
     }
 
