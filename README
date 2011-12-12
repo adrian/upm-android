@@ -47,6 +47,12 @@ Features
 
 History
 -------
+   v1.10 12-Dec-2011
+     * Bug fix release
+
+   v1.9 06-Dec-2011
+     * Bug fix release
+
    v1.8 12-Oct-2011
      * Added Russian translation
      * Trim the remote url before using it
