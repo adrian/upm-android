@@ -110,6 +110,7 @@ Version: %s"</string>
     <string name="confirm_exit_message">Уверены что хотите закрыть UPM? Потребуется пароль при следующем запуске.</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="no_uri">No URL on this account</string>
     <string name="import_cert">Импорт сертификата</string>
     <string name="delete_cert">Удаление сертификата</string>
     <string name="import_cert_message">Убедитесь в наличии файла %s в корне SD-карты</string>
