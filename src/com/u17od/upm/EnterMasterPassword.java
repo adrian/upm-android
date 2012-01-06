@@ -52,7 +52,8 @@ public class EnterMasterPassword extends Activity implements OnClickListener {
     public static File databaseFileToDecrypt;
 
     private EditText passwordField;
-
+    private DecryptDatabase decryptDatabaseTask;
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,24 @@ public class EnterMasterPassword extends Activity implements OnClickListener {
                 return false;
             }
         });
+
+        decryptDatabaseTask = (DecryptDatabase) getLastNonConfigurationInstance();
+        if (decryptDatabaseTask != null) {
+            // Associate the async task with the new activity
+            decryptDatabaseTask.setActivity(this);
+
+            // If the decryptDatabaseTask is running display the progress
+            // dialog. This can happen if the screen was rotated while the
+            // background task is running.
+            if (decryptDatabaseTask.getStatus() == AsyncTask.Status.RUNNING) {
+                progressDialog = ProgressDialog.show(this, "",
+                        this.getString(R.string.decrypting_db));
+            }
+        }
+    }
+
+    public ProgressDialog getProgressDialog() {
+        return this.progressDialog;
     }
 
     @Override
@@ -87,23 +106,60 @@ public class EnterMasterPassword extends Activity implements OnClickListener {
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // If the activity is being stopped while the progress dialog is
+        // displayed (e.g. the screen is being rotated) dismiss it here.
+        // We'll display it again in the new activity.
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public Object onRetainNonConfigurationInstance () {
+        // Disassociate the background task from the activity. A new one will
+        // be created imminently.
+        if (decryptDatabaseTask != null) {
+            decryptDatabaseTask.setActivity(null);
+        }
+        return decryptDatabaseTask;
+    }
+
     private void openDatabase() {
-        new DecryptDatabase().execute();
+        // Show the progress dialog
+        progressDialog = ProgressDialog.show(
+                this, "", this.getString(R.string.decrypting_db));
+
+        // Create and execute the background task that will decrypt the db
+        decryptDatabaseTask = new DecryptDatabase(this);
+        decryptDatabaseTask.execute();
+    }
+
+    public EditText getPasswordField() {
+        return passwordField;
     }
 
     // Show a progress dialog and then start the decrypting of the
     // db in a separate thread
-    private class DecryptDatabase extends AsyncTask<Void, Void, Integer> {
+    private static class DecryptDatabase extends AsyncTask<Void, Void, Integer> {
 
         private static final int ERROR_INVALID_PASSWORD = 1;
         private static final int ERROR_GENERIC_ERROR = 2;
 
-        private ProgressDialog progressDialog;
+        private EnterMasterPassword activity;
         private String errorMessage;
+        private char[] password;
+
+        public DecryptDatabase(EnterMasterPassword activity) {
+            this.activity = activity;
+        }
 
         @Override
         protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(EnterMasterPassword.this, "", getString(R.string.decrypting_db));
+            password = activity.getPasswordField().getText().toString().toCharArray();
         }
 
         @Override
@@ -111,11 +167,8 @@ public class EnterMasterPassword extends Activity implements OnClickListener {
             int errorCode = 0;
             try {
                 // Attempt to decrypt the database
-                char[] password = passwordField.getText().toString().toCharArray();
-                decryptedPasswordDatabase = new PasswordDatabase(databaseFileToDecrypt, password);
-
-                setResult(RESULT_OK);
-                finish();
+                decryptedPasswordDatabase = 
+                        new PasswordDatabase(databaseFileToDecrypt, password);
             } catch (InvalidPasswordException e) {
                 Log.e("EnterMasterPassword", e.getMessage(), e);
                 errorMessage = e.getMessage();
@@ -139,23 +192,31 @@ public class EnterMasterPassword extends Activity implements OnClickListener {
 
         @Override
         protected void onPostExecute(Integer result) {
-            progressDialog.dismiss();
+            activity.getProgressDialog().dismiss();
 
             switch (result) {
                 case ERROR_INVALID_PASSWORD:
-                    Toast toast = Toast.makeText(EnterMasterPassword.this, R.string.invalid_password, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(activity, R.string.invalid_password, Toast.LENGTH_SHORT);
                     toast.show();
-                    
+
                     // Set focus back to the password and select all characters
-                    passwordField.requestFocus();
-                    passwordField.selectAll();
-                    
+                    activity.getPasswordField().requestFocus();
+                    activity.getPasswordField().selectAll();
+
                     break; 
                 case ERROR_GENERIC_ERROR:
-                    String message = String.format(getText(R.string.generic_error_with_message).toString(), errorMessage);
-                    UIUtilities.showToast(EnterMasterPassword.this, message, true);
-                    break; 
+                    String message = String.format(activity.getText(R.string.generic_error_with_message).toString(), errorMessage);
+                    UIUtilities.showToast(activity, message, true);
+                    break;
+                default :
+                    activity.setResult(RESULT_OK);
+                    activity.finish();
+                    break;
             }
+        }
+
+        private void setActivity(EnterMasterPassword activity) {
+            this.activity = activity;
         }
 
     }

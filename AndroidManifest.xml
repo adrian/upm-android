@@ -19,8 +19,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".EnterMasterPassword" 
-            android:configChanges="orientation|keyboardHidden">
+        <activity android:name=".EnterMasterPassword">
         </activity>
 
         <activity android:name=".FullAccountList">
