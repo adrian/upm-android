@@ -43,7 +43,7 @@ public class AddEditAccount extends Activity implements OnClickListener {
     public static final int EDIT_MODE = 1;
     public static final int ADD_MODE = 2;
 
-    public static final int EDIT_ACCOUNT_RESULT_CODE_TRUE = 1;
+    public static final int EDIT_ACCOUNT_RESULT_CODE_TRUE = 25;
     public static final int EDIT_ACCOUNT_REQUEST_CODE = 223;
     public static final int OPEN_DATABASE_REQUEST_CODE = 225;
 

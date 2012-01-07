@@ -122,6 +122,9 @@ public class ViewAccountDetails extends Activity {
                             public void execute() {
                                 String message = String.format(getString(R.string.account_deleted), accountName);
                                 Toast.makeText(ViewAccountDetails.this, message, Toast.LENGTH_SHORT).show();
+                                // Set this flag so that when we're returned to the FullAccountList
+                                // activity the list is refreshed
+                                ViewAccountDetails.this.setResult(AddEditAccount.EDIT_ACCOUNT_RESULT_CODE_TRUE);
                                 finish();
                             }
                         }).execute(getPasswordDatabase());

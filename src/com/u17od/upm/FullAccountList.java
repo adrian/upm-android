@@ -84,6 +84,7 @@ public class FullAccountList extends AccountsList {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         registerForContextMenu(getListView());
+        populateAccountList();
     }
 
     @Override
@@ -105,9 +106,7 @@ public class FullAccountList extends AccountsList {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void populateAccountList() {
         if (getPasswordDatabase() == null) {
             // If the UPM process was restarted since AppEntryActivity was last
             // run then databaseFileToDecrypt won't be set so set it here.
@@ -116,12 +115,8 @@ public class FullAccountList extends AccountsList {
             setResult(RESULT_ENTER_PW);
             finish();
         } else {
-            populateAccountList();
+            setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getPasswordDatabase().getAccountNames()));
         }
-    }
-
-    private void populateAccountList() {
-        setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getPasswordDatabase().getAccountNames()));
     }
 
     @Override
