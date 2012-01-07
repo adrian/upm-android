@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,6 +45,7 @@ public class AddEditAccount extends Activity implements OnClickListener {
 
     public static final int EDIT_ACCOUNT_RESULT_CODE_TRUE = 1;
     public static final int EDIT_ACCOUNT_REQUEST_CODE = 223;
+    public static final int OPEN_DATABASE_REQUEST_CODE = 225;
 
     public static AccountInformation accountToEdit;
 
@@ -91,6 +93,33 @@ public class AddEditAccount extends Activity implements OnClickListener {
             notes.setText(new String(accountToEdit.getNotes()));
         } else { // must be add
             setTitle(getString(R.string.add_account));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getPasswordDatabase() == null) {
+            // If we don't have a database (maybe UPM's process was terminated
+            // since we were last here) we need to show the EnterMasterPassword
+            // activity so the user can enter their master password and open
+            // the password database.
+            EnterMasterPassword.databaseFileToDecrypt = Utilities.getDatabaseFile(this);
+            Intent enterMasterPasswordIntent = new Intent(this, EnterMasterPassword.class);
+            startActivityForResult(enterMasterPasswordIntent, OPEN_DATABASE_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        /*
+         * If the database was successfully opened then make it available
+         * on the Application
+         */
+        if (requestCode == OPEN_DATABASE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                ((UPMApplication) getApplication()).setPasswordDatabase(EnterMasterPassword.decryptedPasswordDatabase);
+            }
         }
     }
 
