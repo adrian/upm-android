@@ -43,12 +43,13 @@ public class AddEditAccount extends Activity implements OnClickListener {
     public static final int EDIT_MODE = 1;
     public static final int ADD_MODE = 2;
 
+    public static final String ACCOUNT_TO_EDIT = "ACCOUNT_TO_EDIT";
+
     public static final int EDIT_ACCOUNT_RESULT_CODE_TRUE = 25;
     public static final int EDIT_ACCOUNT_REQUEST_CODE = 223;
     public static final int OPEN_DATABASE_REQUEST_CODE = 225;
 
-    public static AccountInformation accountToEdit;
-
+    private String accountToEdit;
     private int mode;
 
     private Button saveButton;
@@ -78,22 +79,7 @@ public class AddEditAccount extends Activity implements OnClickListener {
         // Were we called to Add/Edit an Account
         Bundle extras = getIntent().getExtras();
         mode = extras.getInt(MODE);
-
-        // Set the title based on weather we were called to Edit/Add
-        if (mode == EDIT_MODE) {
-            setTitle(getString(R.string.edit_account));
-
-            originalAccountName = accountToEdit.getAccountName();
-
-            // Populate the form with the account to edit
-            accountName.setText(accountToEdit.getAccountName());
-            userid.setText(new String(accountToEdit.getUserId()));
-            password.setText(new String(accountToEdit.getPassword()));
-            url.setText(new String(accountToEdit.getUrl()));
-            notes.setText(new String(accountToEdit.getNotes()));
-        } else { // must be add
-            setTitle(getString(R.string.add_account));
-        }
+        accountToEdit = extras.getString(ACCOUNT_TO_EDIT);
     }
 
     @Override
@@ -107,6 +93,27 @@ public class AddEditAccount extends Activity implements OnClickListener {
             EnterMasterPassword.databaseFileToDecrypt = Utilities.getDatabaseFile(this);
             Intent enterMasterPasswordIntent = new Intent(this, EnterMasterPassword.class);
             startActivityForResult(enterMasterPasswordIntent, OPEN_DATABASE_REQUEST_CODE);
+        } else {
+
+            // Set the title based on weather we were called to Edit/Add
+            if (mode == EDIT_MODE) {
+                setTitle(getString(R.string.edit_account));
+
+                AccountInformation accountToEdit =
+                        getPasswordDatabase().getAccount(this.accountToEdit);
+
+                originalAccountName = accountToEdit.getAccountName();
+
+                // Populate the form with the account to edit
+                accountName.setText(accountToEdit.getAccountName());
+                userid.setText(new String(accountToEdit.getUserId()));
+                password.setText(new String(accountToEdit.getPassword()));
+                url.setText(new String(accountToEdit.getUrl()));
+                notes.setText(new String(accountToEdit.getNotes()));
+            } else { // must be add
+                setTitle(getString(R.string.add_account));
+            }
+
         }
     }
 
@@ -137,6 +144,9 @@ public class AddEditAccount extends Activity implements OnClickListener {
                 
                 // If editing this account then ensure another account doesn't exist with this same name
                 if (mode == EDIT_MODE) {
+
+                    AccountInformation accountToEdit =
+                            getPasswordDatabase().getAccount(this.accountToEdit);
 
                     AccountInformation secondAccount = getPasswordDatabase().getAccount(accountNameStr);
                     if (secondAccount != null && secondAccount != accountToEdit) {
@@ -175,7 +185,7 @@ public class AddEditAccount extends Activity implements OnClickListener {
         
         // If editing an account then delete the exiting one before adding it again
         if (mode == EDIT_MODE) {
-            getPasswordDatabase().deleteAccount(accountToEdit.getAccountName());
+            getPasswordDatabase().deleteAccount(this.accountToEdit);
             // Put the edited account back on the ViewAccountDetails
             // activity so that the view can be re-populated with the
             // edited details

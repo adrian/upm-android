@@ -123,7 +123,7 @@ public class AccountsList extends ListActivity {
         } else {
             Intent i = new Intent(AccountsList.this, AddEditAccount.class);
             i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
-            AddEditAccount.accountToEdit = ai;
+            i.putExtra(AddEditAccount.ACCOUNT_TO_EDIT, ai.getAccountName());
             startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
         }
     }

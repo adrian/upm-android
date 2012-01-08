@@ -86,7 +86,7 @@ public class ViewAccountDetails extends Activity {
             } else {
                 Intent i = new Intent(ViewAccountDetails.this, AddEditAccount.class);
                 i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
-                AddEditAccount.accountToEdit = account;
+                i.putExtra(AddEditAccount.ACCOUNT_TO_EDIT, account.getAccountName());
                 startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
             }
             break;
