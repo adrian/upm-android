@@ -1,6 +1,6 @@
 /*
  * Universal Password Manager
- * Copyright (c) 2010-2011 Adrian Smith
+ * Copyright (C) 2005-2011 Adrian Smith
  *
  * This file is part of Universal Password Manager.
  *   
@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import com.u17od.upm.util.Util;
 
@@ -43,16 +45,17 @@ public abstract class FlatPackObject {
      * Write the given string to the given OutputStream
      * @param s
      * @param os
+     * @throws UnsupportedEncodingException 
      */
-    protected byte[] flatPack(String s) {
-        return flatPack(s.getBytes());
+    protected byte[] flatPack(String s) throws UnsupportedEncodingException {
+        return flatPack(s.getBytes("UTF-8"));
     }
     
 
-    protected byte[] flatPack(byte[] bytesToFlatPack) {
+    protected byte[] flatPack(byte[] bytesToFlatPack) throws UnsupportedEncodingException {
         //Create a byte array populated with the field length 
         String l = Util.lpad(bytesToFlatPack.length, LENGTH_FIELD_NUM_CHARS, '0');
-        byte[] fieldLengthBytes = l.getBytes();
+        byte[] fieldLengthBytes = l.getBytes("UTF-8");
         
         //Declare the buffer we're going to return
         byte[] returnBuffer = new byte[fieldLengthBytes.length + bytesToFlatPack.length];
@@ -115,11 +118,16 @@ public abstract class FlatPackObject {
         return Integer.parseInt(getString(is));
     }
 
-    
+
     public String getString(InputStream is) throws IOException, ProblemReadingDatabaseFile {
-        return new String(getBytes(is));
+        return new String(getBytes(is), "UTF-8");
     }
-    
+
+
+    public String getString(InputStream is, Charset charset) throws IOException, ProblemReadingDatabaseFile {
+        return new String(getBytes(is), charset.name());
+    }
+
     public abstract void flatPack(OutputStream os) throws IOException;
     
 }

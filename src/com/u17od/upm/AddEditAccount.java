@@ -174,10 +174,10 @@ public class AddEditAccount extends Activity implements OnClickListener {
     }
 
     private void saveAccount(final String accountName) {
-        byte[] useridBytes = userid.getText().toString().getBytes();
-        byte[] passwordBytes = password.getText().toString().getBytes();
-        byte[] urlBytes = url.getText().toString().getBytes();
-        byte[] notesBytes = notes.getText().toString().getBytes();
+        String useridBytes = userid.getText().toString();
+        String passwordBytes = password.getText().toString();
+        String urlBytes = url.getText().toString();
+        String notesBytes = notes.getText().toString();
 
         AccountInformation ai = new AccountInformation(
                 accountName, useridBytes,

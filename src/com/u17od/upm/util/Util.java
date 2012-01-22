@@ -20,10 +20,13 @@
  */
 package com.u17od.upm.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 
 
 public class Util {
@@ -71,6 +74,12 @@ public class Util {
         is.close();
 
         return bytes;
+    }
+
+    public static Charset defaultCharset() {
+        return Charset.forName(
+                new OutputStreamWriter(
+                        new ByteArrayOutputStream()).getEncoding());
     }
 
 }

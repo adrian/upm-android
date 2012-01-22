@@ -26,6 +26,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +49,8 @@ import com.u17od.upm.util.Util;
  * All interaction with the database file is done using this class.
  * 
  * Database versions and formats. The items between [] brackets are encrypted.
+ *   3     >> MAGIC_NUMBER DB_VERSION SALT [DB_REVISION DB_OPTIONS ACCOUNTS]
+ *      (all strings are encoded using UTF-8)
  *   2     >> MAGIC_NUMBER DB_VERSION SALT [DB_REVISION DB_OPTIONS ACCOUNTS]
  *   1.1.0 >> SALT [DB_HEADER DB_REVISION DB_OPTIONS ACCOUNTS]
  *   1.0.0 >> SALT [DB_HEADER ACCOUNTS]
@@ -64,7 +67,7 @@ import com.u17od.upm.util.Util;
  */
 public class PasswordDatabase {
 
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
     private static final String FILE_HEADER = "UPM";
 
     private File databaseFile;
@@ -118,6 +121,7 @@ public class PasswordDatabase {
         }
 
         ByteArrayInputStream is = null;
+        Charset charset = Charset.forName("UTF-8");
 
         // Ensure this is a real UPM database by checking for the existance of the string "UPM" at the start of the file
         byte[] header = new byte[FILE_HEADER.getBytes().length];
@@ -132,13 +136,20 @@ public class PasswordDatabase {
             // Get the database version 
             byte dbVersion = fullDatabase[dbVersionPos];
 
-            if (dbVersion == 2) {
+            if (dbVersion == 2 || dbVersion == 3) {
                 byte[] salt = new byte[EncryptionService.SALT_LENGTH];
                 System.arraycopy(fullDatabase, saltPos, salt, 0, EncryptionService.SALT_LENGTH);
                 int encryptedBytesLength = fullDatabase.length - encryptedBytesPos;
                 byte[] encryptedBytes = new byte[encryptedBytesLength]; 
                 System.arraycopy(fullDatabase, encryptedBytesPos, encryptedBytes, 0, encryptedBytesLength);
-    
+
+                // From version 3 onwards Strings in AccountInformation are
+                // encoded using UTF-8. To ensure we can still open older dbs
+                // we default back to the then character set, the system default
+                if (dbVersion < 3) {
+                    charset = Util.defaultCharset();
+                }
+
                 //Attempt to decrypt the database information
                 encryptionService = new EncryptionService(secretKey, salt);
                 byte[] decryptedBytes = encryptionService.decrypt(encryptedBytes);
@@ -200,7 +211,7 @@ public class PasswordDatabase {
         accounts = new HashMap<String, AccountInformation>();
         try {
             while (true) { //keep loading accounts until an EOFException is thrown
-                AccountInformation ai = new AccountInformation(is);
+                AccountInformation ai = new AccountInformation(is, charset);
                 addAccount(ai);
             }
         } catch (EOFException e) {
