@@ -47,6 +47,9 @@ Features
 
 History
 -------
+   v1.12 23-Jan-2012
+     * Added support for version 3 of the password database. This version stores all strings as UTF-8.
+
    v1.11 08-Jan-2012
      * Bug fix release
 
