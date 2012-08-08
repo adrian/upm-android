@@ -65,8 +65,11 @@ public class UPMApplication extends Application {
 
         FileChannel sourceChannel = null;
         FileChannel destinationChannel = null;
+        FileInputStream is = null;
+        FileOutputStream os = null;
         try {
-            sourceChannel = new FileInputStream(source).getChannel();
+            is = new FileInputStream(source);
+            sourceChannel = is.getChannel();
 
             File destFile = null;
             if (dest.isDirectory()) {
@@ -75,7 +78,8 @@ public class UPMApplication extends Application {
                 destFile = dest;
             }
 
-            destinationChannel = new FileOutputStream(destFile).getChannel();
+            os = new FileOutputStream(destFile);
+            destinationChannel = os.getChannel();
             destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
 
             successful=true;
@@ -87,8 +91,14 @@ public class UPMApplication extends Application {
                 if (sourceChannel != null) {
                     sourceChannel.close();
                 }
+                if (is != null) {
+                    is.close();
+                }
                 if (destinationChannel != null) {
                     destinationChannel.close();
+                }
+                if (os != null) {
+                    os.close();
                 }
             } catch (IOException e) {
                 Log.e(activity.getClass().getName(), getString(R.string.file_problem), e);
