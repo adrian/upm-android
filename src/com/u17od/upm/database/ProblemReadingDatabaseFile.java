@@ -21,6 +21,7 @@
 package com.u17od.upm.database;
 
 
+@SuppressWarnings("serial")
 public class ProblemReadingDatabaseFile extends Exception {
     
     public ProblemReadingDatabaseFile(String message) {

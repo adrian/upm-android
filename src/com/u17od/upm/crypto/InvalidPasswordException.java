@@ -20,6 +20,7 @@
  */
 package com.u17od.upm.crypto;
 
+@SuppressWarnings("serial")
 public class InvalidPasswordException extends Exception {
 
 }

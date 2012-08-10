@@ -20,6 +20,7 @@
  */
 package com.u17od.upm.transport;
 
+@SuppressWarnings("serial")
 public class TransportException extends Exception {
 
     public TransportException(String message) {
