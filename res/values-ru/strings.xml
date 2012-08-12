@@ -126,4 +126,5 @@ Version: %s"</string>
     <string name="dont_forget_password_warning">Если вы забудете мастер-пароль, открыть БД будет невозможно. Разработчик UPM не сможет вам в этом помочь.</string>
     <string name="backup_message">ВАЖНО: Если удалить UPM, ваша БД будет также удалена. Поэтому необходимо регулярно сохранять резервные копии БД (доступно в меню).</string>
     <string name="no_url">Нет URL адреса в этой записи</string>
+    <string name="search_hint">Поиск записей</string>
 </resources>

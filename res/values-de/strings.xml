@@ -112,4 +112,5 @@
     <string name="new_master_password_message">Wählen Sie Ihr Hauptpasswort sorgfältig. Es sollte für andere schwer zu erraten, aber für Sie einfach zu merken, sein.</string>
     <string name="dont_forget_password_warning">Wenn Sie Ihr Hauptpasswort vergessen, gibt es keine Möglichkeit Ihre Passwort-Datenbank zu öffnen. Es gibt keine Hintertüren und somit können auch die UPM-Entwickler nicht helfen.</string>
     <string name="backup_message">HINWEIS: Wenn Sie UPM deinstallieren, wird auch Ihre Passwort-Datenbank gelöscht. Aus diesem Grund ist es wichtig, dass Sie Ihre Daten regelmäßig sichern (im Menü verfügbar).</string>
+    <string name="search_hint">Suchen Konten</string>
 </resources>
