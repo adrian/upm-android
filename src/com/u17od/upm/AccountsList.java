@@ -67,9 +67,8 @@ public class AccountsList extends ListActivity {
         case R.id.launch_url:
             launchURL(getURL(getAccount(info.targetView)));
             return true;
-        default:
-          return super.onContextItemSelected(item);
-        } 
+        }
+        return super.onContextItemSelected(item);
     }
 
     private void setClipboardText(String text) {
