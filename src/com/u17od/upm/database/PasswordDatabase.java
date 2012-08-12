@@ -319,7 +319,7 @@ public class PasswordDatabase {
 
         // Extract the header bytes
         byte[] headerBytes = new byte[FILE_HEADER.getBytes().length];
-        if (data.length > headerBytes.length) {
+        if (data != null && data.length > headerBytes.length) {
             // Check if the first n bytes are what we expect in a UPM password
             // database
             for (int i=0; i<headerBytes.length; i++) {
