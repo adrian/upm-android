@@ -133,6 +133,13 @@ public class EnterMasterPassword extends Activity implements OnClickListener {
         progressDialog = ProgressDialog.show(
                 this, "", this.getString(R.string.decrypting_db));
 
+        // In certain situations (which I'm not clear on) databaseFileToDecrypt
+        // can be null. Check here to ensure we don't end up crashing.
+        if (EnterMasterPassword.databaseFileToDecrypt == null) {
+            Log.w("EnterMasterPassword", "databaseFileToDecrypt was unexpectedly null");
+            EnterMasterPassword.databaseFileToDecrypt = Utilities.getDatabaseFile(this);
+        }
+
         // Create and execute the background task that will decrypt the db
         decryptDatabaseTask = new DecryptDatabase(this);
         decryptDatabaseTask.execute();
