@@ -47,6 +47,10 @@ Features
 
 History
 -------
+   v1.13 12-Aug-2012
+     * Added support for all API levels up to and including 16
+     * Fixed a few bugs
+
    v1.12 23-Jan-2012
      * Added support for version 3 of the password database. This version stores all strings as UTF-8.
 
