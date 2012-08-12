@@ -26,6 +26,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -102,14 +103,22 @@ public class AddEditAccount extends Activity implements OnClickListener {
                 AccountInformation accountToEdit =
                         getPasswordDatabase().getAccount(this.accountToEdit);
 
-                originalAccountName = accountToEdit.getAccountName();
+                // Populate the on-screen fields. If accountToEdit should happen
+                // to be null (for some unknown reason) close the activity to
+                // return to the FullAccountList.
+                if (accountToEdit != null) {
+                    originalAccountName = accountToEdit.getAccountName();
 
-                // Populate the form with the account to edit
-                accountName.setText(accountToEdit.getAccountName());
-                userid.setText(new String(accountToEdit.getUserId()));
-                password.setText(new String(accountToEdit.getPassword()));
-                url.setText(new String(accountToEdit.getUrl()));
-                notes.setText(new String(accountToEdit.getNotes()));
+                    // Populate the form with the account to edit
+                    accountName.setText(accountToEdit.getAccountName());
+                    userid.setText(new String(accountToEdit.getUserId()));
+                    password.setText(new String(accountToEdit.getPassword()));
+                    url.setText(new String(accountToEdit.getUrl()));
+                    notes.setText(new String(accountToEdit.getNotes()));
+                } else {
+                    Log.w("AddEditAccount", "accountToEdit was unexpectedly null");
+                    this.finish();
+                }
             } else { // must be add
                 setTitle(getString(R.string.add_account));
             }
