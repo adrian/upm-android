@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    
-
-<PreferenceCategory android:title="@string/shared_database_settings"><EditTextPreference android:title="@string/shared_url" android:summary="@string/shared_url_summary" android:key="shared_url" android:singleLine="true" android:inputType="textUri"/>
-
-<ListPreference android:title="@string/shared_url_auth" android:key="shared_url_auth" android:summary="@string/shared_url_auth_summary"></ListPreference>
-<EditTextPreference android:key="trusted_hostname" android:title="@string/trusted_hostname" android:summary="@string/trusted_hostname_summary"></EditTextPreference>
-</PreferenceCategory>
+  <PreferenceCategory android:title="@string/sync_settings">
+    <ListPreference android:entries="@array/sync_methods_human" android:title="@string/sync_method" android:key="sync_method"/>
+  </PreferenceCategory>
+  <PreferenceCategory android:title="@string/shared_database_settings" android:key="http_server_settings">
+    <EditTextPreference android:title="@string/shared_url" android:summary="@string/shared_url_summary" android:key="shared_url" android:singleLine="true" android:inputType="textUri"/>
+    <ListPreference android:title="@string/shared_url_auth" android:key="shared_url_auth" android:summary="@string/shared_url_auth_summary"></ListPreference>
+    <EditTextPreference android:key="trusted_hostname" android:title="@string/trusted_hostname" android:summary="@string/trusted_hostname_summary"></EditTextPreference>
+  </PreferenceCategory>
 </PreferenceScreen> 

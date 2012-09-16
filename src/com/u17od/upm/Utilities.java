@@ -23,16 +23,23 @@ package com.u17od.upm;
 import java.io.File;
 import java.util.Date;
 
-import com.u17od.upm.database.PasswordDatabase;
-
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.dropbox.client2.session.AccessTokenPair;
+import com.u17od.upm.database.PasswordDatabase;
 
 public class Utilities {
 
     public static final String DEFAULT_DATABASE_FILE = "upm.db";
-    public static final String PREFS_NAME = "UPMPrefs";
     public static final String PREFS_DB_FILE_NAME = "DB_FILE_NAME";
+
+    public static final String DROPBOX_PREFS = "DROPBOX_PREFS";
+    public static final String DROPBOX_KEY = "DROPBOX_KEY";
+    public static final String DROPBOX_SECRET = "DROPBOX_SECRET";
+    public static final String DROPBOX_DB_REV = "DROPBOX_DB_REV";
+    public static final String DROPBOX_SELECTED_FILENAME = "DROPBOX_SELECTED_FILENAME";
 
     public static File getDatabaseFile(Activity activity) {
         String dbFileName = getDatabaseFileName(activity);
@@ -44,14 +51,51 @@ public class Utilities {
     }
 
     public static String getDatabaseFileName(Activity activity) {
-        SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
+        SharedPreferences settings = activity.getSharedPreferences(Prefs.PREFS_NAME, Activity.MODE_PRIVATE);
         return settings.getString(PREFS_DB_FILE_NAME, DEFAULT_DATABASE_FILE);
     }
 
+    public static String getSyncMethod(Activity activity) {
+        UPMApplication app = (UPMApplication) activity.getApplication();
+        String remoteHTTPLocation = app.getPasswordDatabase().getDbOptions().getRemoteLocation();
+        SharedPreferences settings = activity.getSharedPreferences(Prefs.PREFS_NAME, Activity.MODE_PRIVATE);
+        return getSyncMethod(settings, remoteHTTPLocation);
+    }
+
+    /**
+     * If we've upgraded from an older version of UPM the preference
+     * 'sync.method' may not exist. In this case we should check if the
+     * database has a value for sharedURL. If it does it means the database
+     * has been configured to use "http" as the sync method
+     * @param settings
+     * @param remoteHTTPLocation
+     * @return
+     */
+    public static String getSyncMethod(SharedPreferences settings, String remoteHTTPLocation) {
+        String syncMethod = settings.getString(Prefs.SYNC_METHOD, null);
+
+        if (syncMethod == null) {
+            if (remoteHTTPLocation != null) {
+                syncMethod = Prefs.SyncMethod.HTTP;
+            } else {
+                syncMethod = Prefs.SyncMethod.DISABLED;
+            }
+        }
+
+        return syncMethod;
+    }
+
     public static void setDatabaseFileName(String dbFileName, Activity activity) {
-        SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
+        SharedPreferences settings = activity.getSharedPreferences(Prefs.PREFS_NAME, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(PREFS_DB_FILE_NAME, dbFileName);
+        editor.commit();
+    }
+
+    public static void setSyncMethod(String syncMethod, Activity activity) {
+        SharedPreferences settings = activity.getSharedPreferences(Prefs.PREFS_NAME, Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(Prefs.SYNC_METHOD, syncMethod);
         editor.commit();
     }
 
@@ -69,6 +113,47 @@ public class Utilities {
         }
 
         return syncRequired;
+    }
+
+    public static AccessTokenPair getDropboxAccessTokenPair(Context context) {
+        SharedPreferences settings =
+            context.getSharedPreferences(DROPBOX_PREFS, Context.MODE_PRIVATE);
+        String dropboxKey = settings.getString(DROPBOX_KEY, null);
+        String dropboxSecret = settings.getString(DROPBOX_SECRET, null);
+        AccessTokenPair accessTokenPair = null;
+        if (dropboxKey != null && dropboxSecret != null) {
+            accessTokenPair = new AccessTokenPair(dropboxKey, dropboxSecret);
+        }
+        return accessTokenPair;
+    }
+
+    public static void setDropboxAccessTokenPair(Context context, AccessTokenPair accessTokenPair) {
+       SharedPreferences settings = context.getSharedPreferences(DROPBOX_PREFS, Context.MODE_PRIVATE);
+       SharedPreferences.Editor editor = settings.edit();
+       editor.putString(DROPBOX_KEY, accessTokenPair.key);
+       editor.putString(DROPBOX_SECRET, accessTokenPair.secret);
+       editor.commit();
+     }
+
+    public static void clearDropboxAccessTokenPair(Context context) {
+        SharedPreferences settings = context.getSharedPreferences(DROPBOX_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.remove(DROPBOX_KEY);
+        editor.remove(DROPBOX_SECRET);
+        editor.commit();
+      }
+
+    public static void setConfig(Context context, String fileName, String keyName, String value) {
+        SharedPreferences settings = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(keyName, value);
+        editor.commit();
+    }
+
+    public static String getConfig(Context context, String fileName, String keyName) {
+        SharedPreferences settings =
+            context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+        return settings.getString(keyName, null);
     }
 
 }

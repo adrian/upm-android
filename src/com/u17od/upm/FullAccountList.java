@@ -25,23 +25,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.security.GeneralSecurityException;
-import java.util.Date;
 
-import javax.crypto.SecretKey;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -55,13 +47,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.u17od.upm.crypto.InvalidPasswordException;
-import com.u17od.upm.database.AccountInformation;
-import com.u17od.upm.database.PasswordDatabase;
-import com.u17od.upm.database.ProblemReadingDatabaseFile;
-import com.u17od.upm.transport.HTTPTransport;
-import com.u17od.upm.transport.TransportException;
-
 public class FullAccountList extends AccountsList {
 
     private static final int CONFIRM_RESTORE_DIALOG = 0;
@@ -69,15 +54,11 @@ public class FullAccountList extends AccountsList {
     private static final int DIALOG_ABOUT = 2;
     private static final int CONFIRM_DELETE_DB_DIALOG = 3;
     private static final int IMPORT_CERT_DIALOG = 4;
-    
-    private static final int ENTER_PW_REQUEST_CODE = 222;
 
     public static final int RESULT_EXIT = 0;
     public static final int RESULT_ENTER_PW = 1;
 
     public static final String CERT_FILE_NAME = "upm.cer";
-
-    private File downloadedDatabaseFile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,16 +71,14 @@ public class FullAccountList extends AccountsList {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         switch(requestCode) {
-            case ENTER_PW_REQUEST_CODE:
-                if (resultCode == Activity.RESULT_CANCELED) {
-                    UIUtilities.showToast(this, R.string.enter_password_cancalled);
-                } else {
-                    syncDb(EnterMasterPassword.decryptedPasswordDatabase);
-                }
-                break;
             case AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE:
             case ViewAccountDetails.VIEW_ACCOUNT_REQUEST_CODE:
                 if (resultCode == AddEditAccount.EDIT_ACCOUNT_RESULT_CODE_TRUE) {
+                    populateAccountList();
+                }
+                break;
+            case SyncDatabaseActivity.SYNC_DB_REQUEST_CODE:
+                if (resultCode == SyncDatabaseActivity.RESULT_REFRESH) {
                     populateAccountList();
                 }
                 break;
@@ -124,6 +103,17 @@ public class FullAccountList extends AccountsList {
         super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (Utilities.getSyncMethod(this).equals(Prefs.SyncMethod.DISABLED)) {
+            menu.findItem(R.id.sync).setEnabled(false);
+        } else {
+            menu.findItem(R.id.sync).setEnabled(true);
+        }
         return true;
     }
 
@@ -198,7 +188,13 @@ public class FullAccountList extends AccountsList {
                 showDialog(DIALOG_ABOUT);
                 break;
             case R.id.sync:
-                new RetrieveRemoteDatabase().execute();
+                if (Utilities.getSyncMethod(this).equals(Prefs.SyncMethod.HTTP)) {
+                    Intent i = new Intent(FullAccountList.this, SyncDatabaseViaHttpActivity.class);
+                    startActivityForResult(i, SyncDatabaseActivity.SYNC_DB_REQUEST_CODE);
+                } else if (Utilities.getSyncMethod(this).equals(Prefs.SyncMethod.DROPBOX)) {
+                    Intent i = new Intent(FullAccountList.this, SyncDatabaseViaDropboxActivity.class);
+                    startActivityForResult(i, SyncDatabaseActivity.SYNC_DB_REQUEST_CODE);
+                }
                 break;
             case R.id.preferences:
                 startActivity(new Intent(this, Prefs.class));
@@ -351,203 +347,9 @@ public class FullAccountList extends AccountsList {
         }
     }
 
-    /**
-     * Check if the downloaded DB is more recent than the current db.
-     * If it is the replace the current DB with the downloaded one and reload
-     * the accounts listview
-     * @param dbDownloadedOnSync
-     */
-    private void syncDb(PasswordDatabase dbDownloadedOnSync) {
-        UPMApplication app = (UPMApplication) getApplication();
-        if (dbDownloadedOnSync == null || dbDownloadedOnSync.getRevision() < app.getPasswordDatabase().getRevision()) {
-            new UploadDatabase().execute();
-        } else if (dbDownloadedOnSync.getRevision() > app.getPasswordDatabase().getRevision()) {
-            app.copyFile(downloadedDatabaseFile, Utilities.getDatabaseFile(this), this);
-            app.setPasswordDatabase(dbDownloadedOnSync);
-            dbDownloadedOnSync.setDatabaseFile(Utilities.getDatabaseFile(this));
-            populateAccountList(); // so that the account list is refreshed
-            UIUtilities.showToast(this, R.string.new_db_downloaded);
-        } else if (dbDownloadedOnSync.getRevision() == app.getPasswordDatabase().getRevision()) {
-            UIUtilities.showToast(this, R.string.db_uptodate);
-        }
-        app.setTimeOfLastSync(new Date());
-        if (downloadedDatabaseFile != null) {
-            downloadedDatabaseFile.delete();
-        }
-    }
-
     private void launchDonatePage() {
         Uri uri = Uri.parse(getString(R.string.donateURL));
         startActivity(new Intent(Intent.ACTION_VIEW, uri));
-    }
-
-    private class UploadDatabase extends AsyncTask<Void, Void, Integer> {
-
-        private static final int UPLOAD_OK = 0;
-        private static final int UPLOAD_ERROR = 1;
-        
-        private ProgressDialog progressDialog;
-        private String uploadError;
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(FullAccountList.this, "", getString(R.string.uploading_database));
-        }
-
-        @Override
-        protected Integer doInBackground(Void... params) {
-            int result = UPLOAD_OK;
-
-            String remoteURL = getPasswordDatabase().getDbOptions().getRemoteLocation();
-            String remoteURLUsername = null, remoteURLPassword = null;
-            String accountWithAuthDetails = getPasswordDatabase().getDbOptions().getAuthDBEntry();
-            if (accountWithAuthDetails != null && accountWithAuthDetails.length() > 0) {
-                AccountInformation account = getPasswordDatabase().getAccount(accountWithAuthDetails);
-                remoteURLUsername = new String(account.getUserId());
-                remoteURLPassword = new String(account.getPassword());
-            }
-
-            SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
-            String trustedHostname = settings.getString(Prefs.PREF_TRUSTED_HOSTNAME, "");
-
-            HTTPTransport transport = new HTTPTransport(getFileStreamPath(
-                    FullAccountList.CERT_FILE_NAME), trustedHostname, 
-                    getApplicationContext().getFilesDir());
-            String fileName = getPasswordDatabase().getDatabaseFile().getName();
-            try {
-                transport.delete(remoteURL, fileName, remoteURLUsername, remoteURLPassword);
-                transport.put(remoteURL, getPasswordDatabase().getDatabaseFile(), remoteURLUsername, remoteURLPassword);
-            } catch (TransportException e) {
-                Log.e("FullAccountList", e.getMessage(), e);
-                uploadError = e.getMessage();
-                result = UPLOAD_ERROR;
-            }
-
-            return result;
-        }
-     
-        @Override
-        protected void onPostExecute(Integer result) {
-            progressDialog.dismiss();
-            if (result == UPLOAD_OK) {
-                UIUtilities.showToast(FullAccountList.this, R.string.db_sync_complete);
-            } else {
-                String messageRes = getString(R.string.restore_file_doesnt_exist);
-                String message = String.format(messageRes, uploadError);
-                UIUtilities.showToast(FullAccountList.this, message, true);
-            }
-        }
-
-    }
-
-    private class RetrieveRemoteDatabase extends AsyncTask<Void, Void, Integer> {
-
-        private static final int PROBLEM_DOWNLOADING_DB = 1;
-        private static final int PROBLEM_READING_DB = 2;
-        private static final int PROBLEM_DECRYPTING_DB = 3;
-        private static final int NOT_UPM_DB = 4;
-        private static final int INVALID_PASSWORD = 5;
-        private static final int NO_REMOTE_DB = 6;
-
-        private ProgressDialog progressDialog;
-        private String errorMessage;
-        private PasswordDatabase downloadedDatabase;
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(FullAccountList.this, "", getString(R.string.syncing_database));
-        }
-
-        @Override
-        protected Integer doInBackground(Void... params) {
-            int errorCode = 0;
-
-            String remoteURL = getPasswordDatabase().getDbOptions().getRemoteLocation();
-            if (remoteURL.trim().equals("")) {
-                errorCode = NO_REMOTE_DB;
-            } else {
-                String remoteFileName = Utilities.getDatabaseFileName(FullAccountList.this);
-                String remoteURLUsername = null, remoteURLPassword = null;
-                String accountWithAuthDetails = getPasswordDatabase().getDbOptions().getAuthDBEntry();
-                if (accountWithAuthDetails != null && accountWithAuthDetails.length() > 0) {
-                    AccountInformation account = getPasswordDatabase().getAccount(accountWithAuthDetails);
-                    remoteURLUsername = new String(account.getUserId());
-                    remoteURLPassword = new String(account.getPassword());
-                }
-    
-                try {
-                    SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
-                    String trustedHostname = settings.getString(Prefs.PREF_TRUSTED_HOSTNAME, "");
-
-                    HTTPTransport transport = new HTTPTransport(getFileStreamPath(
-                            FullAccountList.CERT_FILE_NAME), trustedHostname, 
-                            getApplicationContext().getFilesDir());
-                    downloadedDatabaseFile = transport.getRemoteFile(remoteURL, remoteFileName, remoteURLUsername, remoteURLPassword);
-                    if (downloadedDatabaseFile != null) {
-                        SecretKey existingDBSecretKey = getPasswordDatabase().getEncryptionService().getSecretKey();
-                        downloadedDatabase = new PasswordDatabase(downloadedDatabaseFile, existingDBSecretKey);
-                    }
-                } catch (TransportException e) {
-                    Log.e("DownloadRemoteDatabase", "Problem downloading database", e);
-                    errorMessage = e.getMessage();
-                    errorCode = PROBLEM_DOWNLOADING_DB;
-                } catch (IOException e) {
-                    Log.e("DownloadRemoteDatabase", "Problem reading database", e);
-                    errorMessage = e.getMessage();
-                    errorCode = PROBLEM_READING_DB;
-                } catch (GeneralSecurityException e) {
-                    Log.e("DownloadRemoteDatabase", "Problem decrypting database", e);
-                    errorMessage = e.getMessage();
-                    errorCode = PROBLEM_DECRYPTING_DB;
-                } catch (ProblemReadingDatabaseFile e) {
-                    Log.e("DownloadRemoteDatabase", "Not a UPM database", e);
-                    errorMessage = e.getMessage();
-                    errorCode = NOT_UPM_DB;
-                } catch (InvalidPasswordException e) {
-                    errorCode = INVALID_PASSWORD;
-                }
-            }
-            
-            return errorCode;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            progressDialog.dismiss();
-
-            switch (result) {
-                case 0:
-                    syncDb(downloadedDatabase);
-                    break;
-                case NOT_UPM_DB:
-                    UIUtilities.showToast(FullAccountList.this, R.string.not_password_database, true);
-                    break;
-                case PROBLEM_DOWNLOADING_DB:
-                    UIUtilities.showToast(FullAccountList.this, 
-                            String.format(getString(R.string.problem_downloading_db), errorMessage),
-                            true);
-                    break;
-                case PROBLEM_DECRYPTING_DB:
-                    UIUtilities.showToast(FullAccountList.this,
-                            String.format(getString(R.string.problem_decrypying_db), errorMessage),
-                            true);
-                    break;
-                case PROBLEM_READING_DB:
-                    UIUtilities.showToast(FullAccountList.this,
-                            String.format(getString(R.string.problem_reading_upm_db), errorMessage),
-                            true);
-                    break;
-                case INVALID_PASSWORD:
-                    EnterMasterPassword.databaseFileToDecrypt = downloadedDatabaseFile;
-                    Intent i = new Intent(FullAccountList.this, EnterMasterPassword.class);
-                    startActivityForResult(i, ENTER_PW_REQUEST_CODE);
-                    break;
-                case NO_REMOTE_DB:
-                    UIUtilities.showToast(FullAccountList.this, R.string.no_remote_db);
-                    break;
-            }
-        }
-
     }
 
     private void deleteCertificate() {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sync_methods_human">
+        <item >@string/sync_method_disabled</item>
+        <item >@string/sync_method_dropbox</item>
+        <item >@string/sync_method_http</item>
+    </string-array>
+</resources>

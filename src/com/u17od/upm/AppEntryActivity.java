@@ -42,6 +42,7 @@ public class AppEntryActivity extends Activity {
     private static final int REQ_CODE_CREATE_DB = 1;
     private static final int REQ_CODE_DOWNLOAD_DB = 2;
     private static final int REQ_CODE_OPEN_DB = 3;
+    private static final int REQ_CODE_GET_DB_FILE = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,7 @@ public class AppEntryActivity extends Activity {
             showDialog(NEW_DATABASE_DIALOG);
         }
     }
+
 
     /**
      * We can get here from either EnterMasterPassword, CreateNewDatabase or
@@ -91,6 +93,7 @@ public class AppEntryActivity extends Activity {
             }
             break;
         case REQ_CODE_DOWNLOAD_DB:
+        case REQ_CODE_GET_DB_FILE:
             if (resultCode == RESULT_OK) {
                 Intent i = new Intent(AppEntryActivity.this, FullAccountList.class);
                 startActivityForResult(i, REQ_CODE_OPEN_DB);
@@ -156,6 +159,15 @@ public class AppEntryActivity extends Activity {
                     public void onClick(View v) {
                         Intent i = new Intent(AppEntryActivity.this, DownloadRemoteDatabase.class);
                         startActivityForResult(i, REQ_CODE_DOWNLOAD_DB);
+                    }
+                });
+
+                Button retrieveFromDropboxButton = (Button) dialog.findViewById(R.id.retrieve_from_dropbox);
+                retrieveFromDropboxButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(AppEntryActivity.this, SelectDatabaseFromDropboxActivity.class);
+                        startActivityForResult(i, REQ_CODE_GET_DB_FILE);
                     }
                 });
 

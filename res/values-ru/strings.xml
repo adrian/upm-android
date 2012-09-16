@@ -68,23 +68,17 @@ Version: %s"</string>
     <string name="new_database">Новая база данных (БД)</string>
     <string name="download">Скачать</string>
     <string name="download_remote_database">Скачать удаленно</string>
-    <string name="downloading_db">Скачивание БД...</string>
-    <string name="problem_downloading_db">"Ошибка скачивания
-
-%s"</string>
+    <string name="downloading_db">Скачивание БД…</string>
+    <string name="problem_downloading_db">Ошибка скачивания</string>
     <string name="not_password_database">Скачанный файл не является файлом БД UPM</string>
     <string name="sync">Синхронизация</string>
-    <string name="problem_decrypying_db">"Ошибка расшифровки БД
-
-%s"</string>
+    <string name="problem_decrypying_db">Ошибка расшифровки БД</string>
     <string name="enter_password_cancalled">Не указан пароль</string>
-    <string name="generic_error_with_message">"Непредвиденная ошибка...
+    <string name="generic_error_with_message">"Непредвиденная ошибка…
 
 %s"</string>
     <string name="syncing_database">Синхронизация БД</string>
-    <string name="problem_reading_upm_db">"Ошибка считывания БД...
-
-%s"</string>
+    <string name="problem_reading_upm_db">Ошибка считывания БД</string>
     <string name="new_db_downloaded">Новая БД скачана</string>
     <string name="db_uptodate">БД обновлена</string>
     <string name="preferences">Настройки</string>

@@ -44,6 +44,18 @@
                   android:label="@string/download_remote_database">
         </activity>
 
+        <activity android:name=".SelectDatabaseFromDropboxActivity"
+                  android:label="@string/dropbox_files">
+        </activity>
+
+        <activity android:name=".SyncDatabaseViaHttpActivity"
+                  android:theme="@style/Theme.Transparent">
+        </activity>
+
+        <activity android:name=".SyncDatabaseViaDropboxActivity"
+                  android:theme="@style/Theme.Transparent">
+        </activity>
+
         <activity android:name=".SearchResults"
                   android:label="@string/search_results"
                   android:launchMode="singleTop"
@@ -57,6 +69,17 @@
         </activity>
 
         <activity android:name=".Prefs" android:label="@string/settings_title"/>
+
+        <activity android:name="com.dropbox.client2.android.AuthActivity"
+                  android:launchMode="singleTask"
+                  android:configChanges="orientation|keyboard">
+            <intent-filter>
+                <data android:scheme="db-qkpfz3ar30aozp0" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
     </application>
 

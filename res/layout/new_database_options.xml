@@ -30,5 +30,12 @@
             android:text="@string/emp_open_remote_db"
             style="@android:style/Widget.Button"
             android:layout_gravity="center"/>
+
+    <Button android:id="@+id/retrieve_from_dropbox"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/retrieve_from_dropbox"
+            style="@android:style/Widget.Button"
+            android:layout_gravity="center"/>
     
 </LinearLayout>

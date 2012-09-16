@@ -333,6 +333,18 @@ public class PasswordDatabase {
         return isPasswordDatabase;
     }
 
+    public static boolean isPasswordDatabase(File file) throws IOException {
+        boolean isPasswordDatabase = false;
+
+        // Extract the header bytes
+        byte[] headerBytes = new byte[FILE_HEADER.getBytes().length];
+        if (file != null && file.length() > headerBytes.length) {
+            byte[] data = Util.getBytesFromFile(file, headerBytes.length + 1);
+            return isPasswordDatabase(data);
+        }
+
+        return isPasswordDatabase;
+    }
 
     public EncryptionService getEncryptionService () {
         return encryptionService;
