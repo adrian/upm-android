@@ -120,10 +120,12 @@ public class AccountsList extends ListActivity {
         if (Utilities.isSyncRequired(this)) {
             UIUtilities.showToast(this, R.string.sync_required);
         } else {
-            Intent i = new Intent(AccountsList.this, AddEditAccount.class);
-            i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
-            i.putExtra(AddEditAccount.ACCOUNT_TO_EDIT, ai.getAccountName());
-            startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
+            if (ai != null) {
+                Intent i = new Intent(AccountsList.this, AddEditAccount.class);
+                i.putExtra(AddEditAccount.MODE, AddEditAccount.EDIT_MODE);
+                i.putExtra(AddEditAccount.ACCOUNT_TO_EDIT, ai.getAccountName());
+                startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
+            }
         }
     }
 
