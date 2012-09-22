@@ -121,4 +121,15 @@ Version: %s"</string>
     <string name="backup_message">ВАЖНО: Если удалить UPM, ваша БД будет также удалена. Поэтому необходимо регулярно сохранять резервные копии БД (доступно в меню).</string>
     <string name="no_url">Нет URL адреса в этой записи</string>
     <string name="search_hint">Поиск записей</string>
+    <string name="retrieve_from_dropbox">Retrieve From Dropbox</string>
+    <string name="dropbox_problem">Problem communicating with Dropbox</string>
+    <string name="dropbox_files">Dropbox Files</string>
+    <string name="dropbox_get_file_list">Retrieving Filenames From Dropbox…</string>
+    <string name="sync_method">Sync Method</string>
+    <string name="sync_method_disabled">Disabled</string>
+    <string name="sync_method_dropbox">Dropbox</string>
+    <string name="sync_method_http">HTTP Server</string>
+    <string name="sync_settings">Sync Settings</string>
+    <string name="problem_uploading">Problem Uploading Database</string>
+    <string name="no_database_files">No Database files on Dropbox</string>
 </resources>

@@ -113,4 +113,15 @@
     <string name="dont_forget_password_warning">Wenn Sie Ihr Hauptpasswort vergessen, gibt es keine Möglichkeit Ihre Passwort-Datenbank zu öffnen. Es gibt keine Hintertüren und somit können auch die UPM-Entwickler nicht helfen.</string>
     <string name="backup_message">HINWEIS: Wenn Sie UPM deinstallieren, wird auch Ihre Passwort-Datenbank gelöscht. Aus diesem Grund ist es wichtig, dass Sie Ihre Daten regelmäßig sichern (im Menü verfügbar).</string>
     <string name="search_hint">Suchen Konten</string>
+    <string name="retrieve_from_dropbox">Retrieve From Dropbox</string>
+    <string name="dropbox_problem">Problem communicating with Dropbox</string>
+    <string name="dropbox_files">Dropbox Files</string>
+    <string name="dropbox_get_file_list">Retrieving Filenames From Dropbox…</string>
+    <string name="sync_method">Sync Method</string>
+    <string name="sync_method_disabled">Disabled</string>
+    <string name="sync_method_dropbox">Dropbox</string>
+    <string name="sync_method_http">HTTP Server</string>
+    <string name="sync_settings">Sync Settings</string>
+    <string name="problem_uploading">Problem Uploading Database</string>
+    <string name="no_database_files">No Database files on Dropbox</string>
 </resources>
