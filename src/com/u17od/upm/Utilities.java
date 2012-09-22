@@ -26,6 +26,7 @@ import java.util.Date;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 
 import com.dropbox.client2.session.AccessTokenPair;
 import com.u17od.upm.database.PasswordDatabase;
@@ -40,6 +41,19 @@ public class Utilities {
     public static final String DROPBOX_SECRET = "DROPBOX_SECRET";
     public static final String DROPBOX_DB_REV = "DROPBOX_DB_REV";
     public static final String DROPBOX_SELECTED_FILENAME = "DROPBOX_SELECTED_FILENAME";
+
+    public static class VERSION_CODES {
+        public static final int HONEYCOMB = 11;
+    }
+
+    public static class VERSION {
+        /**
+         * The user-visible SDK version of the framework; its possible
+         * values are defined in {@link Build.VERSION_CODES}.
+         */
+        public static final int SDK_INT = Integer.parseInt(System.getProperty(
+                "ro.build.version.sdk", "0"));
+    }
 
     public static File getDatabaseFile(Activity activity) {
         String dbFileName = getDatabaseFileName(activity);
