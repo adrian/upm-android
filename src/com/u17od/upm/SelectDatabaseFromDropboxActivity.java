@@ -81,7 +81,7 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (progressDialog.isShowing()) {
+        if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
     }

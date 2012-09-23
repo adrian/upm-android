@@ -140,7 +140,9 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
 
         @Override
         protected void onPostExecute(Integer result) {
-            progressDialog.dismiss();
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+            }
 
             switch (result) {
                 case 0:
