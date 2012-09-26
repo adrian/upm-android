@@ -9,7 +9,6 @@ import javax.crypto.SecretKey;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.u17od.upm.crypto.InvalidPasswordException;
@@ -34,12 +33,6 @@ public abstract class SyncDatabaseActivity extends Activity {
 
     protected abstract void uploadDatabase();
     protected abstract void downloadDatabase();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        downloadDatabase();
-    }
 
     protected void decryptDatabase() {
         SecretKey existingDBSecretKey = getPasswordDatabase().getEncryptionService().getSecretKey();

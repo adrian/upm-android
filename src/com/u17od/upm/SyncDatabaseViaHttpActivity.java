@@ -18,6 +18,12 @@ import com.u17od.upm.transport.TransportException;
 public class SyncDatabaseViaHttpActivity extends SyncDatabaseActivity {
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        downloadDatabase();
+    }
+
+    @Override
     protected void downloadDatabase() {
         new RetrieveRemoteDatabaseFromHTTP().execute();
     }

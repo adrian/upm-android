@@ -109,10 +109,19 @@ public class FullAccountList extends AccountsList {
     @Override
     public boolean onPrepareOptionsMenu (Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (Utilities.getSyncMethod(this).equals(Prefs.SyncMethod.DISABLED)) {
-            menu.findItem(R.id.sync).setEnabled(false);
+        if (getPasswordDatabase() == null) {
+            // If the UPM process was restarted since AppEntryActivity was last
+            // run then databaseFileToDecrypt won't be set so set it here.
+            EnterMasterPassword.databaseFileToDecrypt = Utilities.getDatabaseFile(this);
+
+            setResult(RESULT_ENTER_PW);
+            finish();
         } else {
-            menu.findItem(R.id.sync).setEnabled(true);
+            if (Utilities.getSyncMethod(this).equals(Prefs.SyncMethod.DISABLED)) {
+                menu.findItem(R.id.sync).setEnabled(false);
+            } else {
+                menu.findItem(R.id.sync).setEnabled(true);
+            }
         }
         return true;
     }

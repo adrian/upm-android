@@ -21,26 +21,68 @@ import com.dropbox.client2.session.AppKeyPair;
 
 public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
 
+    private static final String RETURNING_FROM_DB_AUTH = "retDBAuth";
+
     private DropboxAPI<AndroidAuthSession> mDBApi;
+
+    private boolean returningFromDropboxAuthentication;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null){
+            returningFromDropboxAuthentication =
+                    savedInstanceState.getBoolean(
+                            RETURNING_FROM_DB_AUTH, false);
+        }
+        prepareDropboxAPI();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (returningFromDropboxAuthentication) {
+            // We'll reach here if we're returning from the Dropbox
+            // authentication activity. If auth was successful then download
+            // the database file. Otherwise leave the activity and abort the
+            // sync.
+            if (mDBApi.getSession().authenticationSuccessful()) {
+                // MANDATORY call to complete auth.
+                // Sets the access token on the session
+                mDBApi.getSession().finishAuthentication();
+
+                // store the tokens so we don't need to authenticate again
+                // during this session
+                AccessTokenPair tokens = mDBApi.getSession().getAccessTokenPair();
+                Utilities.setDropboxAccessTokenPair(this, tokens);
+
+                downloadDatabase();
+            } else {
+                finish();
+            }
+        } else {
+            // We'll reach here if we're entering the activity after selecting
+            // the "Sync" menu option.
+            downloadDatabase();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(RETURNING_FROM_DB_AUTH,
+                returningFromDropboxAuthentication);
+    }
+
+    private void prepareDropboxAPI() {
         // Prepare Dropbox Session objects
         AppKeyPair appKeys = new AppKeyPair(DropboxConstants.APP_KEY, DropboxConstants.APP_SECRET);
         AndroidAuthSession session = new AndroidAuthSession(appKeys, DropboxConstants.ACCESS_TYPE);
         mDBApi = new DropboxAPI<AndroidAuthSession>(session);
-
-        // Attempt to download the list of db files from Dropbox. If we have an
-        // access token then use it. If not then start the authentication
-        // process.
         AccessTokenPair accessTokenPair = Utilities.getDropboxAccessTokenPair(this);
-        if (accessTokenPair == null) {
-            mDBApi.getSession().startAuthentication(this);
-        } else {
+        if (accessTokenPair != null) {
             mDBApi.getSession().setAccessTokenPair(accessTokenPair);
         }
-
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -51,25 +93,6 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
     @Override
     protected void downloadDatabase() {
         new DownloadDatabaseTask().execute();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mDBApi != null && mDBApi.getSession().authenticationSuccessful()) {
-            // MANDATORY call to complete auth.
-            // Sets the access token on the session
-            mDBApi.getSession().finishAuthentication();
-
-            // store the tokens so we don't need to authenticate again
-            // during this session
-            AccessTokenPair tokens = mDBApi.getSession().getAccessTokenPair();
-            Utilities.setDropboxAccessTokenPair(this, tokens);
-
-            // Download database file from Dropbox
-            new DownloadDatabaseTask().execute();
-        }
     }
 
     private class DownloadDatabaseTask extends AsyncTask<Void, Void, Integer> {
@@ -83,6 +106,9 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
         protected void onPreExecute() {
             progressDialog = ProgressDialog.show(SyncDatabaseViaDropboxActivity.this,
                     "", getString(R.string.downloading_db));
+            if (mDBApi == null) {
+                prepareDropboxAPI();
+            }
         }
 
         @Override
@@ -140,9 +166,7 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
 
         @Override
         protected void onPostExecute(Integer result) {
-            if (progressDialog != null) {
-                progressDialog.dismiss();
-            }
+            progressDialog.dismiss();
 
             switch (result) {
                 case 0:
@@ -154,6 +178,7 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
                     finish();
                     break;
                 case ERROR_DROPBOX_UNLINKED:
+                    returningFromDropboxAuthentication = true;
                     mDBApi.getSession().startAuthentication(SyncDatabaseViaDropboxActivity.this);
                     break;
                 case ERROR_DROPBOX_ERROR:
@@ -178,6 +203,9 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
             progressDialog = ProgressDialog.show(
                     SyncDatabaseViaDropboxActivity.this, "",
                     getString(R.string.uploading_database));
+            if (mDBApi == null) {
+                prepareDropboxAPI();
+            }
         }
 
         @Override

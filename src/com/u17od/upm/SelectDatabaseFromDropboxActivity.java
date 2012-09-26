@@ -45,24 +45,18 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
         AppKeyPair appKeys = new AppKeyPair(DropboxConstants.APP_KEY, DropboxConstants.APP_SECRET);
         AndroidAuthSession session = new AndroidAuthSession(appKeys, DropboxConstants.ACCESS_TYPE);
         mDBApi = new DropboxAPI<AndroidAuthSession>(session);
-
-        // Attempt to download the list of db files from Dropbox. If we have an
-        // access token then use it. If not then start the authentication
-        // process.
         AccessTokenPair accessTokenPair = Utilities.getDropboxAccessTokenPair(this);
-        if (accessTokenPair == null) {
-            mDBApi.getSession().startAuthentication(this);
-        } else {
+        if (accessTokenPair != null) {
             mDBApi.getSession().setAccessTokenPair(accessTokenPair);
-            new DownloadListOfFilesTask().execute();
         }
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        // If we're returning from a successful Dropbox authentication then
+        // update the session and store the access token pair
         if (mDBApi != null && mDBApi.getSession().authenticationSuccessful()) {
             // MANDATORY call to complete auth.
             // Sets the access token on the session
@@ -72,10 +66,11 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
             // during this session
             AccessTokenPair tokens = mDBApi.getSession().getAccessTokenPair();
             Utilities.setDropboxAccessTokenPair(this, tokens);
-
-            // Download filenames from Dropbox and populate the ListView
-            new DownloadListOfFilesTask().execute();
         }
+
+        // Launch the async task where we'll download database filenames from
+        // Dropbox and populate the ListView
+        new DownloadListOfFilesTask().execute();
     }
 
     @Override
