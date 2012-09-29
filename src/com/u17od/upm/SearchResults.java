@@ -46,7 +46,12 @@ public class SearchResults extends AccountsList {
     @Override
     public void onResume() {
         super.onResume();
-        doSearch();
+        // If the pw database is null then just close the activity.
+        if (getPasswordDatabase() == null) {
+            finish();
+        } else {
+            doSearch();
+        }
     }
 
     private void doSearch() {
