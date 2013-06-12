@@ -47,10 +47,6 @@ Features
 
 History
 -------
-   v1.14 28-Oct-2012
-     * Added support for syncing to Dropbox
-     * Hide account details in screenshots and task manager
-
    v1.13 12-Aug-2012
      * Added support for all API levels up to and including 16
      * Fixed a few bugs
