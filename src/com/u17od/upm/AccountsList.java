@@ -30,6 +30,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -37,7 +39,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import com.u17od.upm.database.AccountInformation;
 import com.u17od.upm.database.PasswordDatabase;
 
-public class AccountsList extends ListActivity {
+public class AccountsList extends ListActivity implements OnItemClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -139,5 +141,10 @@ public class AccountsList extends ListActivity {
     protected PasswordDatabase getPasswordDatabase() {
         return ((UPMApplication) getApplication()).getPasswordDatabase();
     }
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
+		onListItemClick(null, v, position, id);
+	}
 
 }
