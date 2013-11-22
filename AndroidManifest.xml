@@ -56,18 +56,6 @@
                   android:theme="@style/Theme.Transparent">
         </activity>
 
-        <activity android:name=".SearchResults"
-                  android:label="@string/search_results"
-                  android:launchMode="singleTop"
-                  android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-            </intent-filter>
-
-            <meta-data android:name="android.app.searchable"
-                       android:resource="@xml/searchable"/>
-        </activity>
-
         <activity android:name=".Prefs" android:label="@string/settings_title"/>
 
         <activity android:name="com.dropbox.client2.android.AuthActivity"

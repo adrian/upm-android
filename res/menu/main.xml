@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:icon="@android:drawable/ic_search_category_default"
-          android:alphabeticShortcut="s"
-          android:title="@string/search"
-          android:id="@+id/search">
-    </item>
 
     <item android:title="@string/add" android:id="@+id/add" android:alphabeticShortcut="a" android:icon="@android:drawable/ic_menu_add">
     </item>
