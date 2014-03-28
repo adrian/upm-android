@@ -31,6 +31,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.u17od.upm.database.PasswordDatabase;
@@ -197,6 +198,10 @@ public class Prefs extends PreferenceActivity implements OnPreferenceChangeListe
         return true;
     }
 
+    private UPMApplication getUPMApplication() {
+        return (UPMApplication) getApplication();
+    }
+
     @Override
     protected void onStop(){
         super.onStop();
@@ -210,6 +215,11 @@ public class Prefs extends PreferenceActivity implements OnPreferenceChangeListe
 
        // Commit the edits!
        editor.commit();
+
+       // Ask the BackupManager to backup the database using
+       // Google's cloud backup service.
+       Log.i("Prefs", "Calling BackupManager().dataChanged()");
+       getUPMApplication().getBackupManager().dataChanged();
      }
 
 }

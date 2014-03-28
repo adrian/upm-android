@@ -64,8 +64,8 @@ public class Utilities {
         }
     }
 
-    public static String getDatabaseFileName(Activity activity) {
-        SharedPreferences settings = activity.getSharedPreferences(Prefs.PREFS_NAME, Activity.MODE_PRIVATE);
+    public static String getDatabaseFileName(Context context) {
+        SharedPreferences settings = context.getSharedPreferences(Prefs.PREFS_NAME, Activity.MODE_PRIVATE);
         return settings.getString(PREFS_DB_FILE_NAME, DEFAULT_DATABASE_FILE);
     }
 

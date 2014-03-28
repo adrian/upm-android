@@ -29,6 +29,7 @@ import com.u17od.upm.database.PasswordDatabase;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.backup.BackupManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -53,7 +54,14 @@ public class SaveDatabaseAsyncTask extends AsyncTask<PasswordDatabase, Void, Str
         String message = null;
 
         try {
-            params[0].save();
+            synchronized (UPMApplication.sDataLock) {
+                params[0].save();
+            }
+
+            // Ask the BackupManager to backup the database using
+            // Google's cloud backup service.
+            Log.i("SaveDatabaseAsyncTask", "Calling BackupManager().dataChanged()");
+            ((UPMApplication) activity.getApplication()).getBackupManager().dataChanged();
         } catch (IllegalBlockSizeException e) {
             Log.e("SaveDatabaseAsyncTask", e.getMessage(), e);
             message = String.format(activity.getString(R.string.problem_saving_db), e.getMessage());
