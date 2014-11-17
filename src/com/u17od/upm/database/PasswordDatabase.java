@@ -256,15 +256,20 @@ public class PasswordDatabase {
 
         //Now encrypt the database data
         byte[] encryptedData = encryptionService.encrypt(dataToEncrypt);
-        
-        //Write the salt and the encrypted data out to the database file
-        FileOutputStream fos = new FileOutputStream(databaseFile);
+
+        // Write the salt and the encrypted data out to a temporary file
+        File tempFile = File.createTempFile("upmdb", null);
+        FileOutputStream fos = new FileOutputStream(tempFile);
         fos.write(FILE_HEADER.getBytes());
         fos.write(DB_VERSION);
         fos.write(encryptionService.getSalt());
         fos.write(encryptedData);
         fos.close();
 
+        // Rename the tempfile to the real database file
+        // The reason for this is to protect against the write thread being
+        // terminated thus corrupting the file.
+        tempFile.renameTo(databaseFile);
     }
 
     
