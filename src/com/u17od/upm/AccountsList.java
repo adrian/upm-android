@@ -38,6 +38,9 @@ import com.u17od.upm.database.AccountInformation;
 import com.u17od.upm.database.PasswordDatabase;
 
 public class AccountsList extends ListActivity {
+    private static final int DELETE_DIALOG = 5;
+    public static AccountInformation account;
+    private int editAccountResultCode = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,13 @@ public class AccountsList extends ListActivity {
         case R.id.launch_url:
             launchURL(getURL(getAccount(info.targetView)));
             return true;
+        case R.id.delete:
+            if (Utilities.isSyncRequired(this)) {
+                UIUtilities.showToast(this, R.string.sync_required);
+            } else {
+                showDialog(DELETE_DIALOG);
+            }
+            break;
         }
         return super.onContextItemSelected(item);
     }
