@@ -18,8 +18,6 @@ put "${Authentication Database Entry}"
     put $_."URL"
     put $_."Notes"
 }
-[string]::Join(" ",$stream.ToArray())
-[System.Text.Encoding]::ASCII.GetString($stream.ToArray())
 $cipher=(New-Object Org.BouncyCastle.Crypto.Paddings.PaddedBufferedBlockCipher (New-Object Org.BouncyCastle.Crypto.Modes.CbcBlockCipher (New-Object Org.BouncyCastle.Crypto.Engines.AesEngine)),(New-Object Org.BouncyCastle.Crypto.Paddings.Pkcs7Padding))
 $generator=New-Object Org.BouncyCastle.Crypto.Generators.Pkcs12ParametersGenerator (New-Object Org.BouncyCastle.Crypto.Digests.Sha256Digest)
 $generator.Init([Org.BouncyCastle.Crypto.Generators.Pkcs12ParametersGenerator]::Pkcs12PasswordToBytes($password.ToCharArray()),$salt,20)
