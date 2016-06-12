@@ -85,14 +85,14 @@ public class HTTPTransport extends Transport {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             baos.write("--".getBytes());
             baos.write(BOUNDRY.getBytes());
-            baos.write("\n".getBytes());
+            baos.write("\r\n".getBytes());
             baos.write(contentDisposition.getBytes());
-            baos.write("\n".getBytes());
+            baos.write("\r\n".getBytes());
             baos.write(contentType.getBytes());
-            baos.write("\n".getBytes());
-            baos.write("\n".getBytes());
+            baos.write("\r\n".getBytes());
+            baos.write("\r\n".getBytes());
             baos.write(Util.getBytesFromFile(file));
-            baos.write("\n".getBytes());
+            baos.write("\r\n".getBytes());
             baos.write("--".getBytes());
             baos.write(BOUNDRY.getBytes());
             baos.write("--".getBytes());
@@ -166,7 +166,6 @@ public class HTTPTransport extends Transport {
                 conn.setRequestProperty ("Authorization", createAuthenticationString(username, password));
             }
 
-            conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setUseCaches(false);
             conn.setRequestMethod("GET");
