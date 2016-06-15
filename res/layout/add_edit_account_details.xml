@@ -63,7 +63,7 @@
                   android:layout_height="wrap_content"
                   android:inputType="textMultiLine"
                   android:layout_marginBottom="10dip"
-                  android:lines="3"/>
+                  android:minLines="@integer/notes_min_lines"/>
 
         </LinearLayout>
 
