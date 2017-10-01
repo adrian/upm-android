@@ -1,16 +1,10 @@
 package com.u17od.upm;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,34 +14,43 @@ import android.widget.ListView;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.exception.DropboxException;
-import com.dropbox.client2.exception.DropboxUnlinkedException;
-import com.dropbox.client2.session.AccessTokenPair;
-import com.dropbox.client2.session.AppKeyPair;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.InvalidAccessTokenException;
+import com.dropbox.core.android.Auth;
+import com.dropbox.core.v2.files.ListFolderResult;
+import com.dropbox.core.v2.files.Metadata;
 import com.u17od.upm.database.PasswordDatabase;
+import com.u17od.upm.dropbox.DropboxClientFactory;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static com.u17od.upm.DropboxConstants.DROPBOX_ACCESS_TOKEN;
 
 public class SelectDatabaseFromDropboxActivity extends ListActivity {
 
-    public static final String EXTRA_DB_FILENAMES = "EXTRA_DB_FILENAMES";
+    private static final String TAG = SelectDatabaseFromDropboxActivity.class.getName();
+    private SharedPreferences prefs;
 
     private static final int ENTER_PW_REQUEST_CODE = 111;
 
     private DropboxAPI<AndroidAuthSession> mDBApi;
     private ProgressDialog progressDialog;
 
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dropbox_file_list);
 
-        // Prepare Dropbox Session objects
-        AppKeyPair appKeys = new AppKeyPair(DropboxConstants.APP_KEY, DropboxConstants.APP_SECRET);
-        AndroidAuthSession session = new AndroidAuthSession(appKeys, DropboxConstants.ACCESS_TYPE);
-        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
-        AccessTokenPair accessTokenPair = Utilities.getDropboxAccessTokenPair(this);
-        if (accessTokenPair != null) {
-            mDBApi.getSession().setAccessTokenPair(accessTokenPair);
+        prefs = getSharedPreferences(Utilities.DROPBOX_PREFS, MODE_PRIVATE);
+        String dropboxAccessToken = prefs.getString(DROPBOX_ACCESS_TOKEN, null);
+        Log.i("onCreate", "dropboxAccessToken=" + dropboxAccessToken);
+
+        if (dropboxAccessToken == null) {
+            Auth.startOAuth2Authentication(SelectDatabaseFromDropboxActivity.this, DropboxConstants.APP_KEY);
         }
     }
 
@@ -55,22 +58,25 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
     protected void onResume() {
         super.onResume();
 
-        // If we're returning from a successful Dropbox authentication then
-        // update the session and store the access token pair
-        if (mDBApi != null && mDBApi.getSession().authenticationSuccessful()) {
-            // MANDATORY call to complete auth.
-            // Sets the access token on the session
-            mDBApi.getSession().finishAuthentication();
+        String dropboxAccessToken = prefs.getString(DROPBOX_ACCESS_TOKEN, null);
+        Log.i("onResume", "dropboxAccessToken=" + dropboxAccessToken);
 
-            // store the tokens so we don't need to authenticate again
-            // during this session
-            AccessTokenPair tokens = mDBApi.getSession().getAccessTokenPair();
-            Utilities.setDropboxAccessTokenPair(this, tokens);
+        if (dropboxAccessToken == null) {
+            dropboxAccessToken = Auth.getOAuth2Token();
+            Log.i("onResume", "dropboxAccessToken after getOAuth2Token=" + dropboxAccessToken);
+            if (dropboxAccessToken != null) {
+                prefs.edit().putString(DROPBOX_ACCESS_TOKEN, dropboxAccessToken).commit();
+                DropboxClientFactory.init(dropboxAccessToken);
+                // Launch the async task where we'll download database filenames from
+                // Dropbox and populate the ListView
+                new DownloadListOfFilesTask().execute();
+            }
+        } else {
+            DropboxClientFactory.init(dropboxAccessToken);
+            // Launch the async task where we'll download database filenames from
+            // Dropbox and populate the ListView
+            new DownloadListOfFilesTask().execute();
         }
-
-        // Launch the async task where we'll download database filenames from
-        // Dropbox and populate the ListView
-        new DownloadListOfFilesTask().execute();
     }
 
     @Override
@@ -119,15 +125,15 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
         String selectedFileName = (String) lv.getItemAtPosition(position);
         Utilities.setConfig(this, Utilities.DROPBOX_PREFS,
                 Utilities.DROPBOX_SELECTED_FILENAME, selectedFileName);
-        new DownloadFileTask().execute(selectedFileName);
+        new DownloadDatabaseTask().execute(selectedFileName);
     }
 
     private class DownloadListOfFilesTask extends AsyncTask<Void, Void, Integer> {
 
-        private static final int ERROR_CODE_DB_UNLINKED = 1;
-        private static final int ERROR_CODE_DB_EXCEPTION = 2;
+        private static final int ERROR_DROPBOX = 1;
+        private static final int ERROR_DROPBOX_INVALID_TOKEN = 2;
 
-        private List<DropboxAPI.Entry> dropBoxEntries;
+        private List<Metadata> dropBoxEntries;
 
         protected void onPreExecute() {
             progressDialog = ProgressDialog.show(SelectDatabaseFromDropboxActivity.this,
@@ -137,16 +143,16 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
         @Override
         protected Integer doInBackground(Void... params) {
             try {
-                DropboxAPI.Entry rootMetadata = mDBApi.metadata("/", 100, null, true, null);
-                dropBoxEntries = rootMetadata.contents;
+                ListFolderResult filderContents =
+                        DropboxClientFactory.getClient().files().listFolder("");
+                dropBoxEntries = filderContents.getEntries();
                 return 0;
-            } catch (DropboxUnlinkedException e) {
-                Log.e("DropboxDownloadActivity", "Dropbox Unlinked Exception", e);
-                Utilities.clearDropboxAccessTokenPair(SelectDatabaseFromDropboxActivity.this);
-                return ERROR_CODE_DB_UNLINKED;
-            } catch (DropboxException e) {
-                Log.e("AppEntryActivity", "Problem communicating with Dropbox", e);
-                return ERROR_CODE_DB_EXCEPTION;
+            } catch (InvalidAccessTokenException e) {
+                Log.e(TAG, "InvalidAccessTokenException downloading database", e);
+                return ERROR_DROPBOX_INVALID_TOKEN;
+            } catch (DbxException e) {
+                Log.e(TAG, "DbxException downloading database", e);
+                return ERROR_DROPBOX;
             }
         }
 
@@ -161,12 +167,16 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
                             android.R.layout.simple_list_item_1,
                             dropboxFiles(dropBoxEntries)));
                     break;
-                case ERROR_CODE_DB_UNLINKED:
-                    mDBApi.getSession().startAuthentication(SelectDatabaseFromDropboxActivity.this);
+                case ERROR_DROPBOX_INVALID_TOKEN:
+                    prefs.edit().remove(DROPBOX_ACCESS_TOKEN).commit();
+                    UIUtilities.showToast(SelectDatabaseFromDropboxActivity.this,
+                            R.string.dropbox_token_problem, true);
+                    finish();
                     break;
-                case ERROR_CODE_DB_EXCEPTION:
+                case ERROR_DROPBOX:
                     UIUtilities.showToast(SelectDatabaseFromDropboxActivity.this,
                             R.string.dropbox_problem, true);
+                    finish();
                     break;
             }
         }
@@ -176,12 +186,10 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
          * Extract the filenames from the given list of Dropbox Entries and return
          * a simple String array.
          */
-        private List<String> dropboxFiles(List<DropboxAPI.Entry> dpEntries) {
+        private List<String> dropboxFiles(List<Metadata> dpEntries) {
             List<String> fileNames = new ArrayList<String>();
-            for (DropboxAPI.Entry entry : dpEntries) {
-                if (!entry.isDir) {
-                    fileNames.add(entry.fileName());
-                }
+            for (Metadata entry : dpEntries) {
+                fileNames.add(entry.getName());
             }
             return fileNames;
         }
@@ -189,11 +197,15 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
     }
 
 
-    private class DownloadFileTask extends AsyncTask<String, Void, Integer> {
+    private class DownloadDatabaseTask extends AsyncTask<String, Void, Integer> {
 
-        private static final int ERROR_IO_ERROR = 1;
-        private static final int ERROR_DROPBOX_ERROR = 2;
-        private static final int NOT_UPM_DB = 3;
+        private static final String TAG = "DownloadDatabaseTask";
+        private static final int ERROR_IO = 1;
+        private static final int ERROR_DROPBOX = 2;
+        private static final int ERROR_DROPBOX_INVALID_TOKEN = 3;
+        private static final int NOT_UPM_DB = 4;
+
+        private ProgressDialog progressDialog;
 
         protected void onPreExecute() {
             progressDialog = ProgressDialog.show(SelectDatabaseFromDropboxActivity.this,
@@ -207,7 +219,10 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
                 // Download the file and save it to UPM's internal files area
                 File file = new File(getFilesDir(), fileName[0]);
                 outputStream = new FileOutputStream(file);
-                mDBApi.getFile(fileName[0], null, outputStream, null);
+                DropboxClientFactory.getClient()
+                        .files()
+                        .download("/" + fileName[0])
+                        .download(outputStream);
 
                 // Check this is a UPM database file
                 if (!PasswordDatabase.isPasswordDatabase(file)) {
@@ -216,16 +231,22 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
                 EnterMasterPassword.databaseFileToDecrypt = file;
 
                 return 0;
-            } catch (DropboxException e) {
-                return ERROR_DROPBOX_ERROR;
             } catch (IOException e) {
-                return ERROR_IO_ERROR;
+                Log.e(TAG, "IOException downloading database", e);
+                return ERROR_IO;
+            } catch (InvalidAccessTokenException e) {
+                Log.e(TAG, "InvalidAccessTokenException downloading database", e);
+                return ERROR_DROPBOX_INVALID_TOKEN;
+            } catch (DbxException e) {
+                Log.e(TAG, "DbxException downloading database", e);
+                return ERROR_DROPBOX;
             } finally {
                 if (outputStream != null) {
                     try {
                         outputStream.close();
                     } catch (IOException e) {
-                        return ERROR_IO_ERROR;
+                        Log.e(TAG, "IOException closing database file stream", e);
+                        return ERROR_IO;
                     }
                 }
             }
@@ -238,27 +259,34 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
             Intent i = null;
             switch (result) {
                 case 0:
-
                     // Call up the EnterMasterPassword activity
                     // When it returns we'll pick up in the method onActivityResult
                     i = new Intent(SelectDatabaseFromDropboxActivity.this, EnterMasterPassword.class);
                     startActivityForResult(i, ENTER_PW_REQUEST_CODE);
                     break;
-                case ERROR_IO_ERROR:
+                case ERROR_IO:
                     UIUtilities.showToast(SelectDatabaseFromDropboxActivity.this,
                             R.string.problem_saving_db, true);
+                    finish();
                     break;
-                case ERROR_DROPBOX_ERROR:
+                case ERROR_DROPBOX:
                     UIUtilities.showToast(SelectDatabaseFromDropboxActivity.this,
                             R.string.dropbox_problem, true);
+                    finish();
+                    break;
+                case ERROR_DROPBOX_INVALID_TOKEN:
+                    prefs.edit().remove(DROPBOX_ACCESS_TOKEN).commit();
+                    UIUtilities.showToast(SelectDatabaseFromDropboxActivity.this,
+                            R.string.dropbox_token_problem, true);
+                    finish();
                     break;
                 case NOT_UPM_DB:
                     UIUtilities.showToast(SelectDatabaseFromDropboxActivity.this,
                             R.string.not_password_database, true);
+                    finish();
                     break;
             }
         }
-
     }
 
 }

@@ -119,9 +119,9 @@ Version: %s"</string>
     <string name="new_master_password_message">Выбирайте мастер-пароль осторожно. Он должен быть сложным для угадывания кем-то чужим, и достаточно легким чтобы вам запомнить.</string>
     <string name="dont_forget_password_warning">Если вы забудете мастер-пароль, открыть БД будет невозможно. Разработчик UPM не сможет вам в этом помочь.</string>
     <string name="backup_message">ВАЖНО: Если удалить UPM, ваша БД будет также удалена. Поэтому необходимо регулярно сохранять резервные копии БД (доступно в меню).</string>
-    <string name="no_url">Нет URL адреса в этой записи</string>
     <string name="search_hint">Поиск записей</string>
     <string name="retrieve_from_dropbox">Retrieve From Dropbox</string>
+    <string name="dropbox_token_problem">Проблема с паролем Dropbox - повторите попытку</string>
     <string name="dropbox_problem">Problem communicating with Dropbox</string>
     <string name="dropbox_files">Dropbox Files</string>
     <string name="dropbox_get_file_list">Retrieving Filenames From Dropbox…</string>

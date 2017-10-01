@@ -114,6 +114,7 @@
     <string name="backup_message">NOTE: If you uninstall UPM your password database will be deleted along with it. For this reason it\'s important you backup your data regularly (available in the menu).</string>
     <string name="search_hint">Search Accounts</string>
     <string name="retrieve_from_dropbox">Retrieve From Dropbox</string>
+    <string name="dropbox_token_problem">Dropbox auth problem - try again</string>
     <string name="dropbox_problem">Problem communicating with Dropbox</string>
     <string name="dropbox_files">Dropbox Files</string>
     <string name="dropbox_get_file_list">Retrieving Filenames From Dropbox…</string>

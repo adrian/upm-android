@@ -47,7 +47,9 @@
     <string name="about">À propos</string>
     <string name="close">Fermer</string>
     <string name="homepage">Page d\'accueil</string>
+    <string name="homepageUrl">Page d\'accueil URL</string>
     <string name="donate">Faire un don</string>
+    <string name="donateURL">Faire un don URL</string>
     <string name="aboutText">
         Universal Password Manager (gestionnaire de mots de passe universel) vous permet d\'enregistrer
         les noms d\'utilisateur, mots de passe et notes génériques dans une base de données chiffrée
@@ -112,6 +114,7 @@
     <string name="backup_message">NOTE\u00A0: si vous désinstallez UPM, votre base de donées de mots de passe sera supprimée avec. Pour cela, il est important que vous la sauvegardiez régulièrement (disponible dans le menu).</string>
     <string name="search_hint">Rechercher des comptes</string>
     <string name="retrieve_from_dropbox">Récupérer de Dropbox</string>
+    <string name="dropbox_token_problem">Problème Dropbox auth - réessayez</string>
     <string name="dropbox_problem">Problème de communication avec Dropbox</string>
     <string name="dropbox_files">Fichiers Dropbox</string>
     <string name="dropbox_get_file_list">Récupération des noms de fichiers de Dropbox…</string>

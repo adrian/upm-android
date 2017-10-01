@@ -114,6 +114,7 @@
     <string name="backup_message">HINWEIS: Wenn Sie UPM deinstallieren, wird auch Ihre Passwort-Datenbank gelöscht. Aus diesem Grund ist es wichtig, dass Sie Ihre Daten regelmäßig sichern (im Menü verfügbar).</string>
     <string name="search_hint">Suchen Konten</string>
     <string name="retrieve_from_dropbox">Retrieve From Dropbox</string>
+    <string name="dropbox_token_problem">Dropbox Auth Problem - versuchen Sie es erneut</string>
     <string name="dropbox_problem">Problem communicating with Dropbox</string>
     <string name="dropbox_files">Dropbox Files</string>
     <string name="dropbox_get_file_list">Retrieving Filenames From Dropbox…</string>

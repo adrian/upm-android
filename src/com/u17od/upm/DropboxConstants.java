@@ -7,5 +7,6 @@ public interface DropboxConstants {
     public final static String APP_KEY = "qkpfz3ar30aozp0";
     public final static String APP_SECRET = "mt1txfu523l38m7";
     public final static AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
+    public static final String DROPBOX_ACCESS_TOKEN = "dropbox-access-token";
 
 }

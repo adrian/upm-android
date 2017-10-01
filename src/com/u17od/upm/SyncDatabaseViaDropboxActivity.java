@@ -1,87 +1,61 @@
 package com.u17od.upm;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.exception.DropboxException;
-import com.dropbox.client2.exception.DropboxServerException;
-import com.dropbox.client2.exception.DropboxUnlinkedException;
-import com.dropbox.client2.session.AccessTokenPair;
-import com.dropbox.client2.session.AppKeyPair;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.InvalidAccessTokenException;
+import com.dropbox.core.android.Auth;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.WriteMode;
+import com.u17od.upm.dropbox.DropboxClientFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import static com.u17od.upm.DropboxConstants.DROPBOX_ACCESS_TOKEN;
 
 public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
 
-    private static final String RETURNING_FROM_DB_AUTH = "retDBAuth";
-
-    private DropboxAPI<AndroidAuthSession> mDBApi;
-
-    private boolean returningFromDropboxAuthentication;
+    private static final String TAG = SyncDatabaseViaDropboxActivity.class.getName();
+    private SharedPreferences prefs;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null){
-            returningFromDropboxAuthentication =
-                    savedInstanceState.getBoolean(
-                            RETURNING_FROM_DB_AUTH, false);
+
+        prefs = getSharedPreferences(Utilities.DROPBOX_PREFS, MODE_PRIVATE);
+        String dropboxAccessToken = prefs.getString(DROPBOX_ACCESS_TOKEN, null);
+        Log.i("onCreate", "dropboxAccessToken=" + dropboxAccessToken);
+
+        if (dropboxAccessToken == null) {
+            Auth.startOAuth2Authentication(SyncDatabaseViaDropboxActivity.this, DropboxConstants.APP_KEY);
         }
-        prepareDropboxAPI();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (returningFromDropboxAuthentication) {
-            // We'll reach here if we're returning from the Dropbox
-            // authentication activity. If auth was successful then download
-            // the database file. Otherwise leave the activity and abort the
-            // sync.
-            if (mDBApi.getSession().authenticationSuccessful()) {
-                // MANDATORY call to complete auth.
-                // Sets the access token on the session
-                mDBApi.getSession().finishAuthentication();
+        String dropboxAccessToken = prefs.getString(DROPBOX_ACCESS_TOKEN, null);
+        Log.i("onResume", "dropboxAccessToken=" + dropboxAccessToken);
 
-                // store the tokens so we don't need to authenticate again
-                // during this session
-                AccessTokenPair tokens = mDBApi.getSession().getAccessTokenPair();
-                Utilities.setDropboxAccessTokenPair(this, tokens);
-
+        if (dropboxAccessToken == null) {
+            dropboxAccessToken = Auth.getOAuth2Token();
+            Log.i("onResume", "dropboxAccessToken after getOAuth2Token=" + dropboxAccessToken);
+            if (dropboxAccessToken != null) {
+                prefs.edit().putString(DROPBOX_ACCESS_TOKEN, dropboxAccessToken).commit();
+                DropboxClientFactory.init(dropboxAccessToken);
                 downloadDatabase();
-            } else {
-                finish();
             }
         } else {
-            // We'll reach here if we're entering the activity after selecting
-            // the "Sync" menu option.
+            DropboxClientFactory.init(dropboxAccessToken);
             downloadDatabase();
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(RETURNING_FROM_DB_AUTH,
-                returningFromDropboxAuthentication);
-    }
-
-    private void prepareDropboxAPI() {
-        // Prepare Dropbox Session objects
-        AppKeyPair appKeys = new AppKeyPair(DropboxConstants.APP_KEY, DropboxConstants.APP_SECRET);
-        AndroidAuthSession session = new AndroidAuthSession(appKeys, DropboxConstants.ACCESS_TYPE);
-        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
-        AccessTokenPair accessTokenPair = Utilities.getDropboxAccessTokenPair(this);
-        if (accessTokenPair != null) {
-            mDBApi.getSession().setAccessTokenPair(accessTokenPair);
         }
     }
 
@@ -97,18 +71,16 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
 
     private class DownloadDatabaseTask extends AsyncTask<Void, Void, Integer> {
 
-        private static final int ERROR_IO_ERROR = 1;
-        private static final int ERROR_DROPBOX_UNLINKED = 2;
-        private static final int ERROR_DROPBOX_ERROR = 3;
+        private static final String TAG = "DownloadDatabaseTask";
+        private static final int ERROR_IO = 1;
+        private static final int ERROR_DROPBOX = 2;
+        private static final int ERROR_DROPBOX_INVALID_TOKEN = 3;
 
         private ProgressDialog progressDialog;
 
         protected void onPreExecute() {
             progressDialog = ProgressDialog.show(SyncDatabaseViaDropboxActivity.this,
                     "", getString(R.string.downloading_db));
-            if (mDBApi == null) {
-                prepareDropboxAPI();
-            }
         }
 
         @Override
@@ -119,46 +91,38 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
                 String remoteFileName = Utilities.getDatabaseFileName(SyncDatabaseViaDropboxActivity.this);
                 downloadedDatabaseFile = new File(getCacheDir(), remoteFileName);
                 outputStream = new FileOutputStream(downloadedDatabaseFile);
-                DropboxAPI.DropboxFileInfo downloadedFileInfo =
-                        mDBApi.getFile(remoteFileName, null, outputStream, null);
+
+                FileMetadata metadata = DropboxClientFactory.getClient()
+                        .files()
+                        .download("/" + remoteFileName)
+                        .download(outputStream);
+
+
                 // Store the db file rev for use in the UploadDatabaseTask
                 // Prefs is used instead of the activity instance because the
                 // activity could be recreate between now and then meaning the
                 // instance variables are reset.
                 Utilities.setConfig(SyncDatabaseViaDropboxActivity.this,
                         Utilities.DROPBOX_PREFS, Utilities.DROPBOX_DB_REV,
-                        downloadedFileInfo.getMetadata().rev);
+                        metadata.getRev());
+
                 return 0;
             } catch (IOException e) {
-                Log.e("DownloadDropboxFileActivity.DownloadFileTask",
-                        "IOException", e);
-                return ERROR_IO_ERROR;
-            } catch (DropboxUnlinkedException e) {
-                Log.e("DownloadDropboxFileActivity.DownloadFileTask",
-                        "Dropbox unlinked exception", e);
-                return ERROR_DROPBOX_UNLINKED;
-            } catch (DropboxServerException e) {
-                // 404 is a valid response. Just means we haven't uploaded yet
-                if (e.error != DropboxServerException._404_NOT_FOUND){
-                    Log.e("DownloadDropboxFileActivity.DownloadFileTask",
-                            "Dropbox server exception", e);
-                    return ERROR_DROPBOX_ERROR;
-                } else {
-                    downloadedDatabaseFile = null;
-                    return 0;
-                }
-            } catch (DropboxException e) {
-                Log.e("DownloadDropboxFileActivity.DownloadFileTask",
-                        "Dropbox exception", e);
-                return ERROR_DROPBOX_ERROR;
+                Log.e(TAG, "IOException downloading database", e);
+                return ERROR_IO;
+            } catch (InvalidAccessTokenException e) {
+                Log.e(TAG, "InvalidAccessTokenException downloading database", e);
+                return ERROR_DROPBOX_INVALID_TOKEN;
+            } catch (DbxException e) {
+                Log.e(TAG, "DbxException downloading database", e);
+                return ERROR_DROPBOX;
             } finally {
                 if (outputStream != null) {
                     try {
                         outputStream.close();
                     } catch (IOException e) {
-                        Log.e("DownloadDropboxFileActivity.DownloadFileTask",
-                                "IOException", e);
-                        return ERROR_IO_ERROR;
+                        Log.e(TAG, "IOException closing database file stream", e);
+                        return ERROR_IO;
                     }
                 }
             }
@@ -172,18 +136,20 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
                 case 0:
                     decryptDatabase();
                     break;
-                case ERROR_IO_ERROR:
+                case ERROR_IO:
                     UIUtilities.showToast(SyncDatabaseViaDropboxActivity.this,
                             R.string.problem_saving_db, true);
                     finish();
                     break;
-                case ERROR_DROPBOX_UNLINKED:
-                    returningFromDropboxAuthentication = true;
-                    mDBApi.getSession().startAuthentication(SyncDatabaseViaDropboxActivity.this);
-                    break;
-                case ERROR_DROPBOX_ERROR:
+                case ERROR_DROPBOX:
                     UIUtilities.showToast(SyncDatabaseViaDropboxActivity.this,
                             R.string.dropbox_problem, true);
+                    finish();
+                    break;
+                case ERROR_DROPBOX_INVALID_TOKEN:
+                    prefs.edit().remove(DROPBOX_ACCESS_TOKEN).commit();
+                    UIUtilities.showToast(SyncDatabaseViaDropboxActivity.this,
+                            R.string.dropbox_token_problem, true);
                     finish();
                     break;
             }
@@ -192,8 +158,9 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
 
     private class UploadDatabaseTask extends AsyncTask<Void, Void, Integer> {
 
+        private static final String TAG = "UploadDatabaseTask";
         private static final int UPLOAD_OK = 0;
-        private static final int ERROR_READING = 1;
+        private static final int ERROR_IO = 1;
         private static final int ERROR_DROPBOX = 2;
 
         private ProgressDialog progressDialog;
@@ -203,9 +170,6 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
             progressDialog = ProgressDialog.show(
                     SyncDatabaseViaDropboxActivity.this, "",
                     getString(R.string.uploading_database));
-            if (mDBApi == null) {
-                prepareDropboxAPI();
-            }
         }
 
         @Override
@@ -216,26 +180,24 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
             try {
                 File databaseFile = getPasswordDatabase().getDatabaseFile();
                 inputStream = new FileInputStream(databaseFile);
-
-                String currentRev = Utilities.getConfig(
-                        SyncDatabaseViaDropboxActivity.this,
-                        Utilities.DROPBOX_PREFS, Utilities.DROPBOX_DB_REV);
-
-                mDBApi.putFile(databaseFile.getName(), inputStream,
-                        databaseFile.length(), currentRev, null);
-            } catch (FileNotFoundException e) {
-                Log.e("SyncDatabaseViaDropboxActivity",
-                        "Problem reading database file", e);
-                result = ERROR_READING;
-            } catch (DropboxException e) {
-                Log.e("SyncDatabaseViaDropboxActivity",
-                        "Dropbox error", e);
-                result = ERROR_DROPBOX;
+                DropboxClientFactory.getClient().files()
+                        .uploadBuilder("/" + databaseFile.getName())
+                        .withMode(WriteMode.OVERWRITE)
+                        .uploadAndFinish(inputStream);
+            } catch (IOException e) {
+                Log.e(TAG, "IOException during database upload", e);
+                result = ERROR_IO;
+            } catch (DbxException e) {
+                Log.e(TAG, "DbxException downloading database", e);
+                return ERROR_DROPBOX;
             } finally {
                 if (inputStream != null) {
                     try {
                         inputStream.close();
-                    } catch (IOException e) {}
+                    } catch (IOException e) {
+                        Log.e(TAG, "IOException during database upload", e);
+                        return ERROR_IO;
+                    }
                 }
             }
 
@@ -246,7 +208,7 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
         protected void onPostExecute(Integer result) {
             progressDialog.dismiss();
             switch (result) {
-            case ERROR_READING:
+            case ERROR_IO:
                 UIUtilities.showToast(SyncDatabaseViaDropboxActivity.this, R.string.problem_reading_upm_db);
                 break;
             case ERROR_DROPBOX:
