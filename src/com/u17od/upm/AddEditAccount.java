@@ -209,7 +209,7 @@ public class AddEditAccount extends Activity implements OnClickListener {
         new SaveDatabaseAsyncTask(this, new Callback() {
             @Override
             public void execute() {
-                // If the account name has changed or we're added a new account
+                // If the account name has changed or we're adding a new account
                 // then pass back a value instructing the FullAccountList to
                 // refresh the list of accounts
                 if (!accountName.equals(originalAccountName) || mode == ADD_MODE) {

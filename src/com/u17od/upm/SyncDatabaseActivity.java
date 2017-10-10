@@ -93,6 +93,12 @@ public abstract class SyncDatabaseActivity extends Activity {
             setResult(RESULT_REFRESH);
             syncResult = SyncResult.KEEP_REMOTE;
             UIUtilities.showToast(this, R.string.new_db_downloaded);
+
+            // Ask the BackupManager to backup the database using
+            // Google's cloud backup service.
+            Log.i("SyncDatabaseActivity", "Calling BackupManager().dataChanged()");
+            app.getBackupManager().dataChanged();
+
             finish();
         } else if (dbDownloadedOnSync.getRevision() == app.getPasswordDatabase().getRevision()) {
             UIUtilities.showToast(this, R.string.db_uptodate);

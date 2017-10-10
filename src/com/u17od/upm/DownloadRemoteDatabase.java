@@ -75,6 +75,10 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
         new DownloadDatabase().execute();
     }
 
+    private UPMApplication getUPMApplication() {
+        return (UPMApplication) getApplication();
+    }
+
     /**
      * The only way this method can be called is if we're returning from EnterMasterPassword
      * because we downloaded a remote db and the current master password didn't work.
@@ -155,6 +159,11 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
                     buf.close();
 
                     EnterMasterPassword.databaseFileToDecrypt = destFile;
+
+                    // Ask the BackupManager to backup the database using
+                    // Google's cloud backup service.
+                    Log.i("DownloadRemoteDatabase", "Calling BackupManager().dataChanged()");
+                    getUPMApplication().getBackupManager().dataChanged();
                 } else {
                     errorCode = NOT_UPM_DB;
                 }

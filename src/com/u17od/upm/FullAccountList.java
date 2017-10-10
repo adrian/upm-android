@@ -271,16 +271,18 @@ public class FullAccountList extends AccountsList {
         case DIALOG_ABOUT:
             PackageInfo pinfo;
             String versionName = "<unknown>";
+            int versionCode = 0;
             try {
                 pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
                 versionName = pinfo.versionName;
+                versionCode = pinfo.versionCode;
             } catch (NameNotFoundException e) {
                 Log.e("FullAccountList", e.getMessage(), e);
             }
-                       
+
             View v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
             TextView text = (TextView) v.findViewById(R.id.dialogText);
-            text.setText(getString(R.string.aboutText, versionName));
+            text.setText(getString(R.string.aboutText, versionName, versionCode));
 
             dialogBuilder
                 .setTitle(R.string.about)

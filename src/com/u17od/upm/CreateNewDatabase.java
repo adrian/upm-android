@@ -68,6 +68,10 @@ public class CreateNewDatabase extends Activity implements OnClickListener {
         });
     }
 
+    private UPMApplication getUPMApplication() {
+        return (UPMApplication) getApplication();
+    }
+
     @Override
     public void onClick(View v) {
         if (!password1.getText().toString().equals(password2.getText().toString())) {
@@ -89,7 +93,12 @@ public class CreateNewDatabase extends Activity implements OnClickListener {
                     public void execute() {
                         // Make the database available to the rest of the application by 
                         // putting a reference to it on the application
-                        ((UPMApplication) getApplication()).setPasswordDatabase(passwordDatabase);
+                        getUPMApplication().setPasswordDatabase(passwordDatabase);
+
+                        // Ask the BackupManager to backup the database using
+                        // Google's cloud backup service.
+                        Log.i("CreateNewDatabase", "Calling BackupManager().dataChanged()");
+                        getUPMApplication().getBackupManager().dataChanged();
 
                         setResult(RESULT_OK);
                         finish();

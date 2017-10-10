@@ -79,8 +79,12 @@ public class ChangeMasterPassword extends Activity implements OnClickListener {
         }
     }
 
+    private UPMApplication getUPMApplication() {
+        return (UPMApplication) getApplication();
+    }
+
     private PasswordDatabase getPasswordDatabase() {
-        return ((UPMApplication) getApplication()).getPasswordDatabase();
+        return getUPMApplication().getPasswordDatabase();
     }
 
     public class DecryptAndSaveDatabaseAsyncTask extends AsyncTask<Void, Void, Integer> {
@@ -100,7 +104,14 @@ public class ChangeMasterPassword extends Activity implements OnClickListener {
 
                 // Re-encrypt the database
                 getPasswordDatabase().changePassword(newPassword.getText().toString().toCharArray());
-                getPasswordDatabase().save();
+                synchronized (UPMApplication.sDataLock) {
+                    getPasswordDatabase().save();
+                }
+
+                // Ask the BackupManager to backup the database using
+                // Google's cloud backup service.
+                Log.i("ChangeMasterPassword", "Calling BackupManager().dataChanged()");
+                getUPMApplication().getBackupManager().dataChanged();
 
                 // We're finished with this activity so take it off the stack
                 finish();

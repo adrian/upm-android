@@ -29,6 +29,7 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.backup.BackupManager;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -43,7 +44,19 @@ public class UPMApplication extends Application {
 
     private PasswordDatabase passwordDatabase;
     private Date timeOfLastSync;
-    
+    private BackupManager backupManager;
+    public static final Object[] sDataLock = new Object[0];
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        backupManager = new BackupManager(this);
+    }
+
+    public BackupManager getBackupManager() {
+        return backupManager;
+    }
+
     public Date getTimeOfLastSync() {
         return timeOfLastSync;
     }
