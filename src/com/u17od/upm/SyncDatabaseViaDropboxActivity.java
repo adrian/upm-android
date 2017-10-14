@@ -10,6 +10,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.SearchResult;
 import com.dropbox.core.v2.files.WriteMode;
 import com.u17od.upm.dropbox.DropboxClientFactory;
 
@@ -75,6 +76,7 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
         private static final int ERROR_IO = 1;
         private static final int ERROR_DROPBOX = 2;
         private static final int ERROR_DROPBOX_INVALID_TOKEN = 3;
+        private static final int REMOTE_FILE_DOESNT_EXIST = 4;
 
         private ProgressDialog progressDialog;
 
@@ -92,11 +94,16 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
                 downloadedDatabaseFile = new File(getCacheDir(), remoteFileName);
                 outputStream = new FileOutputStream(downloadedDatabaseFile);
 
+                SearchResult searchResults = DropboxClientFactory.getClient()
+                        .files().search("", remoteFileName);
+                if (searchResults.getMatches().size() == 0) {
+                    return REMOTE_FILE_DOESNT_EXIST;
+                }
+
                 FileMetadata metadata = DropboxClientFactory.getClient()
                         .files()
                         .download("/" + remoteFileName)
                         .download(outputStream);
-
 
                 // Store the db file rev for use in the UploadDatabaseTask
                 // Prefs is used instead of the activity instance because the
@@ -151,6 +158,9 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
                     UIUtilities.showToast(SyncDatabaseViaDropboxActivity.this,
                             R.string.dropbox_token_problem, true);
                     finish();
+                    break;
+                case REMOTE_FILE_DOESNT_EXIST:
+                    syncDb(null);
                     break;
             }
         }

@@ -47,6 +47,9 @@ Features
 
 History
 -------
+   v1.17 14-Oct-2017
+     * Handle situation where db doesn't exist on Dropbox
+
    v1.16 11-Oct-2017 (beta)
      * Refactor to use Dropbox v2 API
 
