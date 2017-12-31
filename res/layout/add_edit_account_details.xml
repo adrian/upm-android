@@ -42,6 +42,7 @@
                   android:layout_width="fill_parent" 
                   android:layout_height="wrap_content"
                   android:inputType="textVisiblePassword"
+                  android:importantForAccessibility="no"
                   android:layout_marginBottom="10dip"/>
 
         <TextView android:layout_width="wrap_content"
