@@ -86,6 +86,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.patarapolw.diceware_utils.GeneratePassword"/>
+        <activity android:name="com.patarapolw.diceware_utils.Leetify"/>
+        <activity android:name="com.patarapolw.diceware_utils.Policy"/>
+
     </application>
 
 </manifest>
