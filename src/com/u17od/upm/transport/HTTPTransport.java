@@ -20,6 +20,9 @@
  */
 package com.u17od.upm.transport;
 
+import com.u17od.upm.util.Base64;
+import com.u17od.upm.util.Util;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -45,9 +48,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-
-import com.u17od.upm.util.Base64;
-import com.u17od.upm.util.Util;
 
 
 public class HTTPTransport extends Transport {
@@ -166,7 +166,7 @@ public class HTTPTransport extends Transport {
                 conn.setRequestProperty ("Authorization", createAuthenticationString(username, password));
             }
 
-            conn.setDoOutput(true);
+            conn.setDoOutput(false);
             conn.setDoInput(true);
             conn.setUseCaches(false);
             conn.setRequestMethod("GET");
