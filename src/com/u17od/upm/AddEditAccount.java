@@ -34,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.patarapolw.diceware_utils.GeneratePassword;
 import com.u17od.upm.database.AccountInformation;
 import com.u17od.upm.database.PasswordDatabase;
 
@@ -85,6 +86,15 @@ public class AddEditAccount extends Activity implements OnClickListener {
         Bundle extras = getIntent().getExtras();
         mode = extras.getInt(MODE);
         accountToEdit = extras.getString(ACCOUNT_TO_EDIT);
+
+        final Button generatePassword = (Button) findViewById(R.id.generate_password);
+        final GeneratePassword password_generator = new GeneratePassword(getApplicationContext());
+        generatePassword.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                password.setText(password_generator.newPassword());
+            }
+        });
     }
 
     @Override

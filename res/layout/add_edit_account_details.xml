@@ -38,12 +38,27 @@
                   android:layout_height="wrap_content"
                   android:text="@string/password"/>
 
-        <EditText android:id="@+id/account_password" 
-                  android:layout_width="fill_parent" 
-                  android:layout_height="wrap_content"
-                  android:inputType="textVisiblePassword"
-                  android:importantForAccessibility="no"
-                  android:layout_marginBottom="10dip"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText android:id="@+id/account_password"
+                android:layout_width="0dp"
+                android:layout_weight=".85"
+                android:layout_height="wrap_content"
+                android:inputType="textVisiblePassword"
+                android:importantForAccessibility="no"
+                android:layout_marginBottom="10dip"/>
+
+            <Button android:id="@+id/generate_password"
+                android:layout_width="0dp"
+                android:layout_weight=".15"
+                android:layout_height="wrap_content"
+                android:text="+"
+                style="@android:style/Widget.Button"/>
+
+        </LinearLayout>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
