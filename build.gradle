@@ -1,13 +1,15 @@
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.1.4'
     }
 }
 
 repositories {
+    google()
     jcenter()
     mavenLocal()
 }
@@ -15,14 +17,14 @@ repositories {
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'com.dropbox.core:dropbox-core-sdk:3.0.4'
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    implementation fileTree(dir: 'libs', include: '*.jar')
+    implementation 'com.dropbox.core:dropbox-core-sdk:3.0.4'
+    implementation 'com.squareup.okhttp3:okhttp:3.5.0'
 }
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '27.0.3'
 
     sourceSets {
         main {
@@ -36,7 +38,7 @@ android {
         }
 
         // Move the tests to tests/java, tests/res, etc...
-        instrumentTest.setRoot('tests')
+        test.setRoot('tests')
 
         // Move the build types to build-types/<type>
         // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
