@@ -47,6 +47,10 @@ Features
 
 History
 -------
+   v1.18 16-Sep-2018
+     * Fix problem when downloading DB
+     * Password should be invisible to the accessibility services
+
    v1.17 14-Oct-2017
      * Handle situation where db doesn't exist on Dropbox
 
