@@ -48,4 +48,8 @@ android {
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
+    defaultConfig {
+        minSdk 8
+        targetSdk 26
+    }
 }
