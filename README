@@ -47,6 +47,9 @@ Features
 
 History
 -------
+   v1.19 4-May-2022
+     * Fix problem with Dropbox sync
+
    v1.18 16-Sep-2018
      * Fix problem when downloading DB
      * Password should be invisible to the accessibility services
