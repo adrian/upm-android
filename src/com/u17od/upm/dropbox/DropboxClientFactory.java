@@ -9,24 +9,21 @@ import com.dropbox.core.v2.DbxClientV2;
  */
 public class DropboxClientFactory {
 
-    private static DbxClientV2 sDbxClient;
+    private static DbxClientV2 client;
     private static String accessToken;
 
     public static void init(String accessToken) {
-        if (sDbxClient == null || DropboxClientFactory.accessToken != accessToken) {
-            DbxRequestConfig requestConfig = DbxRequestConfig.newBuilder("upm")
-                    .withHttpRequestor(new OkHttp3Requestor(OkHttp3Requestor.defaultOkHttpClient()))
-                    .build();
-
-            sDbxClient = new DbxClientV2(requestConfig, accessToken);
+        if (client == null || !DropboxClientFactory.accessToken.equals(accessToken)) {
+            DbxRequestConfig config = new DbxRequestConfig("upm");
+            DropboxClientFactory.client = new DbxClientV2(config, accessToken);
             DropboxClientFactory.accessToken = accessToken;
         }
     }
 
     public static DbxClientV2 getClient() {
-        if (sDbxClient == null) {
+        if (client == null) {
             throw new IllegalStateException("Client not initialized.");
         }
-        return sDbxClient;
+        return client;
     }
 }

@@ -10,7 +10,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.files.FileMetadata;
-import com.dropbox.core.v2.files.SearchResult;
+import com.dropbox.core.v2.files.SearchV2Result;
 import com.dropbox.core.v2.files.WriteMode;
 import com.u17od.upm.dropbox.DropboxClientFactory;
 
@@ -94,8 +94,8 @@ public class SyncDatabaseViaDropboxActivity extends SyncDatabaseActivity {
                 downloadedDatabaseFile = new File(getCacheDir(), remoteFileName);
                 outputStream = new FileOutputStream(downloadedDatabaseFile);
 
-                SearchResult searchResults = DropboxClientFactory.getClient()
-                        .files().search("", remoteFileName);
+                SearchV2Result searchResults = DropboxClientFactory.getClient()
+                        .files().searchV2(remoteFileName);
                 if (searchResults.getMatches().size() == 0) {
                     return REMOTE_FILE_DOESNT_EXIST;
                 }
