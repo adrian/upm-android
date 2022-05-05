@@ -48,6 +48,6 @@ android {
     }
     defaultConfig {
         minSdk 8
-        targetSdk 26
+        targetSdk 30
     }
 }
