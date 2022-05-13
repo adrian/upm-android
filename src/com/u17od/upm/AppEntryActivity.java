@@ -28,7 +28,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -136,7 +135,7 @@ public class AppEntryActivity extends Activity {
                 restoreDatabase.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        File restoreFile = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
+                        File restoreFile = Utilities.getBackupFile(AppEntryActivity.this);
                         if (restoreFile.exists()) {
                             ((UPMApplication) getApplication()).restoreDatabase(AppEntryActivity.this);
                             // Clear the activity stack and bring up AppEntryActivity

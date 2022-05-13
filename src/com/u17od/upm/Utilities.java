@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Environment;
 
 import com.dropbox.client2.session.AccessTokenPair;
 import com.u17od.upm.database.PasswordDatabase;
@@ -62,6 +63,10 @@ public class Utilities {
         } else {
             return new File(activity.getFilesDir(), dbFileName);
         }
+    }
+
+    public static File getBackupFile(Activity activity) {
+        return new File(activity.getExternalFilesDir(null), Utilities.DEFAULT_DATABASE_FILE);
     }
 
     public static String getDatabaseFileName(Context context) {

@@ -176,7 +176,7 @@ public class FullAccountList extends AccountsList {
                 break;
             case R.id.restore:
                 // Check to ensure there's a file to restore
-                File restoreFile = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
+                File restoreFile = Utilities.getBackupFile(FullAccountList.this);
                 if (restoreFile.exists()) {
                     showDialog(CONFIRM_RESTORE_DIALOG);
                 } else {
@@ -187,7 +187,7 @@ public class FullAccountList extends AccountsList {
                 break;
             case R.id.backup:
                 // If there's already a backup file prompt the user if they want to overwrite
-                File backupFile = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
+                File backupFile = Utilities.getBackupFile(FullAccountList.this);
                 if (backupFile.exists()) {
                     showDialog(CONFIRM_OVERWRITE_BACKUP_FILE);
                 } else {
@@ -252,7 +252,7 @@ public class FullAccountList extends AccountsList {
                });
             break;
         case CONFIRM_OVERWRITE_BACKUP_FILE:
-            File backupFile = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
+            File backupFile = Utilities.getBackupFile(FullAccountList.this);
             String messageRes = getString(R.string.backup_file_exists);
             String message = String.format(messageRes, backupFile.getAbsolutePath());
 
@@ -351,10 +351,10 @@ public class FullAccountList extends AccountsList {
     }
 
     private void backupDatabase() {
-        File fileOnSDCard = new File(Environment.getExternalStorageDirectory(), Utilities.DEFAULT_DATABASE_FILE);
+        File backupFile = Utilities.getBackupFile(FullAccountList.this);
         File databaseFile = Utilities.getDatabaseFile(this);
-        if (((UPMApplication) getApplication()).copyFile(databaseFile, fileOnSDCard, this)) {
-            String message = String.format(getString(R.string.backup_complete), fileOnSDCard.getAbsolutePath());
+        if (((UPMApplication) getApplication()).copyFile(databaseFile, backupFile, this)) {
+            String message = String.format(getString(R.string.backup_complete), backupFile.getAbsolutePath());
             UIUtilities.showToast(this, message, false);
         }
     }
