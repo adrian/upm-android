@@ -38,6 +38,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,17 +56,20 @@ public class FullAccountList extends AccountsList {
     private static final int DIALOG_ABOUT = 2;
     private static final int CONFIRM_DELETE_DB_DIALOG = 3;
     private static final int IMPORT_CERT_DIALOG = 4;
+    private AutoCompleteTextView autoCompleteTextView;
 
     public static final int RESULT_EXIT = 0;
     public static final int RESULT_ENTER_PW = 1;
 
     public static final String CERT_FILE_NAME = "upm.cer";
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         registerForContextMenu(getListView());
+        autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.autocomplete);
         populateAccountList();
     }
 
@@ -96,6 +100,9 @@ public class FullAccountList extends AccountsList {
             finish();
         } else {
             setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getPasswordDatabase().getAccountNames()));
+            autoCompleteTextView.setAdapter(
+                new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, getPasswordDatabase().getAccountNames()));
+            autoCompleteTextView.setOnItemClickListener(this);
         }
     }
 
@@ -154,10 +161,6 @@ public class FullAccountList extends AccountsList {
         boolean optionConsumed = false;
 
         switch (item.getItemId()) {
-            case R.id.search:
-                onSearchRequested();
-                optionConsumed = true;
-                break;
             case R.id.add:
                 if (Utilities.isSyncRequired(this)) {
                     UIUtilities.showToast(this, R.string.sync_required);
