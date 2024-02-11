@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <size
+        android:height="@dimen/default_layout_divider_height" />
+    <solid android:color="@color/data_separator" />
+
+</shape>
