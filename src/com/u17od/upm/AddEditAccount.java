@@ -145,8 +145,8 @@ public class AddEditAccount extends Activity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-        case R.id.save_button:
+        int id = v.getId();
+        if (id == R.id.save_button) {
             String accountNameStr = accountName.getText().toString();
 
             // Ensure all the required data has been entered before saving the
@@ -154,7 +154,7 @@ public class AddEditAccount extends Activity implements OnClickListener {
             if (accountNameStr.trim().length() == 0) {
                 Toast.makeText(this, R.string.account_name_required_error, Toast.LENGTH_SHORT).show();
             } else {
-                
+
                 // If editing this account then ensure another account doesn't exist with this same name
                 if (mode == EDIT_MODE) {
 
@@ -178,11 +178,8 @@ public class AddEditAccount extends Activity implements OnClickListener {
                     }
                 }
             }
-
-            break;
-        case R.id.cancel_button:
+        } else if (id == R.id.cancel_button) {
             this.finish();
-            break;
         }
     }
 

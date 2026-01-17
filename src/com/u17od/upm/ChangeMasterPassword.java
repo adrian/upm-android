@@ -61,8 +61,8 @@ public class ChangeMasterPassword extends Activity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-        case R.id.change_master_password_ok_button:
+        int id = v.getId();
+        if (id == R.id.change_master_password_ok_button) {
             // Check the two new password match
             if (existingPassword.getText().length() == 0) {
                 Toast.makeText(this, R.string.request_master_password, Toast.LENGTH_SHORT).show();
@@ -75,7 +75,6 @@ public class ChangeMasterPassword extends Activity implements OnClickListener {
             } else {
                 new DecryptAndSaveDatabaseAsyncTask().execute();
             }
-            break;
         }
     }
 

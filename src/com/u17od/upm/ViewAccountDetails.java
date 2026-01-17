@@ -81,10 +81,8 @@ public class ViewAccountDetails extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        boolean optionConsumed = false;
-
-        switch (item.getItemId()) {
-        case R.id.edit:
+        int itemId = item.getItemId();
+        if (itemId == R.id.edit) {
             if (Utilities.isSyncRequired(this)) {
                 UIUtilities.showToast(this, R.string.sync_required);
             } else {
@@ -93,17 +91,17 @@ public class ViewAccountDetails extends Activity {
                 i.putExtra(AddEditAccount.ACCOUNT_TO_EDIT, account.getAccountName());
                 startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
             }
-            break;
-        case R.id.delete:
+            return true;
+        } else if (itemId == R.id.delete) {
             if (Utilities.isSyncRequired(this)) {
                 UIUtilities.showToast(this, R.string.sync_required);
             } else {
                 showDialog(CONFIRM_DELETE_DIALOG);
             }
-            break;
+            return true;
         }
 
-        return optionConsumed;
+        return false;
     }
 
     @Override

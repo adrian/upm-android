@@ -99,10 +99,9 @@ public class EnterMasterPassword extends Activity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.master_password_open_button:
-                openDatabase();
-                break;
+        int id = v.getId();
+        if (id == R.id.master_password_open_button) {
+            openDatabase();
         }
     }
 

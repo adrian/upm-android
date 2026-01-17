@@ -151,79 +151,65 @@ public class FullAccountList extends AccountsList {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        boolean optionConsumed = false;
-
-        switch (item.getItemId()) {
-            case R.id.search:
-                onSearchRequested();
-                optionConsumed = true;
-                break;
-            case R.id.add:
-                if (Utilities.isSyncRequired(this)) {
-                    UIUtilities.showToast(this, R.string.sync_required);
-                } else {
-                    Intent i = new Intent(FullAccountList.this, AddEditAccount.class);
-                    i.putExtra(AddEditAccount.MODE, AddEditAccount.ADD_MODE);
-                    startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
-                }
-                break;
-            case R.id.change_master_password:
-                if (Utilities.isSyncRequired(this)) {
-                    UIUtilities.showToast(this, R.string.sync_required);
-                } else {
-                    startActivity(new Intent(FullAccountList.this, ChangeMasterPassword.class));
-                }
-                break;
-            case R.id.restore:
-                // Check to ensure there's a file to restore
-                File restoreFile = Utilities.getBackupFile(FullAccountList.this);
-                if (restoreFile.exists()) {
-                    showDialog(CONFIRM_RESTORE_DIALOG);
-                } else {
-                    String messageRes = getString(R.string.restore_file_doesnt_exist);
-                    String message = String.format(messageRes, restoreFile.getAbsolutePath());
-                    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-                }
-                break;
-            case R.id.backup:
-                // If there's already a backup file prompt the user if they want to overwrite
-                File backupFile = Utilities.getBackupFile(FullAccountList.this);
-                if (backupFile.exists()) {
-                    showDialog(CONFIRM_OVERWRITE_BACKUP_FILE);
-                } else {
-                    backupDatabase();
-                }
-                break;
-            case R.id.about:
-                showDialog(DIALOG_ABOUT);
-                break;
-            case R.id.sync:
-                if (Utilities.getSyncMethod(this).equals(Prefs.SyncMethod.HTTP)) {
-                    Intent i = new Intent(FullAccountList.this, SyncDatabaseViaHttpActivity.class);
-                    startActivityForResult(i, SyncDatabaseActivity.SYNC_DB_REQUEST_CODE);
-                } else if (Utilities.getSyncMethod(this).equals(Prefs.SyncMethod.DROPBOX)) {
-                    Intent i = new Intent(FullAccountList.this, SyncDatabaseViaDropboxActivity.class);
-                    startActivityForResult(i, SyncDatabaseActivity.SYNC_DB_REQUEST_CODE);
-                }
-                break;
-            case R.id.preferences:
-                startActivity(new Intent(this, Prefs.class));
-                break;
-            case R.id.delete_db:
-                showDialog(CONFIRM_DELETE_DB_DIALOG);
-                break;
-            case R.id.import_certificate:
-                showDialog(IMPORT_CERT_DIALOG);
-                break;
-            case R.id.delete_certificate:
-                deleteCertificate();
-                break;
-            case R.id.donate:
-                launchDonatePage();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == R.id.search) {
+            onSearchRequested();
+            return true;
+        } else if (itemId == R.id.add) {
+            if (Utilities.isSyncRequired(this)) {
+                UIUtilities.showToast(this, R.string.sync_required);
+            } else {
+                Intent i = new Intent(FullAccountList.this, AddEditAccount.class);
+                i.putExtra(AddEditAccount.MODE, AddEditAccount.ADD_MODE);
+                startActivityForResult(i, AddEditAccount.EDIT_ACCOUNT_REQUEST_CODE);
+            }
+        } else if (itemId == R.id.change_master_password) {
+            if (Utilities.isSyncRequired(this)) {
+                UIUtilities.showToast(this, R.string.sync_required);
+            } else {
+                startActivity(new Intent(FullAccountList.this, ChangeMasterPassword.class));
+            }
+        } else if (itemId == R.id.restore) {
+            // Check to ensure there's a file to restore
+            File restoreFile = Utilities.getBackupFile(FullAccountList.this);
+            if (restoreFile.exists()) {
+                showDialog(CONFIRM_RESTORE_DIALOG);
+            } else {
+                String messageRes = getString(R.string.restore_file_doesnt_exist);
+                String message = String.format(messageRes, restoreFile.getAbsolutePath());
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            }
+        } else if (itemId == R.id.backup) {
+            // If there's already a backup file prompt the user if they want to overwrite
+            File backupFile = Utilities.getBackupFile(FullAccountList.this);
+            if (backupFile.exists()) {
+                showDialog(CONFIRM_OVERWRITE_BACKUP_FILE);
+            } else {
+                backupDatabase();
+            }
+        } else if (itemId == R.id.about) {
+            showDialog(DIALOG_ABOUT);
+        } else if (itemId == R.id.sync) {
+            if (Utilities.getSyncMethod(this).equals(Prefs.SyncMethod.HTTP)) {
+                Intent i = new Intent(FullAccountList.this, SyncDatabaseViaHttpActivity.class);
+                startActivityForResult(i, SyncDatabaseActivity.SYNC_DB_REQUEST_CODE);
+            } else if (Utilities.getSyncMethod(this).equals(Prefs.SyncMethod.DROPBOX)) {
+                Intent i = new Intent(FullAccountList.this, SyncDatabaseViaDropboxActivity.class);
+                startActivityForResult(i, SyncDatabaseActivity.SYNC_DB_REQUEST_CODE);
+            }
+        } else if (itemId == R.id.preferences) {
+            startActivity(new Intent(this, Prefs.class));
+        } else if (itemId == R.id.delete_db) {
+            showDialog(CONFIRM_DELETE_DB_DIALOG);
+        } else if (itemId == R.id.import_certificate) {
+            showDialog(IMPORT_CERT_DIALOG);
+        } else if (itemId == R.id.delete_certificate) {
+            deleteCertificate();
+        } else if (itemId == R.id.donate) {
+            launchDonatePage();
         }
 
-        return optionConsumed;
+        return false;
     }
 
     @Override
