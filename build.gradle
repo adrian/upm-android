@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath 'com.android.tools.build:gradle:9.0.0'
     }
 }
 
@@ -22,6 +22,8 @@ dependencies {
 
 android {
     compileSdkVersion 33
+
+    namespace "com.u17od.upm"
 
     sourceSets {
         main {
