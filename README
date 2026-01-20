@@ -2,7 +2,7 @@ Universal Password Manager
 --------------------------
 http://upm.sourceforge.net
 
-Copyright (C) 2005-2012 Adrian Smith
+Copyright (C) 2005-2026 Adrian Smith
 
 Universal Password Manager is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -47,6 +47,9 @@ Features
 
 History
 -------
+   v1.25 20-January-2026
+     * Upgraded targetSDK version to 36.
+
    v1.21 26-August-2023
      * Upgraded targetSDK version to 33 to comply with new play store policy.
 

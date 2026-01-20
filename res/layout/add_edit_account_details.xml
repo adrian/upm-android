@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
 
      <ScrollView 
-        android:layout_width="fill_parent"
-        android:layout_height="1px"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true">
 
-        <LinearLayout android:layout_width="fill_parent"
-                      android:layout_height="fill_parent"
-                      android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical"
+                      android:padding="10dip">
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/account_name"/>
 
         <EditText android:id="@+id/account_name" 
-                  android:layout_width="fill_parent" 
+                  android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:singleLine="true"
                   android:layout_marginBottom="10dip"/>
@@ -29,7 +31,7 @@
                   android:text="@string/userid"/>
 
         <EditText android:id="@+id/account_userid" 
-                  android:layout_width="fill_parent" 
+                  android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:singleLine="true"
                   android:layout_marginBottom="10dip"/>
@@ -39,7 +41,7 @@
                   android:text="@string/password"/>
 
         <EditText android:id="@+id/account_password" 
-                  android:layout_width="fill_parent" 
+                  android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:inputType="textVisiblePassword"
                   android:importantForAccessibility="no"
@@ -50,7 +52,7 @@
                   android:text="@string/url"/>
 
         <EditText android:id="@+id/account_url"
-                  android:layout_width="fill_parent" 
+                  android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:singleLine="true"
                   android:layout_marginBottom="10dip"/>
@@ -60,7 +62,7 @@
                   android:text="@string/notes"/>
 
         <EditText android:id="@+id/account_notes"
-                  android:layout_width="fill_parent" 
+                  android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:inputType="textMultiLine"
                   android:layout_marginBottom="10dip"
@@ -71,7 +73,7 @@
     </ScrollView> 
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         style="@android:style/ButtonBar">

@@ -21,7 +21,7 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 36
 
     namespace "com.u17od.upm"
 
@@ -49,7 +49,7 @@ android {
         release.setRoot('build-types/release')
     }
     defaultConfig {
-        minSdk 8
-        targetSdk 33
+        minSdk 21
+        targetSdk 36
     }
 }
