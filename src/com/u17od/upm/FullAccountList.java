@@ -128,28 +128,6 @@ public class FullAccountList extends AccountsList {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            new AlertDialog.Builder(this)
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .setTitle(R.string.confirm_exit_title)
-            .setMessage(R.string.confirm_exit_message)
-            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    FullAccountList.this.setResult(RESULT_EXIT);
-                    FullAccountList.this.finish();
-                }
-            })
-            .setNegativeButton(R.string.no, null)
-            .show();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
-        }
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.search) {

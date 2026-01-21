@@ -93,10 +93,6 @@
     <string name="sync_required">Une synchronisation est nécessaire avant de procéder à cette opération</string>
     <string name="delete_db">Supprimer la base de données</string>
     <string name="confirm_delete_db">Voulez-vous vraiment supprimer votre base de données\u00A0? Une fois supprimée, la base sera perdue à jamais.</string>
-    <string name="confirm_exit_title">Quitter UPM\u00A0?</string>
-    <string name="confirm_exit_message">Voulez-vous vraiment quitter\u00A0? Vous devrez saisir à nouveau votre mot de passe principal lors du prochain lancement de UPM.</string>
-    <string name="yes">Oui</string>
-    <string name="no">Non</string>
     <string name="no_uri">Aucune URL pour ce compte</string>
     <string name="import_cert">Importer un certificat</string>
     <string name="delete_cert">Supprimer un certificat</string>

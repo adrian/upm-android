@@ -93,10 +93,6 @@
     <string name="sync_required">Vor Durchführung dieser Aktion ist eine Synchronisation erforderlich</string>
     <string name="delete_db">Datenbank löschen</string>
     <string name="confirm_delete_db">Sind Sie sicher, dass Sie Ihre Datenbank löschen wollen? Eine gelöschte Datenbank ist für immer verloren.</string>
-    <string name="confirm_exit_title">UPM beenden?</string>
-    <string name="confirm_exit_message">Sind Sie sicher, dass Sie UPM beenden wollen? Sie werden zur Eingabe Ihres Hauptpassworts aufgefordert, wenn Sie UPM das nächste Mal öffnen.</string>
-    <string name="yes">Ja</string>
-    <string name="no">Nein</string>
     <string name="no_uri">Keine URL in diesem Konto</string>
     <string name="import_cert">Zertifikat importieren</string>
     <string name="delete_cert">Zertifikat löschen</string>
