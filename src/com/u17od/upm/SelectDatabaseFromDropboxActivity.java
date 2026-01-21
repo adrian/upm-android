@@ -12,8 +12,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.android.Auth;
@@ -38,7 +36,6 @@ public class SelectDatabaseFromDropboxActivity extends ListActivity {
 
     private static final int ENTER_PW_REQUEST_CODE = 111;
 
-    private DropboxAPI<AndroidAuthSession> mDBApi;
     private ProgressDialog progressDialog;
 
     @Override
