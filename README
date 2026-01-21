@@ -47,7 +47,7 @@ Features
 
 History
 -------
-   v1.26 21-January-2026
+   v1.27 21-January-2026
      * Fixed Dropbox sync issue by upgrading Dropbox SDK to version 7.0.0.
      * Removed "Confirm Exit" dialog when hitting back from main screen.
      * Upgraded targetSDK version to 36.
