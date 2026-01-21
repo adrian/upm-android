@@ -13,7 +13,7 @@
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/account_name"
-                  android:textStyle="bold"
+                  android:textStyle="bold|italic"
                   android:textSize="20dp"/>
 
     	<TextView android:id="@+id/account_name" 
@@ -21,11 +21,16 @@
 	              android:layout_height="wrap_content"
     			  android:layout_marginBottom="10dip"
                   android:textSize="20dp"/>
+			<ImageView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:src="@drawable/account_details_h_divider"
+				/>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/userid"
-                  android:textStyle="bold"
+                  android:textStyle="bold|italic"
                   android:textSize="20dp"/>
 
 	    <TextView android:id="@+id/account_userid" 
@@ -33,11 +38,16 @@
 	              android:layout_height="wrap_content"
 			      android:layout_marginBottom="10dip"
                   android:textSize="20dp"/>
+			<ImageView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:src="@drawable/account_details_h_divider"
+				/>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/password"
-                  android:textStyle="bold"
+                  android:textStyle="bold|italic"
                   android:textSize="20dp"/>
 
 	    <TextView android:id="@+id/account_password" 
@@ -45,11 +55,16 @@
 	              android:layout_height="wrap_content"
 			      android:layout_marginBottom="10dip"
                   android:textSize="20dp"/>
+			<ImageView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:src="@drawable/account_details_h_divider"
+				/>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/url"
-                  android:textStyle="bold"
+                  android:textStyle="bold|italic"
                   android:textSize="20dp"/>
 
 	    <TextView android:id="@+id/account_url"
@@ -58,11 +73,16 @@
 			      android:layout_marginBottom="10dip"
                   android:textSize="20dp"
                   android:autoLink="all"/>
+			<ImageView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:src="@drawable/account_details_h_divider"
+				/>
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/notes"
-                  android:textStyle="bold"
+                  android:textStyle="bold|italic"
                   android:textSize="20dp"/>
 
 	    <TextView android:id="@+id/account_notes"
