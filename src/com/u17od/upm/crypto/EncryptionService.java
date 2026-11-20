@@ -43,10 +43,18 @@ public class EncryptionService {
     public static final int SALT_LENGTH = 8;
     public static final int SALT_GEN_ITER_COUNT = 20;
 
-    private Cipher encryptionCipher; 
+    private Cipher encryptionCipher;
     private Cipher decryptionCipher;
     private SecretKey secretKey;
     private byte salt[];
+    private char[] password;
+
+
+    /**
+     * For EncryptionServiceV4 which implements its own crypto.
+     */
+    protected EncryptionService() {
+    }
 
 
     public EncryptionService(SecretKey secretKey, byte salt[]) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException {
@@ -62,15 +70,18 @@ public class EncryptionService {
         secretKey = keyFac.generateSecret(pbeKeySpec);
 
         this.salt = salt;
+        this.password = password.clone();
 
         initCiphers();
     }
 
-    
+
     public EncryptionService(char[] password) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
         PBEKeySpec pbeKeySpec = new PBEKeySpec(password);
         SecretKeyFactory keyFac = SecretKeyFactory.getInstance(PBEWithSHA256And256BitAES);
         secretKey = keyFac.generateSecret(pbeKeySpec);
+
+        this.password = password.clone();
 
         SecureRandom saltGen = SecureRandom.getInstance(randomAlgorithm);
         this.salt = new byte[SALT_LENGTH];
@@ -114,6 +125,16 @@ public class EncryptionService {
 
     public SecretKey getSecretKey() {
         return secretKey;
+    }
+
+
+    /**
+     * The master password this service derives its key from, if available.
+     * Used by PasswordDatabase to upgrade a v3 database to v4 on save and by
+     * sync to re-derive a key against another file's salt.
+     */
+    public char[] getPassword() {
+        return password == null ? null : password.clone();
     }
 
     

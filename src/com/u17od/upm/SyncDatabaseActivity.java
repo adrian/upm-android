@@ -5,12 +5,11 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Date;
 
-import javax.crypto.SecretKey;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.u17od.upm.crypto.EncryptionService;
 import com.u17od.upm.crypto.InvalidPasswordException;
 import com.u17od.upm.database.PasswordDatabase;
 import com.u17od.upm.database.ProblemReadingDatabaseFile;
@@ -35,11 +34,19 @@ public abstract class SyncDatabaseActivity extends Activity {
     protected abstract void downloadDatabase();
 
     protected void decryptDatabase() {
-        SecretKey existingDBSecretKey = getPasswordDatabase().getEncryptionService().getSecretKey();
+        EncryptionService existingService = getPasswordDatabase().getEncryptionService();
         try {
             PasswordDatabase passwordDatabase = null;
             if (downloadedDatabaseFile != null) {
-                passwordDatabase = new PasswordDatabase(downloadedDatabaseFile, existingDBSecretKey);
+                if (existingService.getPassword() != null) {
+                    // A v4 database key is derived from the master password and
+                    // the *remote file's* salt/KDF parameters, so the derived
+                    // SecretKey of the local database can't be reused here.
+                    // Opening with the master password works for every version.
+                    passwordDatabase = new PasswordDatabase(downloadedDatabaseFile, existingService.getPassword());
+                } else {
+                    passwordDatabase = new PasswordDatabase(downloadedDatabaseFile, existingService.getSecretKey());
+                }
             }
             syncDb(passwordDatabase);
         } catch (IOException e) {
