@@ -19,6 +19,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: '*.jar')
     implementation 'com.dropbox.core:dropbox-core-sdk:7.0.0'
     implementation 'com.dropbox.core:dropbox-android-sdk:7.0.0'
+    // BouncyCastle lightweight API: Argon2id key derivation for format v4
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.81'
+    testImplementation 'junit:junit:4.13.2'
 }
 
 android {

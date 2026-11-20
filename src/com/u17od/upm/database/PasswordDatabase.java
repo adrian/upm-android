@@ -40,6 +40,7 @@ import javax.crypto.SecretKey;
 
 import com.u17od.upm.crypto.DESDecryptionService;
 import com.u17od.upm.crypto.EncryptionService;
+import com.u17od.upm.crypto.EncryptionServiceV4;
 import com.u17od.upm.crypto.InvalidPasswordException;
 import com.u17od.upm.util.Util;
 
@@ -49,6 +50,9 @@ import com.u17od.upm.util.Util;
  * All interaction with the database file is done using this class.
  * 
  * Database versions and formats. The items between [] brackets are encrypted.
+ *   4     >> MAGIC_NUMBER DB_VERSION SALT KDF_PARAMS [IV DB_REVISION DB_OPTIONS ACCOUNTS]
+ *            (Argon2id KDF: SALT=16 bytes, KDF_PARAMS=iterations(4,BE) memoryKB(4,BE) parallelism(1);
+ *             AES-256-GCM, the 12 byte IV is stored in the clear at the start of the encrypted data)
  *   3     >> MAGIC_NUMBER DB_VERSION SALT [DB_REVISION DB_OPTIONS ACCOUNTS]
  *      (all strings are encoded using UTF-8)
  *   2     >> MAGIC_NUMBER DB_VERSION SALT [DB_REVISION DB_OPTIONS ACCOUNTS]
@@ -67,7 +71,8 @@ import com.u17od.upm.util.Util;
  */
 public class PasswordDatabase {
 
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION_V3 = 3;
+    private static final int DB_VERSION_V4 = 4;
     private static final String FILE_HEADER = "UPM";
 
     private File databaseFile;
@@ -97,23 +102,29 @@ public class PasswordDatabase {
             revision = new Revision();
             dbOptions = new DatabaseOptions();
             accounts = new HashMap<String, AccountInformation>();
-            encryptionService = new EncryptionService(password);
+            encryptionService = new EncryptionServiceV4(password);
         } else {
-            SecretKey secretKey = EncryptionService.createSecretKey(password);
-            load(secretKey);
+            load(password);
         }
     }
 
 
-    public void changePassword(char[] password) throws GeneralSecurityException {
-        encryptionService = new EncryptionService(password);
+    public void changePassword(char[] password) {
+        encryptionService = new EncryptionServiceV4(password);
+    }
+
+
+    private void load(char[] password) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
+        loadInternal(Util.getBytesFromFile(databaseFile), password, EncryptionService.createSecretKey(password));
     }
 
 
     private void load(SecretKey secretKey) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
+        loadInternal(Util.getBytesFromFile(databaseFile), null, secretKey);
+    }
 
-        //Read in the encrypted bytes
-        byte[] fullDatabase = Util.getBytesFromFile(databaseFile);
+
+    private void loadInternal(byte[] fullDatabase, char[] password, SecretKey secretKey) throws IOException, GeneralSecurityException, ProblemReadingDatabaseFile, InvalidPasswordException {
 
         // Check the database is a minimum length
         if (fullDatabase.length < EncryptionService.SALT_LENGTH) {
@@ -129,14 +140,41 @@ public class PasswordDatabase {
         if (Arrays.equals(header, FILE_HEADER.getBytes())) {
 
             // Calculate the positions of each item in the file
-            int dbVersionPos      = header.length;
-            int saltPos           = dbVersionPos + 1;
-            int encryptedBytesPos = saltPos + EncryptionService.SALT_LENGTH;
+            int dbVersionPos = header.length;
+            int saltPos      = dbVersionPos + 1;
 
-            // Get the database version 
+            // Get the database version
             byte dbVersion = fullDatabase[dbVersionPos];
 
-            if (dbVersion == 2 || dbVersion == 3) {
+            if (dbVersion == 4) {
+                if (password == null) {
+                    throw new ProblemReadingDatabaseFile("This database uses encryption format v4 and needs the master password to be opened");
+                }
+                int paramsPos  = saltPos + EncryptionServiceV4.SALT_LENGTH_V4;
+                int payloadPos = paramsPos + 9; // iterations(4) + memoryKB(4) + parallelism(1)
+                if (fullDatabase.length < payloadPos + EncryptionServiceV4.IV_LENGTH + (EncryptionServiceV4.TAG_BITS / 8)) {
+                    throw new ProblemReadingDatabaseFile("This file doesn't appear to be a UPM password database");
+                }
+                byte[] salt = new byte[EncryptionServiceV4.SALT_LENGTH_V4];
+                System.arraycopy(fullDatabase, saltPos, salt, 0, EncryptionServiceV4.SALT_LENGTH_V4);
+                int iterations  = readBE(fullDatabase, paramsPos);
+                int memoryKB    = readBE(fullDatabase, paramsPos + 4);
+                int parallelism = fullDatabase[paramsPos + 8] & 0xFF;
+                int encryptedBytesLength = fullDatabase.length - payloadPos;
+                byte[] encryptedBytes = new byte[encryptedBytesLength];
+                System.arraycopy(fullDatabase, payloadPos, encryptedBytes, 0, encryptedBytesLength);
+
+                //Attempt to decrypt the database information
+                EncryptionServiceV4 v4Service = new EncryptionServiceV4(password, salt, iterations, memoryKB, parallelism);
+                byte[] decryptedBytes = v4Service.decrypt(encryptedBytes);
+                encryptionService = v4Service;
+
+                //If we've got here then the database was successfully decrypted
+                is = new ByteArrayInputStream(decryptedBytes);
+                revision = new Revision(is);
+                dbOptions = new DatabaseOptions(is);
+            } else if (dbVersion == 2 || dbVersion == 3) {
+                int encryptedBytesPos = saltPos + EncryptionService.SALT_LENGTH;
                 byte[] salt = new byte[EncryptionService.SALT_LENGTH];
                 System.arraycopy(fullDatabase, saltPos, salt, 0, EncryptionService.SALT_LENGTH);
                 int encryptedBytesLength = fullDatabase.length - encryptedBytesPos;
@@ -150,8 +188,14 @@ public class PasswordDatabase {
                     charset = Util.defaultCharset();
                 }
 
-                //Attempt to decrypt the database information
-                encryptionService = new EncryptionService(secretKey, salt);
+                //Attempt to decrypt the database information. When we have the
+                //password we build a password based service so that save() can
+                //upgrade the database to format v4.
+                if (password != null) {
+                    encryptionService = new EncryptionService(password, salt);
+                } else {
+                    encryptionService = new EncryptionService(secretKey, salt);
+                }
                 byte[] decryptedBytes = encryptionService.decrypt(encryptedBytes);
 
                 //If we've got here then the database was successfully decrypted 
@@ -186,8 +230,14 @@ public class PasswordDatabase {
                 throw new ProblemReadingDatabaseFile("Either your password is incorrect or this file isn't a UPM password database");
             }
 
-            // Create the encryption for use later in the save() method
-            encryptionService = new EncryptionService(secretKey, salt);
+            // Create the encryption for use later in the save() method. If we
+            // have the password, switch straight to a version 4 service so the
+            // next save() migrates this legacy database to the new format.
+            if (password != null) {
+                encryptionService = new EncryptionServiceV4(password);
+            } else {
+                encryptionService = new EncryptionService(secretKey, salt);
+            }
             
             //We'll get to here if the password was correct so load up the decryped byte
             is = new ByteArrayInputStream(decryptedBytes);
@@ -254,6 +304,12 @@ public class PasswordDatabase {
         os.close();
         byte[] dataToEncrypt = os.toByteArray();
 
+        //Upgrade an older database to the v4 format whenever the master
+        //password is available (databases opened with a SecretKey stay on v3)
+        if (!(encryptionService instanceof EncryptionServiceV4) && encryptionService.getPassword() != null) {
+            encryptionService = new EncryptionServiceV4(encryptionService.getPassword());
+        }
+
         //Now encrypt the database data
         byte[] encryptedData = encryptionService.encrypt(dataToEncrypt);
 
@@ -261,8 +317,17 @@ public class PasswordDatabase {
         File tempFile = File.createTempFile("upmdb", null);
         FileOutputStream fos = new FileOutputStream(tempFile);
         fos.write(FILE_HEADER.getBytes());
-        fos.write(DB_VERSION);
-        fos.write(encryptionService.getSalt());
+        if (encryptionService instanceof EncryptionServiceV4) {
+            EncryptionServiceV4 v4 = (EncryptionServiceV4) encryptionService;
+            fos.write(DB_VERSION_V4);
+            fos.write(v4.getSalt());
+            fos.write(intBE(v4.getIterations()));
+            fos.write(intBE(v4.getMemoryKB()));
+            fos.write((byte) v4.getParallelism());
+        } else {
+            fos.write(DB_VERSION_V3);
+            fos.write(encryptionService.getSalt());
+        }
         fos.write(encryptedData);
         fos.close();
 
@@ -353,6 +418,17 @@ public class PasswordDatabase {
 
     public EncryptionService getEncryptionService () {
         return encryptionService;
+    }
+
+
+    private static int readBE(byte[] data, int pos) {
+        return ((data[pos] & 0xFF) << 24) | ((data[pos + 1] & 0xFF) << 16)
+                | ((data[pos + 2] & 0xFF) << 8) | (data[pos + 3] & 0xFF);
+    }
+
+
+    private static byte[] intBE(int value) {
+        return new byte[] { (byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value };
     }
 
 }
