@@ -101,10 +101,7 @@ public class HTTPTransport extends Transport {
             URL url = new URL(targetLocation);
             conn = getConnection(url);
 
-            // Put the authentication details in the request
-            if (username != null) {
-                conn.setRequestProperty ("Authorization", createAuthenticationString(username, password));
-            }
+            applyAuthentication(conn, url, username, password);
 
             conn.setDoOutput(true);
             conn.setDoInput(true);
@@ -161,10 +158,7 @@ public class HTTPTransport extends Transport {
             URL url = new URL(urlToGet);
             conn = getConnection(url);
 
-            // Put the authentication details in the request
-            if (username != null && !username.trim().equals("")) {
-                conn.setRequestProperty ("Authorization", createAuthenticationString(username, password));
-            }
+            applyAuthentication(conn, url, username, password);
 
             conn.setDoOutput(false);
             conn.setDoInput(true);
@@ -317,10 +311,7 @@ public class HTTPTransport extends Transport {
             URL url = new URL(targetURL);
             conn = getConnection(url);
 
-            // Put the authentication details in the request
-            if (username != null) {
-                conn.setRequestProperty ("Authorization", createAuthenticationString(username, password));
-            }
+            applyAuthentication(conn, url, username, password);
 
             int contentLength = requestBody.length();
             conn.setRequestProperty("Content-Length", String.valueOf(contentLength));
@@ -376,6 +367,26 @@ public class HTTPTransport extends Transport {
             url = url + '/';
         }
         return url;
+    }
+
+
+    private void applyAuthentication(HttpURLConnection conn, URL url, String username, String password) {
+        if (username != null && !username.trim().equals("")) {
+            conn.setRequestProperty("Authorization", createAuthenticationString(username, password));
+            return;
+        }
+
+        // The desktop client (commons-httpclient) authenticates using the
+        // credentials embedded in the URL (http://user:pass@host/...) while
+        // java.net.HttpURLConnection silently ignores them. Emulate the
+        // desktop behaviour so both clients send the same request.
+        String userInfo = url.getUserInfo();
+        if (userInfo != null && !userInfo.equals("")) {
+            int colonIndex = userInfo.indexOf(':');
+            String urlUsername = colonIndex == -1 ? userInfo : userInfo.substring(0, colonIndex);
+            String urlPassword = colonIndex == -1 ? "" : userInfo.substring(colonIndex + 1);
+            conn.setRequestProperty("Authorization", createAuthenticationString(urlUsername, urlPassword));
+        }
     }
 
 
