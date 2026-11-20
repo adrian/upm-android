@@ -24,6 +24,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
 import android.app.Activity;
@@ -105,9 +107,19 @@ public class DownloadRemoteDatabase extends Activity implements OnClickListener 
     }
 
     private String getDatabaseFileNameFromURL() {
-        // We need to store the database file name so that we know 
-        // the name of the db to open when starting up
+        // We need to store the database file name so that we know
+        // the name of the db to open when starting up.
+        // Derive it from the URL path so that a query string or fragment
+        // (e.g. a QNAP share download link) is not mistaken for the name.
         String url = urlEditText.getText().toString();
+        try {
+            String path = new URL(url).getPath();
+            if (path != null && !path.equals("")) {
+                url = path;
+            }
+        } catch (MalformedURLException e) {
+            // fall back to the raw text
+        }
         int slashIndex = url.lastIndexOf('/');
         String fileName = url.substring(slashIndex + 1);
         return fileName;
