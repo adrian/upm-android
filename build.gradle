@@ -51,6 +51,13 @@ android {
     }
     defaultConfig {
         minSdk 21
-        targetSdk 36
+        // Target 34 on purpose: from API 35 the platform forces edge-to-edge
+        // placement on apps that opt in, and the UPM layouts predate that
+        // change. With targetSdk 35/36 the first input fields end up behind
+        // the status/action bar and become unreachable on recent devices
+        // (e.g. "Download Remote Database" cannot be filled in at all).
+        // A proper fix is making the layouts inset-aware; until then keep
+        // the legacy, system-decorated placement by targeting 34.
+        targetSdk 34
     }
 }
